@@ -1,6 +1,8 @@
 import { getDatabases, countJalurInDb } from "@/lib/store";
 import DatabaseList from "./DatabaseList";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const list = await getDatabases();
   const databases = await Promise.all(
