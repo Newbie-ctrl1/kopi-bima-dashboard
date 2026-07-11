@@ -326,6 +326,86 @@ export async function bulkCreateOutlets(
   await prisma.outlet.createMany({ data });
 }
 
+export async function bulkImportOutlets(
+  alamatId: string,
+  inputs: Array<{
+    noInduk: string;
+    outlet: string;
+    tglDaftar: string;
+    order?: number;
+    harga?: number;
+    totalBayar?: number;
+  }>
+): Promise<void> {
+  // Check stock first
+  const totalRequestedOrder = inputs.reduce((sum, input) => sum + (input.order ?? 0), 0);
+  if (totalRequestedOrder > 0) {
+    const currentStock = await getCoffeeStockQuantity();
+    if (totalRequestedOrder > currentStock) {
+      throw new Error(`Stok kopi tidak mencukupi untuk melakukan import. (Stok tersedia: ${currentStock} Kardus, Total diminta: ${totalRequestedOrder} Kardus)`);
+    }
+  }
+
+  const stocks = await prisma.coffeeStock.findMany({ take: 1 });
+  const defaultPrice = stocks.length > 0 ? stocks[0].price : 100000;
+
+  await prisma.$transaction(async (tx) => {
+    for (const input of inputs) {
+      const newOutlet = await tx.outlet.create({
+        data: {
+          alamatId,
+          noInduk: input.noInduk,
+          outlet: input.outlet,
+          tglDaftar: input.tglDaftar || new Date().toISOString().slice(0, 10),
+        },
+      });
+
+      const orderQty = input.order ?? 0;
+      if (orderQty > 0) {
+        const price = input.harga && input.harga > 0 ? input.harga : defaultPrice;
+        const totalPiutang = orderQty * price;
+
+        await tx.order.create({
+          data: {
+            outletId: newOutlet.id,
+            order: orderQty,
+            harga: price,
+            totalBayar: 0,
+            totalPiutang: totalPiutang,
+            status: "Piutang",
+            orderStatus: "Sukses",
+            tglOrder: input.tglDaftar || new Date().toISOString().slice(0, 10),
+          },
+        });
+
+        if (stocks.length > 0) {
+          const stock = stocks[0];
+          await tx.coffeeStock.update({
+            where: { id: stock.id },
+            data: {
+              quantity: {
+                decrement: orderQty
+              }
+            },
+          });
+        }
+      }
+
+      const payAmount = input.totalBayar ?? 0;
+      if (payAmount > 0) {
+        await tx.payment.create({
+          data: {
+            outletId: newOutlet.id,
+            amount: payAmount,
+            paymentMethod: "Cash",
+            tglPayment: input.tglDaftar || new Date().toISOString().slice(0, 10),
+          },
+        });
+      }
+    }
+  });
+}
+
 export async function getOutletsWithSummary(alamatId: string): Promise<OutletWithSummary[]> {
   const outlets = await prisma.outlet.findMany({
     where: { alamatId },
@@ -446,8 +526,41 @@ export async function deleteOrder(id: string): Promise<void> {
   await prisma.order.delete({ where: { id } });
 }
 
+export async function autoUpdatePastProsesOrders(dbId: string): Promise<void> {
+  const today = new Date().toISOString().slice(0, 10);
+  const pastProsesOrders = await prisma.order.findMany({
+    where: {
+      orderStatus: "Proses",
+      tglOrder: {
+        lt: today,
+      },
+      outlet: {
+        alamat: {
+          jalur: {
+            databaseId: dbId,
+          },
+        },
+      },
+    },
+    select: { id: true },
+  });
+
+  if (pastProsesOrders.length > 0) {
+    await prisma.order.updateMany({
+      where: {
+        id: { in: pastProsesOrders.map((o) => o.id) },
+      },
+      data: {
+        orderStatus: "Pending",
+      },
+    });
+  }
+}
+
 // Get all orders for a database with outlet/location relations
 export async function getOrdersByDatabase(dbId: string): Promise<OrderWithRelations[]> {
+  await autoUpdatePastProsesOrders(dbId);
+
   const list = await prisma.order.findMany({
     where: {
       outlet: {
@@ -573,6 +686,8 @@ export interface AnalyticsPeriod {
 export async function getDatabaseAnalytics(
   dbId: string
 ): Promise<{ periods: AnalyticsPeriod[]; summary: any }> {
+  await autoUpdatePastProsesOrders(dbId);
+
   const orders = await prisma.order.findMany({
     where: {
       orderStatus: "Sukses",
@@ -643,7 +758,7 @@ export async function getDatabaseAnalytics(
     const totalPaidVal = o.payments.reduce((sum: number, p: any) => sum + p.amount, 0);
     if (totalOrderVal - totalPaidVal > 0) {
       piutangCount++;
-    } else if (suksesOrders.length > 0) {
+    } else {
       lunasCount++;
     }
   }
@@ -673,6 +788,8 @@ export async function getAnalyticsData(
   dbId: string,
   period: "harian" | "bulanan" | "tahunan"
 ): Promise<AnalyticsPeriod[]> {
+  await autoUpdatePastProsesOrders(dbId);
+
   const orders = await prisma.order.findMany({
     where: {
       orderStatus: "Sukses",
@@ -901,7 +1018,7 @@ export async function getAnalyticsData(
         payments: periodPayments,
       };
     })
-    .sort((a, b) => a.key.localeCompare(b.key));
+    .sort((a, b) => b.key.localeCompare(a.key));
 }
 
 export async function getNextNoInduk(alamatId: string): Promise<string> {

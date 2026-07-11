@@ -2,8 +2,6 @@ import Breadcrumb from "@/components/Breadcrumb";
 import GlobalAnalyticsTab from "@/components/GlobalAnalyticsTab";
 import { getGlobalSummary, getGlobalPeriodSummary } from "@/lib/store";
 
-export const dynamic = "force-dynamic";
-
 export default async function AnalisaGlobalPage() {
   const summary = await getGlobalSummary();
   const periodSummary = await getGlobalPeriodSummary();

@@ -332,7 +332,7 @@ export async function uploadOutletsAction(
       return { error: "File tidak berisi data" };
     }
 
-    const outlets: OutletFormData[] = [];
+    const outlets: any[] = [];
     const errors: string[] = [];
 
     for (let i = 0; i < rows.length; i++) {
@@ -354,6 +354,32 @@ export async function uploadOutletsAction(
         row["tanggal"] ||
         "";
 
+      const orderStr =
+        row["order"] ||
+        row["Order"] ||
+        row["ORDER"] ||
+        row["jumlah_order"] ||
+        row["jumlah"] ||
+        "0";
+      const orderVal = parseFloat(String(orderStr)) || 0;
+
+      const hargaStr =
+        row["harga"] ||
+        row["Harga"] ||
+        row["HARGA"] ||
+        "";
+      const hargaVal = hargaStr !== "" ? (parseFloat(String(hargaStr)) || undefined) : undefined;
+
+      const totalBayarStr =
+        row["totalBayar"] ||
+        row["total_bayar"] ||
+        row["Total Bayar"] ||
+        row["TOTAL BAYAR"] ||
+        row["bayar"] ||
+        row["Bayar"] ||
+        "0";
+      const totalBayarVal = parseFloat(String(totalBayarStr)) || 0;
+
       if (!noInduk && !outlet) {
         errors.push(`Baris ${rowNum}: No Induk dan Outlet kosong, dilewati`);
         continue;
@@ -363,6 +389,9 @@ export async function uploadOutletsAction(
         noInduk: String(noInduk).trim(),
         outlet: String(outlet).trim(),
         tglDaftar: String(tglDaftar).trim(),
+        order: orderVal,
+        harga: hargaVal,
+        totalBayar: totalBayarVal,
       });
     }
 
@@ -373,7 +402,7 @@ export async function uploadOutletsAction(
       };
     }
 
-    await store.bulkCreateOutlets(alamatId, outlets);
+    await store.bulkImportOutlets(alamatId, outlets);
     revalidatePath("/", "layout");
 
     return {

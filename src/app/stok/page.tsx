@@ -3,8 +3,6 @@ import SingleStockView from "@/components/SingleStockView";
 import { getCoffeeStocks, createCoffeeStock } from "@/lib/store";
 import { updateCoffeeStockAction } from "@/app/actions";
 
-export const dynamic = "force-dynamic";
-
 export default async function StokPage() {
   let stocks = await getCoffeeStocks();
   if (stocks.length === 0) {

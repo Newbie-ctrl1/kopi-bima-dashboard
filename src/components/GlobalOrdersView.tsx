@@ -389,6 +389,7 @@ export default function GlobalOrdersView({
                           <div className="flex flex-col">
                             <span className="font-serif-aww text-[var(--accent)] text-xs">{o.jalurName}</span>
                             <span className="text-[9px] text-[var(--muted)] uppercase font-semibold">{o.alamatName}</span>
+                            <span className="text-[8.5px] text-[var(--muted)] font-mono mt-0.5 flex items-center gap-1">{o.tglOrder}</span>
                           </div>
                         </td>
                         <td className="font-mono text-[var(--foreground)] font-semibold text-xs tracking-tight">
@@ -491,6 +492,7 @@ export default function GlobalOrdersView({
                           <div className="flex flex-col">
                             <span className="font-serif-aww text-[var(--accent)] text-xs">{p.jalurName}</span>
                             <span className="text-[9px] text-[var(--muted)] uppercase font-semibold">{p.alamatName}</span>
+                            <span className="text-[8.5px] text-[var(--muted)] font-mono mt-0.5 flex items-center gap-1">{p.tglPayment}</span>
                           </div>
                         </td>
                         <td className="font-mono text-[var(--foreground)] font-semibold text-xs tracking-tight">

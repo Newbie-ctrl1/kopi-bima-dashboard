@@ -94,6 +94,92 @@ export default function AnalyticsView({
   const getPercentage = (value: number, total: number) =>
     total > 0 ? Math.round((value / total) * 100) : 0;
 
+  const downloadSummaryCSV = () => {
+    const headers = [
+      activeTab === "harian" ? "Tanggal" : activeTab === "bulanan" ? "Bulan" : "Tahun",
+      "Total Outlet",
+      "Volume Order (Krd)",
+      "Total Pendapatan (Rp)",
+      "Total Terbayar (Rp)",
+      "Sisa Piutang (Rp)",
+      "Jumlah Lunas",
+      "Jumlah Piutang"
+    ];
+
+    const rows = currentData.map(p => [
+      p.label,
+      p.totalOutlet,
+      p.totalOrder,
+      p.totalPendapatan,
+      p.totalBayar,
+      p.totalPiutang,
+      p.lunas,
+      p.piutang
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(val => `"${val}"`).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Rekap_${activeTab}_kopi_bima_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadPeriodDetailsCSV = (periodData: AnalyticsPeriod) => {
+    // Generate CSV for orders
+    const orderLines = [
+      "--- DAFTAR TRANSAKSI ORDER ---",
+      ["Jalur/Alamat", "No Induk", "Nama Outlet", "Volume Order (Krd)", "Harga (Rp)", "Total Harga (Rp)", "Jumlah Bayar (Rp)", "Status"].join(",")
+    ];
+    
+    periodData.orders.forEach(o => {
+      orderLines.push([
+        `"${o.jalurName} - ${o.alamatName}"`,
+        `"${o.outletNoInduk}"`,
+        `"${o.outletName}"`,
+        o.order,
+        o.harga,
+        o.order * o.harga,
+        o.totalBayar,
+        o.status
+      ].join(","));
+    });
+
+    // Generate CSV for payments
+    const paymentLines = [
+      "",
+      "--- DAFTAR TRANSAKSI PEMBAYARAN ---",
+      ["Jalur/Alamat", "No Induk", "Nama Outlet", "Jumlah Bayar (Rp)", "Metode Pembayaran"].join(",")
+    ];
+
+    periodData.payments.forEach(p => {
+      paymentLines.push([
+        `"${p.jalurName} - ${p.alamatName}"`,
+        `"${p.outletNoInduk}"`,
+        `"${p.outletName}"`,
+        p.amount,
+        p.paymentMethod
+      ].join(","));
+    });
+
+    const csvContent = [...orderLines, ...paymentLines].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Detail_${activeTab}_${periodData.label}_kopi_bima.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div>
       {/* Summary Cards */}
@@ -181,63 +267,118 @@ export default function AnalyticsView({
       {/* Lunas vs Piutang Bar */}
       <div className="card-static p-6 mb-8 animate-slide-up bg-[#0d0d0c] border border-[var(--card-border)] relative overflow-hidden" style={{ animationDelay: "0.3s", animationFillMode: "backwards" }}>
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-20" />
-        <h3 className="text-xs uppercase font-bold text-[var(--muted-foreground)] tracking-widest mb-5">Rasio Kepatuhan Pembayaran (Lunas vs Piutang)</h3>
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex-1">
-            <div className="h-2 bg-[#050505] border border-[var(--card-border)] overflow-hidden flex">
-              <div
-                className="h-full transition-all duration-700"
-                style={{
-                  width: `${getPercentage(summary.lunas, summary.totalOutlet)}%`,
-                  background: "linear-gradient(90deg, #10b981, #059669)",
-                }}
-              />
-              <div
-                className="h-full transition-all duration-700"
-                style={{
-                  width: `${getPercentage(summary.piutang, summary.totalOutlet)}%`,
-                  background: "linear-gradient(90deg, #f43f5e, #e11d48)",
-                }}
-              />
-            </div>
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <div>
+            <h3 className="text-xs uppercase font-bold text-[var(--muted-foreground)] tracking-widest">
+              Rasio Kepatuhan Pembayaran
+            </h3>
+            <p className="text-[9px] text-[var(--muted)] uppercase font-semibold mt-1">
+              Persentase Kepatuhan Pelunasan Outlet
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-semibold text-[var(--success)] uppercase tracking-wider">
+            Kepatuhan: {getPercentage(summary.lunas, summary.totalOutlet)}%
           </div>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-[var(--success)]" />
-            <span className="text-xs text-[var(--muted-foreground)]">
-              Lunas: <strong className="text-[var(--success)] font-mono">{summary.lunas}</strong> ({getPercentage(summary.lunas, summary.totalOutlet)}%)
-            </span>
+
+        <div className="space-y-4">
+          <div className="relative">
+            <div className="h-6 bg-[#070707] border border-[var(--card-border)] rounded-full overflow-hidden flex p-0.5">
+              {summary.lunas > 0 && (
+                <div
+                  className="h-full rounded-full transition-all duration-700 flex items-center justify-center text-[10px] font-bold text-white font-mono shadow-inner"
+                  style={{
+                    width: `${getPercentage(summary.lunas, summary.totalOutlet)}%`,
+                    background: "linear-gradient(90deg, #10b981, #059669)",
+                  }}
+                >
+                  {getPercentage(summary.lunas, summary.totalOutlet) >= 12 && (
+                    <span>Lunas ({getPercentage(summary.lunas, summary.totalOutlet)}%)</span>
+                  )}
+                </div>
+              )}
+              {summary.piutang > 0 && (
+                <div
+                  className="h-full rounded-full transition-all duration-700 flex items-center justify-center text-[10px] font-bold text-white font-mono shadow-inner -ml-1.5"
+                  style={{
+                    width: `${getPercentage(summary.piutang, summary.totalOutlet)}%`,
+                    background: "linear-gradient(90deg, #f43f5e, #e11d48)",
+                  }}
+                >
+                  {getPercentage(summary.piutang, summary.totalOutlet) >= 12 && (
+                    <span>Piutang ({getPercentage(summary.piutang, summary.totalOutlet)}%)</span>
+                  )}
+                </div>
+              )}
+              {summary.totalOutlet === 0 && (
+                <div className="w-full h-full flex items-center justify-center text-[10px] text-[var(--muted-foreground)] font-semibold">
+                  Belum ada outlet terdaftar
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-[var(--danger)]" />
-            <span className="text-xs text-[var(--muted-foreground)]">
-              Piutang: <strong className="text-[var(--danger)] font-mono">{summary.piutang}</strong> ({getPercentage(summary.piutang, summary.totalOutlet)}%)
-            </span>
+
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[var(--success)] shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                <span className="text-xs text-[var(--muted-foreground)]">
+                  Lunas / Aman: <strong className="text-[var(--success)] font-mono font-bold">{summary.lunas}</strong> dari {summary.totalOutlet} Outlet
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[var(--danger)] shadow-[0_0_8px_rgba(244,63,94,0.4)]" />
+                <span className="text-xs text-[var(--muted-foreground)]">
+                  Memiliki Piutang: <strong className="text-[var(--danger)] font-mono font-bold">{summary.piutang}</strong> dari {summary.totalOutlet} Outlet
+                </span>
+              </div>
+            </div>
+            
+            <div className="text-[10px] text-[var(--muted)] font-mono font-semibold uppercase">
+              Total: {summary.totalOutlet} Outlet
+            </div>
           </div>
         </div>
       </div>
 
       {/* Period Tabs */}
-      <div className="flex items-center gap-3 mb-6 animate-slide-up" style={{ animationDelay: "0.35s", animationFillMode: "backwards" }}>
-        {tabs.map((tab) => (
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 animate-slide-up" style={{ animationDelay: "0.35s", animationFillMode: "backwards" }}>
+        <div className="flex items-center gap-3">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              id={`tab-${tab.key}`}
+              onClick={() => {
+                setActiveTab(tab.key);
+                setExpandedPeriod(null);
+              }}
+              className={`flex items-center gap-2.5 px-5 py-3 border text-xs uppercase tracking-wider font-bold transition-all duration-300 ${
+                activeTab === tab.key
+                  ? "bg-[var(--accent)] border-[var(--accent)] text-white shadow-lg shadow-[var(--accent)]/15"
+                  : "bg-[#0d0d0c] border-[var(--card-border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--muted)]"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {currentData.length > 0 && (
           <button
-            key={tab.key}
-            id={`tab-${tab.key}`}
-            onClick={() => {
-              setActiveTab(tab.key);
-              setExpandedPeriod(null);
-            }}
-            className={`flex items-center gap-2.5 px-5 py-3 border text-xs uppercase tracking-wider font-bold transition-all duration-300 ${
-              activeTab === tab.key
-                ? "border-[var(--accent)] text-[var(--accent)] bg-gradient-to-r from-[rgba(201,154,107,0.03)] to-transparent"
-                : "border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--card-border)]"
-            }`}
+            onClick={downloadSummaryCSV}
+            className="btn btn-secondary text-xs flex items-center gap-2 py-3 px-4 border border-[var(--card-border)] bg-[#0d0d0c] hover:bg-[#121211] text-[var(--foreground)] font-bold uppercase tracking-wider"
           >
-            {tab.icon}
-            {tab.label}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Unduh Rekap {activeTab === "harian" ? "Harian" : activeTab === "bulanan" ? "Bulanan" : "Tahunan"} (.csv)
           </button>
-        ))}
+        )}
       </div>
 
       {/* Period List */}
@@ -301,6 +442,22 @@ export default function AnalyticsView({
                     </div>
                   </div>
 
+                  {/* Instantly Download CSV */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      downloadPeriodDetailsCSV(period);
+                    }}
+                    className="p-1.5 rounded-lg border border-[var(--card-border)] bg-black/40 text-[var(--muted-foreground)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all flex items-center justify-center shrink-0"
+                    title={`Unduh Rincian CSV (${period.label})`}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                  </button>
+
                   <svg
                     width="14"
                     height="14"
@@ -332,23 +489,37 @@ export default function AnalyticsView({
               {expandedPeriod === period.key && (
                 <div className="border-t border-[var(--card-border)] bg-[#090909]">
                   {/* Period Stats Summary Banner */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 border-b border-[var(--card-border)] bg-black/20">
-                    <div>
-                      <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Total Order</p>
-                      <p className="text-xs font-bold font-mono text-[var(--foreground)]">{period.totalOrder.toFixed(1)} Krd</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 border-b border-[var(--card-border)] bg-black/20">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 flex-1">
+                      <div>
+                        <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Total Order</p>
+                        <p className="text-xs font-bold font-mono text-[var(--foreground)]">{period.totalOrder.toFixed(1)} Krd</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Pendapatan</p>
+                        <p className="text-xs font-bold font-mono text-purple-400">{formatCurrency(period.totalPendapatan)}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Terbayar</p>
+                        <p className="text-xs font-bold font-mono text-[var(--success)]">{formatCurrency(period.totalBayar)}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Piutang</p>
+                        <p className="text-xs font-bold font-mono text-[var(--danger)]">{formatCurrency(period.totalPiutang)}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Pendapatan</p>
-                      <p className="text-xs font-bold font-mono text-purple-400">{formatCurrency(period.totalPendapatan)}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Terbayar</p>
-                      <p className="text-xs font-bold font-mono text-[var(--success)]">{formatCurrency(period.totalBayar)}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Piutang</p>
-                      <p className="text-xs font-bold font-mono text-[var(--danger)]">{formatCurrency(period.totalPiutang)}</p>
-                    </div>
+                    
+                    <button
+                      onClick={() => downloadPeriodDetailsCSV(period)}
+                      className="btn btn-secondary text-[10px] flex items-center gap-1.5 py-2 px-3 border border-[var(--card-border)] bg-[#0d0d0c] hover:bg-[#121211] text-[var(--foreground)] font-bold uppercase tracking-wider h-fit self-end sm:self-center"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accent)]">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                      Unduh CSV Rincian
+                    </button>
                   </div>
 
                   {/* Table Headers */}

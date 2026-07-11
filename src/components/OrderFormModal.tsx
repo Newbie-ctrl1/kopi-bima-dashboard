@@ -42,6 +42,7 @@ export default function OrderFormModal({
   const [qty, setQty] = useState<number | "">(order?.order ?? 1);
   const [harga, setHarga] = useState<number | "">(order?.harga ?? 100000);
   const [orderStatus, setOrderStatus] = useState<"Sukses" | "Pending" | "Cancel" | "Proses">(order?.orderStatus ?? "Sukses");
+  const [tglOrder, setTglOrder] = useState(order?.tglOrder ?? new Date().toISOString().slice(0, 10));
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -72,6 +73,7 @@ export default function OrderFormModal({
       setQty(order.order);
       setHarga(order.harga);
       setOrderStatus(order.orderStatus);
+      setTglOrder(order.tglOrder);
     }
   }, [order]);
 
@@ -264,8 +266,24 @@ export default function OrderFormModal({
               </select>
             </div>
 
-            {/* Hidden tglOrder — always today */}
-            <input type="hidden" name="tglOrder" value={new Date().toISOString().slice(0, 10)} />
+            {/* Tanggal Order */}
+            <div>
+              <label
+                htmlFor="tglOrder"
+                className="block text-sm font-medium text-[var(--muted-foreground)] mb-1.5"
+              >
+                Tanggal Order
+              </label>
+              <input
+                id="tglOrder"
+                name="tglOrder"
+                type="date"
+                className="input"
+                value={tglOrder}
+                onChange={(e) => setTglOrder(e.target.value)}
+                required
+              />
+            </div>
 
             {/* Order Quantity */}
             <div>
