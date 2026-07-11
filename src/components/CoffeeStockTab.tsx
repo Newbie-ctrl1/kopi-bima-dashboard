@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import CoffeeStockFormModal from "./CoffeeStockFormModal";
 
 interface CoffeeStock {
@@ -35,6 +36,8 @@ export default function CoffeeStockTab({
   onDeleteStock,
 }: CoffeeStockTabProps) {
   const [search, setSearch] = useState("");
+  const auth = useAuth();
+  const isAdmin = auth?.role === "ADMIN";
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editStock, setEditStock] = useState<CoffeeStock | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -98,25 +101,27 @@ export default function CoffeeStockTab({
           />
         </div>
 
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="btn btn-primary text-xs"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {isAdmin && (
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="btn btn-primary text-xs"
           >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Tambah Stok Kopi
-        </button>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Tambah Stok Kopi
+          </button>
+        )}
       </div>
 
       {/* Stock List Card */}
@@ -157,7 +162,7 @@ export default function CoffeeStockTab({
                   <th>Persediaan</th>
                   <th>Harga Satuan</th>
                   <th>Total Nilai Aset</th>
-                  <th aria-label="Aksi" className="w-[60px] text-right"></th>
+                  {isAdmin && <th aria-label="Aksi" className="w-[60px] text-right"></th>}
                 </tr>
               </thead>
               <tbody>
@@ -207,50 +212,52 @@ export default function CoffeeStockTab({
                       <td className="font-mono text-xs font-bold text-[var(--foreground)]">
                         {formatCurrency(totalValue)}
                       </td>
-                      <td className="text-right relative">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveMenuId(activeMenuId === item.id ? null : item.id);
-                          }}
-                          className="btn-icon btn-ghost rounded-lg"
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <circle cx="12" cy="5" r="1" />
-                            <circle cx="12" cy="12" r="1" />
-                            <circle cx="12" cy="19" r="1" />
-                          </svg>
-                        </button>
+                      {isAdmin && (
+                        <td className="text-right relative">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveMenuId(activeMenuId === item.id ? null : item.id);
+                            }}
+                            className="btn-icon btn-ghost rounded-lg"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <circle cx="12" cy="5" r="1" />
+                              <circle cx="12" cy="12" r="1" />
+                              <circle cx="12" cy="19" r="1" />
+                            </svg>
+                          </button>
 
-                        {/* Dropdown Menu */}
-                        {activeMenuId === item.id && (
-                          <>
-                            <div
-                              className="fixed inset-0 z-40"
-                              onClick={() => setActiveMenuId(null)}
-                            />
-                            <div className="dropdown-menu z-50 animate-scale-up right-0 top-9">
-                              <button
-                                onClick={() => {
-                                  setActiveMenuId(null);
-                                  setEditStock(item);
-                                }}
-                              >
-                                Edit Stok
-                              </button>
-                              <button
-                                className="text-[var(--danger)] hover:bg-[var(--danger-bg)]"
-                                onClick={() => {
-                                  setActiveMenuId(null);
-                                  setDeleteId(item.id);
-                                }}
-                              >
-                                Hapus Stok
-                              </button>
-                            </div>
-                          </>
-                        )}
-                      </td>
+                          {/* Dropdown Menu */}
+                          {activeMenuId === item.id && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-40"
+                                onClick={() => setActiveMenuId(null)}
+                              />
+                              <div className="dropdown-menu z-50 animate-scale-up right-0 top-9">
+                                <button
+                                  onClick={() => {
+                                    setActiveMenuId(null);
+                                    setEditStock(item);
+                                  }}
+                                >
+                                  Edit Stok
+                                </button>
+                                <button
+                                  className="text-[var(--danger)] hover:bg-[var(--danger-bg)]"
+                                  onClick={() => {
+                                    setActiveMenuId(null);
+                                    setDeleteId(item.id);
+                                  }}
+                                >
+                                  Hapus Stok
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   );
                 })}

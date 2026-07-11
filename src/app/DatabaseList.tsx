@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import ItemCard from "@/components/ItemCard";
 import CreateModal from "@/components/CreateModal";
 import type { Database } from "@/lib/types";
+import { useAuth } from "@/components/AuthProvider";
 import {
   createDatabaseAction,
   deleteDatabaseAction,
@@ -17,6 +19,8 @@ interface DatabaseListProps {
 
 export default function DatabaseList({ databases, hideHeader }: DatabaseListProps) {
   const [showCreate, setShowCreate] = useState(false);
+  const auth = useAuth();
+  const isAdmin = auth?.role === "ADMIN";
 
   return (
     <>
@@ -31,26 +35,51 @@ export default function DatabaseList({ databases, hideHeader }: DatabaseListProp
               Kelola database, jalur, dan data outlet Anda
             </p>
           </div>
-          <button
-            id="btn-buat-database"
-            onClick={() => setShowCreate(true)}
-            className="btn btn-primary"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Buat Database
-          </button>
+          {isAdmin && (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/kelola-user"
+                className="btn btn-secondary text-xs"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Kelola User
+              </Link>
+              <button
+                id="btn-buat-database"
+                onClick={() => setShowCreate(true)}
+                className="btn btn-primary text-xs"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Buat Database
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -77,15 +106,18 @@ export default function DatabaseList({ databases, hideHeader }: DatabaseListProp
             Belum Ada Database
           </h3>
           <p className="text-sm text-[var(--muted)] max-w-md">
-            Buat database pertama Anda untuk mulai mengelola data jalur dan
-            outlet.
+            {isAdmin 
+              ? "Buat database pertama Anda untuk mulai mengelola data jalur dan outlet." 
+              : "Tidak ada database yang terdaftar saat ini."}
           </p>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="btn btn-primary mt-2"
-          >
-            Buat Database Pertama
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowCreate(true)}
+              className="btn btn-primary mt-2"
+            >
+              Buat Database Pertama
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -115,27 +147,30 @@ export default function DatabaseList({ databases, hideHeader }: DatabaseListProp
                   <path d="M3 12A9 3 0 0 0 21 12" />
                 </svg>
               }
-              onDelete={async (id) => {
+              onDelete={isAdmin ? async (id) => {
                 await deleteDatabaseAction(id);
-              }}
-              onUpdate={async (id, newName) => {
+              } : undefined}
+              onUpdate={isAdmin ? async (id, newName) => {
                 const formData = new FormData();
                 formData.append("name", newName);
                 await updateDatabaseAction(id, formData);
-              }}
+              } : undefined}
             />
           ))}
         </div>
       )}
 
       {/* Create Modal */}
-      <CreateModal
-        isOpen={showCreate}
-        onClose={() => setShowCreate(false)}
-        title="Buat Database Baru"
-        placeholder="Contoh: Database Rendi"
-        onSubmit={createDatabaseAction}
-      />
+      {isAdmin && showCreate && (
+        <CreateModal
+          isOpen={showCreate}
+          onClose={() => setShowCreate(false)}
+          title="Buat Database Baru"
+          placeholder="Contoh: Database Rendi"
+          onSubmit={createDatabaseAction}
+        />
+      )}
     </>
   );
 }
+

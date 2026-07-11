@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import CoffeeStockFormModal from "./CoffeeStockFormModal";
 
 interface CoffeeStock {
@@ -31,6 +32,8 @@ export default function SingleStockView({
   onUpdateStock,
 }: SingleStockViewProps) {
   const [showEditModal, setShowEditModal] = useState(false);
+  const auth = useAuth();
+  const isAdmin = auth?.role === "ADMIN";
 
   const totalValue = stock.quantity * stock.price;
   const pct = Math.min((stock.quantity / 100) * 100, 100);
@@ -142,31 +145,33 @@ export default function SingleStockView({
         </div>
 
         {/* Action Button */}
-        <div className="flex justify-end border-t border-[var(--card-border)] pt-6">
-          <button
-            onClick={() => setShowEditModal(true)}
-            className="btn btn-primary text-xs flex items-center gap-2"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        {isAdmin && (
+          <div className="flex justify-end border-t border-[var(--card-border)] pt-6">
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="btn btn-primary text-xs flex items-center gap-2"
             >
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-            </svg>
-            Ubah Kuantitas & Harga
-          </button>
-        </div>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+              Ubah Kuantitas & Harga
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Edit Modal */}
-      {showEditModal && (
+      {isAdmin && showEditModal && (
         <CoffeeStockFormModal
           mode="edit"
           stock={stock}
@@ -179,3 +184,4 @@ export default function SingleStockView({
     </div>
   );
 }
+

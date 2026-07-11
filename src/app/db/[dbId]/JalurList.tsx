@@ -4,6 +4,7 @@ import { useState } from "react";
 import ItemCard from "@/components/ItemCard";
 import CreateModal from "@/components/CreateModal";
 import type { Jalur } from "@/lib/types";
+import { useAuth } from "@/components/AuthProvider";
 import { createJalurAction, deleteJalurAction, updateJalurAction } from "@/app/actions";
 
 interface JalurListProps {
@@ -13,6 +14,8 @@ interface JalurListProps {
 
 export default function JalurList({ dbId, jalurList }: JalurListProps) {
   const [showCreate, setShowCreate] = useState(false);
+  const auth = useAuth();
+  const isAdmin = auth?.role === "ADMIN";
 
   return (
     <>
@@ -26,26 +29,28 @@ export default function JalurList({ dbId, jalurList }: JalurListProps) {
             {jalurList.length} jalur dalam database ini
           </p>
         </div>
-        <button
-          id="btn-tambah-jalur"
-          onClick={() => setShowCreate(true)}
-          className="btn btn-primary"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {isAdmin && (
+          <button
+            id="btn-tambah-jalur"
+            onClick={() => setShowCreate(true)}
+            className="btn btn-primary"
           >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Tambah Jalur
-        </button>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Tambah Jalur
+          </button>
+        )}
       </div>
 
       {/* Jalur Cards */}
@@ -70,14 +75,18 @@ export default function JalurList({ dbId, jalurList }: JalurListProps) {
             Belum Ada Jalur
           </h3>
           <p className="text-sm text-[var(--muted)] max-w-md">
-            Tambahkan jalur pertama untuk mulai mengelola alamat dan data outlet.
+            {isAdmin 
+              ? "Tambahkan jalur pertama untuk mulai mengelola alamat dan data outlet."
+              : "Tidak ada jalur yang terdaftar dalam database ini."}
           </p>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="btn btn-primary mt-2"
-          >
-            Tambah Jalur Pertama
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowCreate(true)}
+              className="btn btn-primary mt-2"
+            >
+              Tambah Jalur Pertama
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -106,29 +115,32 @@ export default function JalurList({ dbId, jalurList }: JalurListProps) {
                   <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z" />
                 </svg>
               }
-              onDelete={async (id) => {
+              onDelete={isAdmin ? async (id) => {
                 await deleteJalurAction(id, dbId);
-              }}
-              onUpdate={async (id, newName) => {
+              } : undefined}
+              onUpdate={isAdmin ? async (id, newName) => {
                 const formData = new FormData();
                 formData.append("name", newName);
                 await updateJalurAction(id, dbId, formData);
-              }}
+              } : undefined}
             />
           ))}
         </div>
       )}
 
       {/* Create Modal */}
-      <CreateModal
-        isOpen={showCreate}
-        onClose={() => setShowCreate(false)}
-        title="Tambah Jalur Baru"
-        placeholder="Contoh: Jalur 1"
-        onSubmit={async (formData) => {
-          return createJalurAction(dbId, formData);
-        }}
-      />
+      {isAdmin && showCreate && (
+        <CreateModal
+          isOpen={showCreate}
+          onClose={() => setShowCreate(false)}
+          title="Tambah Jalur Baru"
+          placeholder="Contoh: Jalur 1"
+          onSubmit={async (formData) => {
+            return createJalurAction(dbId, formData);
+          }}
+        />
+      )}
     </>
   );
 }
+

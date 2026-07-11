@@ -18,17 +18,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { cookies } from "next/headers";
+import { getCurrentUser } from "@/app/actions";
+import { AuthProvider } from "@/components/AuthProvider";
+
 export const metadata: Metadata = {
   title: "Kopi Bima — Dashboard Admin",
   description:
     "Dashboard Admin untuk mengelola data outlet, jalur, dan keuangan Kopi Bima",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const isAuthenticated = cookieStore.has("admin-session");
+  const user = await getCurrentUser();
+  const authValue = user ? { role: user.role, username: user.username } : null;
+
   return (
     <html
       lang="id"
@@ -36,9 +45,14 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full" suppressHydrationWarning>
-        <Sidebar />
-        <main className="main-content">{children}</main>
+        <AuthProvider value={authValue}>
+          {isAuthenticated && <Sidebar />}
+          <main className={isAuthenticated ? "main-content" : ""}>
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );
 }
+

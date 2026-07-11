@@ -52,3 +52,8 @@ export type CoffeeStock = Prisma.CoffeeStockModel
  * 
  */
 export type Payment = Prisma.PaymentModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel

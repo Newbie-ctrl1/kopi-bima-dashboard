@@ -5,15 +5,26 @@
 // ============================================
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import * as store from "@/lib/store";
 import type { OutletFormData, OrderFormData, PaymentFormData } from "@/lib/types";
 import * as XLSX from "xlsx";
+
+export async function getCurrentUser() {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("admin-session")?.value;
+  if (!userId) return null;
+  return await store.getUserById(userId);
+}
 
 // ============================================
 // DATABASE ACTIONS
 // ============================================
 
 export async function createDatabaseAction(formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const name = formData.get("name") as string;
   if (!name || !name.trim()) {
     return { error: "Nama database tidak boleh kosong" };
@@ -24,12 +35,18 @@ export async function createDatabaseAction(formData: FormData) {
 }
 
 export async function deleteDatabaseAction(id: string) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   await store.deleteDatabase(id);
   revalidatePath("/");
   return { success: true };
 }
 
 export async function updateDatabaseAction(id: string, formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const name = formData.get("name") as string;
   if (!name || !name.trim()) {
     return { error: "Nama database tidak boleh kosong" };
@@ -44,6 +61,9 @@ export async function updateDatabaseAction(id: string, formData: FormData) {
 // ============================================
 
 export async function createJalurAction(dbId: string, formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const name = formData.get("name") as string;
   if (!name || !name.trim()) {
     return { error: "Nama jalur tidak boleh kosong" };
@@ -54,12 +74,18 @@ export async function createJalurAction(dbId: string, formData: FormData) {
 }
 
 export async function deleteJalurAction(id: string, dbId: string) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   await store.deleteJalur(id);
   revalidatePath(`/db/${dbId}`);
   return { success: true };
 }
 
 export async function updateJalurAction(id: string, dbId: string, formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const name = formData.get("name") as string;
   if (!name || !name.trim()) {
     return { error: "Nama jalur tidak boleh kosong" };
@@ -78,6 +104,9 @@ export async function createAlamatAction(
   dbId: string,
   formData: FormData
 ) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const name = formData.get("name") as string;
   if (!name || !name.trim()) {
     return { error: "Nama alamat tidak boleh kosong" };
@@ -92,6 +121,9 @@ export async function deleteAlamatAction(
   jalurId: string,
   dbId: string
 ) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   await store.deleteAlamat(id);
   revalidatePath(`/db/${dbId}/jalur/${jalurId}`);
   return { success: true };
@@ -103,6 +135,9 @@ export async function updateAlamatAction(
   dbId: string,
   formData: FormData
 ) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const name = formData.get("name") as string;
   if (!name || !name.trim()) {
     return { error: "Nama alamat tidak boleh kosong" };
@@ -136,6 +171,9 @@ export async function createOutletAction(
   basePath: string,
   formData: FormData
 ) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const data = parseOutletFormData(formData);
   const error = validateOutletData(data);
   if (error) return { error };
@@ -150,6 +188,9 @@ export async function updateOutletAction(
   basePath: string,
   formData: FormData
 ) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const data = parseOutletFormData(formData);
   const error = validateOutletData(data);
   if (error) return { error };
@@ -162,6 +203,9 @@ export async function updateOutletAction(
 }
 
 export async function deleteOutletAction(outletId: string, basePath: string) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   await store.deleteOutlet(outletId);
   revalidatePath("/", "layout");
   return { success: true };
@@ -193,6 +237,9 @@ function validateOrderData(data: OrderFormData): string | null {
 }
 
 export async function createOrderAction(basePath: string, formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const data = parseOrderFormData(formData);
   const error = validateOrderData(data);
   if (error) return { error };
@@ -211,6 +258,9 @@ export async function updateOrderAction(
   basePath: string,
   formData: FormData
 ) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const data = parseOrderFormData(formData);
   const error = validateOrderData(data);
   if (error) return { error };
@@ -227,6 +277,9 @@ export async function updateOrderAction(
 }
 
 export async function deleteOrderAction(orderId: string, basePath: string) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   await store.deleteOrder(orderId);
   revalidatePath("/", "layout");
   return { success: true };
@@ -253,6 +306,9 @@ function validatePaymentData(data: PaymentFormData): string | null {
 }
 
 export async function createPaymentAction(basePath: string, formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const data = parsePaymentFormData(formData);
   const error = validatePaymentData(data);
   if (error) return { error };
@@ -271,6 +327,9 @@ export async function updatePaymentAction(
   basePath: string,
   formData: FormData
 ) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const data = parsePaymentFormData(formData);
   const error = validatePaymentData(data);
   if (error) return { error };
@@ -287,6 +346,9 @@ export async function updatePaymentAction(
 }
 
 export async function deletePaymentAction(paymentId: string, basePath: string) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   await store.deletePayment(paymentId);
   revalidatePath("/", "layout");
   return { success: true };
@@ -301,6 +363,9 @@ export async function uploadOutletsAction(
   basePath: string,
   formData: FormData
 ) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const file = formData.get("file") as File;
   if (!file) return { error: "File tidak ditemukan" };
 
@@ -470,6 +535,9 @@ function parseCsvLine(line: string): string[] {
 // ============================================
 
 export async function createCoffeeStockAction(formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const name = formData.get("name") as string;
   const sku = formData.get("sku") as string;
   const quantity = parseFloat(formData.get("quantity") as string) || 0;
@@ -493,6 +561,9 @@ export async function createCoffeeStockAction(formData: FormData) {
 }
 
 export async function updateCoffeeStockAction(id: string, formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   const name = formData.get("name") as string;
   const sku = formData.get("sku") as string;
   const quantity = parseFloat(formData.get("quantity") as string) || 0;
@@ -522,6 +593,9 @@ export async function updateCoffeeStockAction(id: string, formData: FormData) {
 }
 
 export async function deleteCoffeeStockAction(id: string) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+
   try {
     await store.deleteCoffeeStock(id);
     revalidatePath("/");
@@ -530,3 +604,98 @@ export async function deleteCoffeeStockAction(id: string) {
     return { error: err.message || "Gagal menghapus item stok" };
   }
 }
+
+// ============================================
+// AUTH ACTIONS
+// ============================================
+
+export async function loginAction(formData: FormData) {
+  const usernameInput = formData.get("username") as string;
+  const passwordInput = formData.get("password") as string;
+
+  if (!usernameInput || !passwordInput) {
+    return { error: "Username dan password tidak boleh kosong" };
+  }
+
+  // Ensure default admin is bootstrapped
+  await store.ensureDefaultAdmin();
+
+  // Find user by username
+  const user = await store.getUserByUsername(usernameInput.trim());
+  if (!user) {
+    return { error: "Username atau password salah" };
+  }
+
+  // Compare password hash
+  const inputHash = store.hashPassword(passwordInput);
+  if (user.password !== inputHash) {
+    return { error: "Username atau password salah" };
+  }
+
+  const cookieStore = await cookies();
+  cookieStore.set("admin-session", user.id, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+    path: "/",
+    sameSite: "lax",
+  });
+
+  return { success: true };
+}
+
+export async function logoutAction() {
+  const cookieStore = await cookies();
+  cookieStore.delete("admin-session");
+  return { success: true };
+}
+
+export async function createUserAction(formData: FormData) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") {
+    return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+  }
+
+  const username = formData.get("username") as string;
+  const password = formData.get("password") as string;
+  const role = formData.get("role") as string;
+
+  if (!username || !username.trim()) return { error: "Username tidak boleh kosong" };
+  if (!password || !password.trim()) return { error: "Password tidak boleh kosong" };
+  if (role !== "ADMIN" && role !== "USER") return { error: "Role tidak valid" };
+
+  try {
+    await store.createUser({
+      username: username.trim(),
+      password: password.trim(),
+      role,
+    });
+    revalidatePath("/kelola-user");
+    return { success: true };
+  } catch (err: any) {
+    if (err.code === "P2002") {
+      return { error: "Username sudah terdaftar" };
+    }
+    return { error: err.message || "Gagal membuat user" };
+  }
+}
+
+export async function deleteUserAction(id: string) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") {
+    return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
+  }
+
+  if (admin.id === id) {
+    return { error: "Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif" };
+  }
+
+  try {
+    await store.deleteUser(id);
+    revalidatePath("/kelola-user");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Gagal menghapus user" };
+  }
+}
+

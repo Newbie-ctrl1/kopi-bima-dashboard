@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Outlet, OrderWithRelations, PaymentWithRelations } from "@/lib/types";
+import { useAuth } from "@/components/AuthProvider";
 import OrderFormModal from "./OrderFormModal";
 import PaymentFormModal from "./PaymentFormModal";
 
@@ -39,6 +40,8 @@ export default function GlobalOrdersView({
   onUpdatePayment,
   onDeletePayment,
 }: GlobalOrdersViewProps) {
+  const auth = useAuth();
+  const isAdmin = auth?.role === "ADMIN";
   const [activeTab, setActiveTab] = useState<"orders" | "payments">("orders");
   const [search, setSearch] = useState("");
   const [orderFilter, setOrderFilter] = useState<"all" | "Sukses" | "Pending" | "Cancel" | "Proses">("all");
@@ -311,22 +314,24 @@ export default function GlobalOrdersView({
           </div>
 
           {/* Action Buttons */}
-          {activeTab === "orders" ? (
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="btn btn-primary text-xs self-end lg:self-auto"
-              disabled={outlets.length === 0}
-            >
-              Buat Order Baru
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowPaymentCreateModal(true)}
-              className="btn btn-primary text-xs self-end lg:self-auto"
-              disabled={outlets.length === 0}
-            >
-              Terima Pembayaran
-            </button>
+          {isAdmin && (
+            activeTab === "orders" ? (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="btn btn-primary text-xs self-end lg:self-auto"
+                disabled={outlets.length === 0}
+              >
+                Buat Order Baru
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowPaymentCreateModal(true)}
+                className="btn btn-primary text-xs self-end lg:self-auto"
+                disabled={outlets.length === 0}
+              >
+                Terima Pembayaran
+              </button>
+            )
           )}
         </div>
 
@@ -362,15 +367,15 @@ export default function GlobalOrdersView({
                     <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Order (Krd)</th>
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
-                    <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total</th>
+                    <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total Harga</th>
                     <th className="text-center font-sans text-[10px] tracking-widest font-bold">Status</th>
-                    <th className="text-center font-sans text-[10px] tracking-widest font-bold">Aksi</th>
+                    {isAdmin && <th className="text-center font-sans text-[10px] tracking-widest font-bold">Aksi</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {filteredOrders.length === 0 ? (
                     <tr>
-                      <td colSpan={8}>
+                      <td colSpan={isAdmin ? 8 : 7}>
                         <div className="empty-state py-16">
                           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--muted)] mb-2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -429,30 +434,32 @@ export default function GlobalOrdersView({
                             {o.orderStatus}
                           </span>
                         </td>
-                        <td>
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              onClick={() => setEditOrder(o)}
-                              className="p-2 border border-transparent hover:border-[var(--accent)] text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-300"
-                              title="Edit Order"
-                            >
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M12 20h9" />
-                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => setDeleteId(o.id)}
-                              className="p-2 border border-transparent hover:border-rose-500/30 text-[var(--muted)] hover:text-rose-400 transition-all duration-300"
-                              title="Hapus Order"
-                            >
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
+                        {isAdmin && (
+                          <td>
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                onClick={() => setEditOrder(o)}
+                                className="p-2 border border-transparent hover:border-[var(--accent)] text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-300"
+                                title="Edit Order"
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M12 20h9" />
+                                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => setDeleteId(o.id)}
+                                className="p-2 border border-transparent hover:border-rose-500/30 text-[var(--muted)] hover:text-rose-400 transition-all duration-300"
+                                title="Hapus Order"
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))
                   )}
@@ -467,13 +474,13 @@ export default function GlobalOrdersView({
                     <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Jumlah Bayar</th>
                     <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
-                    <th className="text-center font-sans text-[10px] tracking-widest font-bold">Aksi</th>
+                    {isAdmin && <th className="text-center font-sans text-[10px] tracking-widest font-bold">Aksi</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {filteredPayments.length === 0 ? (
                     <tr>
-                      <td colSpan={6}>
+                      <td colSpan={isAdmin ? 6 : 5}>
                         <div className="empty-state py-16">
                           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--muted)] mb-2">
                             <rect width="20" height="12" x="2" y="6" rx="2" />
@@ -481,7 +488,7 @@ export default function GlobalOrdersView({
                             <path d="M6 12h.01M18 12h.01" />
                           </svg>
                           <p className="text-xs text-[var(--muted-foreground)] font-medium">Belum ada pembayaran hari ini</p>
-                          <p className="text-[10px] text-[var(--muted)] mt-1">Klik "Terima Pembayaran" untuk mencatat pembayaran baru</p>
+                          {isAdmin && <p className="text-[10px] text-[var(--muted)] mt-1">Klik "Terima Pembayaran" untuk mencatat pembayaran baru</p>}
                         </div>
                       </td>
                     </tr>
@@ -513,30 +520,32 @@ export default function GlobalOrdersView({
                             {p.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
                           </span>
                         </td>
-                        <td>
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              onClick={() => setEditPayment(p)}
-                              className="p-2 border border-transparent hover:border-[var(--accent)] text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-300"
-                              title="Edit Pembayaran"
-                            >
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M12 20h9" />
-                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => setDeletePaymentId(p.id)}
-                              className="p-2 border border-transparent hover:border-rose-500/30 text-[var(--muted)] hover:text-rose-400 transition-all duration-300"
-                              title="Hapus Pembayaran"
-                            >
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
+                        {isAdmin && (
+                          <td>
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                onClick={() => setEditPayment(p)}
+                                className="p-2 border border-transparent hover:border-[var(--accent)] text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-300"
+                                title="Edit Pembayaran"
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M12 20h9" />
+                                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => setDeletePaymentId(p.id)}
+                                className="p-2 border border-transparent hover:border-rose-500/30 text-[var(--muted)] hover:text-rose-400 transition-all duration-300"
+                                title="Hapus Pembayaran"
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))
                   )}
@@ -548,7 +557,7 @@ export default function GlobalOrdersView({
       </div>
 
       {/* Orders Modals */}
-      {showCreateModal && (
+      {isAdmin && showCreateModal && (
         <OrderFormModal
           mode="create"
           outlets={outlets}
@@ -559,7 +568,7 @@ export default function GlobalOrdersView({
         />
       )}
 
-      {editOrder && (
+      {isAdmin && editOrder && (
         <OrderFormModal
           mode="edit"
           outlets={outlets}
@@ -572,7 +581,7 @@ export default function GlobalOrdersView({
       )}
 
       {/* Delete Order Confirmation */}
-      {deleteId && (
+      {isAdmin && deleteId && (
         <div className="modal-overlay" onClick={() => setDeleteId(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="text-center">
@@ -600,7 +609,7 @@ export default function GlobalOrdersView({
       )}
 
       {/* Payments Modals */}
-      {showPaymentCreateModal && onCreatePayment && (
+      {isAdmin && showPaymentCreateModal && onCreatePayment && (
         <PaymentFormModal
           payment={null}
           outlets={outlets}
@@ -611,7 +620,7 @@ export default function GlobalOrdersView({
         />
       )}
 
-      {editPayment && onUpdatePayment && (
+      {isAdmin && editPayment && onUpdatePayment && (
         <PaymentFormModal
           payment={editPayment}
           outlets={outlets}
@@ -623,7 +632,7 @@ export default function GlobalOrdersView({
       )}
 
       {/* Delete Payment Confirmation */}
-      {deletePaymentId && (
+      {isAdmin && deletePaymentId && (
         <div className="modal-overlay" onClick={() => setDeletePaymentId(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="text-center">
