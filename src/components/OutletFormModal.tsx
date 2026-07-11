@@ -173,20 +173,20 @@ export default function OutletFormModal({
               />
             </div>
 
-            {/* Kunjungan */}
+            {/* Tanggal Daftar */}
             <div>
               <label
-                htmlFor="kunjungan"
+                htmlFor="tglDaftar"
                 className="block text-sm font-medium text-[var(--muted-foreground)] mb-1.5"
               >
-                Tanggal Kunjungan
+                Tanggal Daftar
               </label>
               <input
-                id="kunjungan"
-                name="kunjungan"
+                id="tglDaftar"
+                name="tglDaftar"
                 type="date"
                 className="input"
-                defaultValue={outlet?.kunjungan ?? ""}
+                defaultValue={outlet?.tglDaftar ?? ""}
                 required
               />
             </div>

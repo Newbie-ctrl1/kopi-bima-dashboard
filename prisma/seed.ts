@@ -101,11 +101,11 @@ async function main() {
 
   // Outlets in Sananrejo
   const outletsSananrejo = [
-    { id: "o-sn-001", noInduk: "#DRJ1SN001", outlet: "Toko Sejahtera", kunjungan: "2026-07-07", order: 2.0, harga: 100000, totalBayar: 200000 },
-    { id: "o-sn-002", noInduk: "#DRJ1SN002", outlet: "Warung Barokah", kunjungan: "2026-07-08", order: 1.5, harga: 100000, totalBayar: 100000 },
-    { id: "o-sn-003", noInduk: "#DRJ1SN003", outlet: "Toko Makmur Jaya", kunjungan: "2026-07-07", order: 3.0, harga: 100000, totalBayar: 300000 },
-    { id: "o-sn-004", noInduk: "#DRJ1SN004", outlet: "Kios Berkah Sanan", kunjungan: "2026-07-09", order: 0.5, harga: 100000, totalBayar: 50000 },
-    { id: "o-sn-005", noInduk: "#DRJ1SN005", outlet: "Toko Roti Lezat", kunjungan: "2026-07-10", order: 2.2, harga: 100000, totalBayar: 150000 },
+    { id: "o-sn-001", noInduk: "#DRJ1SN001", outlet: "Toko Sejahtera", tglDaftar: "2026-07-07", order: 2.0, harga: 100000, totalBayar: 200000 },
+    { id: "o-sn-002", noInduk: "#DRJ1SN002", outlet: "Warung Barokah", tglDaftar: "2026-07-08", order: 1.5, harga: 100000, totalBayar: 100000 },
+    { id: "o-sn-003", noInduk: "#DRJ1SN003", outlet: "Toko Makmur Jaya", tglDaftar: "2026-07-07", order: 3.0, harga: 100000, totalBayar: 300000 },
+    { id: "o-sn-004", noInduk: "#DRJ1SN004", outlet: "Kios Berkah Sanan", tglDaftar: "2026-07-09", order: 0.5, harga: 100000, totalBayar: 50000 },
+    { id: "o-sn-005", noInduk: "#DRJ1SN005", outlet: "Toko Roti Lezat", tglDaftar: "2026-07-10", order: 2.2, harga: 100000, totalBayar: 150000 },
   ];
 
   for (const o of outletsSananrejo) {
@@ -119,9 +119,9 @@ async function main() {
 
   // Outlets in Wonokerto
   const outletsWonokerto = [
-    { id: "o-wn-001", noInduk: "#DRJ1WN001", outlet: "Toko Berkah", kunjungan: "2026-07-08", order: 1.0, harga: 100000, totalBayar: 50000 },
-    { id: "o-wn-002", noInduk: "#DRJ1WN002", outlet: "Warung Bu Sri", kunjungan: "2026-07-08", order: 2.5, harga: 100000, totalBayar: 250000 },
-    { id: "o-wn-003", noInduk: "#DRJ1WN003", outlet: "Toko Rejeki Wono", kunjungan: "2026-07-09", order: 4.0, harga: 100000, totalBayar: 350000 },
+    { id: "o-wn-001", noInduk: "#DRJ1WN001", outlet: "Toko Berkah", tglDaftar: "2026-07-08", order: 1.0, harga: 100000, totalBayar: 50000 },
+    { id: "o-wn-002", noInduk: "#DRJ1WN002", outlet: "Warung Bu Sri", tglDaftar: "2026-07-08", order: 2.5, harga: 100000, totalBayar: 250000 },
+    { id: "o-wn-003", noInduk: "#DRJ1WN003", outlet: "Toko Rejeki Wono", tglDaftar: "2026-07-09", order: 4.0, harga: 100000, totalBayar: 350000 },
   ];
 
   for (const o of outletsWonokerto) {
@@ -135,9 +135,9 @@ async function main() {
 
   // Outlets in Bululawang
   const outletsBululawang = [
-    { id: "o-bl-001", noInduk: "#DRJ2BL001", outlet: "Kios Mandiri", kunjungan: "2026-07-09", order: 2.0, harga: 110000, totalBayar: 150000 },
-    { id: "o-bl-002", noInduk: "#DRJ2BL002", outlet: "Toko Sumber Sari", kunjungan: "2026-07-10", order: 1.8, harga: 110000, totalBayar: 198000 },
-    { id: "o-bl-003", noInduk: "#DRJ2BL003", outlet: "Agen Sembako Bulu", kunjungan: "2026-07-09", order: 5.0, harga: 110000, totalBayar: 500000 },
+    { id: "o-bl-001", noInduk: "#DRJ2BL001", outlet: "Kios Mandiri", tglDaftar: "2026-07-09", order: 2.0, harga: 110000, totalBayar: 150000 },
+    { id: "o-bl-002", noInduk: "#DRJ2BL002", outlet: "Toko Sumber Sari", tglDaftar: "2026-07-10", order: 1.8, harga: 110000, totalBayar: 198000 },
+    { id: "o-bl-003", noInduk: "#DRJ2BL003", outlet: "Agen Sembako Bulu", tglDaftar: "2026-07-09", order: 5.0, harga: 110000, totalBayar: 500000 },
   ];
 
   for (const o of outletsBululawang) {
@@ -151,8 +151,8 @@ async function main() {
 
   // Outlets in Krebet
   const outletsKrebet = [
-    { id: "o-kb-001", noInduk: "#DRJ2KB001", outlet: "Toko Manis Krebet", kunjungan: "2026-07-10", order: 3.5, harga: 100000, totalBayar: 350000 },
-    { id: "o-kb-002", noInduk: "#DRJ2KB002", outlet: "Warung Kopi Gula", kunjungan: "2026-07-10", order: 1.2, harga: 100000, totalBayar: 100000 },
+    { id: "o-kb-001", noInduk: "#DRJ2KB001", outlet: "Toko Manis Krebet", tglDaftar: "2026-07-10", order: 3.5, harga: 100000, totalBayar: 350000 },
+    { id: "o-kb-002", noInduk: "#DRJ2KB002", outlet: "Warung Kopi Gula", tglDaftar: "2026-07-10", order: 1.2, harga: 100000, totalBayar: 100000 },
   ];
 
   for (const o of outletsKrebet) {
@@ -249,10 +249,10 @@ async function main() {
 
   // Outlets in Lawang
   const outletsLawang = [
-    { id: "o-lw-001", noInduk: "#DFJ1LW001", outlet: "Toko Sehat", kunjungan: "2026-07-07", order: 4.0, harga: 100000, totalBayar: 400000 },
-    { id: "o-lw-002", noInduk: "#DFJ1LW002", outlet: "Warung Murni", kunjungan: "2026-07-08", order: 2.5, harga: 100000, totalBayar: 200000 },
-    { id: "o-lw-003", noInduk: "#DFJ1LW003", outlet: "Kios Sejahtera Lawang", kunjungan: "2026-07-08", order: 1.0, harga: 100000, totalBayar: 100000 },
-    { id: "o-lw-004", noInduk: "#DFJ1LW004", outlet: "Toko Baru Lawang", kunjungan: "2026-07-09", order: 3.2, harga: 100000, totalBayar: 320000 },
+    { id: "o-lw-001", noInduk: "#DFJ1LW001", outlet: "Toko Sehat", tglDaftar: "2026-07-07", order: 4.0, harga: 100000, totalBayar: 400000 },
+    { id: "o-lw-002", noInduk: "#DFJ1LW002", outlet: "Warung Murni", tglDaftar: "2026-07-08", order: 2.5, harga: 100000, totalBayar: 200000 },
+    { id: "o-lw-003", noInduk: "#DFJ1LW003", outlet: "Kios Sejahtera Lawang", tglDaftar: "2026-07-08", order: 1.0, harga: 100000, totalBayar: 100000 },
+    { id: "o-lw-004", noInduk: "#DFJ1LW004", outlet: "Toko Baru Lawang", tglDaftar: "2026-07-09", order: 3.2, harga: 100000, totalBayar: 320000 },
   ];
 
   for (const o of outletsLawang) {
@@ -266,9 +266,9 @@ async function main() {
 
   // Outlets in Singosari
   const outletsSingosari = [
-    { id: "o-sg-001", noInduk: "#DFJ1SG001", outlet: "Toko Rahayu", kunjungan: "2026-07-09", order: 3.0, harga: 100000, totalBayar: 300000 },
-    { id: "o-sg-002", noInduk: "#DFJ1SG002", outlet: "Warung Soto Sari", kunjungan: "2026-07-09", order: 0.8, harga: 100000, totalBayar: 80000 },
-    { id: "o-sg-003", noInduk: "#DFJ1SG003", outlet: "Toko Singo Candi", kunjungan: "2026-07-10", order: 2.0, harga: 100000, totalBayar: 150000 },
+    { id: "o-sg-001", noInduk: "#DFJ1SG001", outlet: "Toko Rahayu", tglDaftar: "2026-07-09", order: 3.0, harga: 100000, totalBayar: 300000 },
+    { id: "o-sg-002", noInduk: "#DFJ1SG002", outlet: "Warung Soto Sari", tglDaftar: "2026-07-09", order: 0.8, harga: 100000, totalBayar: 80000 },
+    { id: "o-sg-003", noInduk: "#DFJ1SG003", outlet: "Toko Singo Candi", tglDaftar: "2026-07-10", order: 2.0, harga: 100000, totalBayar: 150000 },
   ];
 
   for (const o of outletsSingosari) {
@@ -282,10 +282,10 @@ async function main() {
 
   // Outlets in Kepanjen
   const outletsKepanjen = [
-    { id: "o-kp-001", noInduk: "#DFJ2KP001", outlet: "Toko Abadi", kunjungan: "2026-07-09", order: 5.0, harga: 95000, totalBayar: 400000 },
-    { id: "o-kp-002", noInduk: "#DFJ2KP002", outlet: "Warung Solo", kunjungan: "2026-07-10", order: 1.2, harga: 95000, totalBayar: 114000 },
-    { id: "o-kp-003", noInduk: "#DFJ2KP003", outlet: "Toko Jaya Kepanjen", kunjungan: "2026-07-10", order: 2.8, harga: 95000, totalBayar: 200000 },
-    { id: "o-kp-004", noInduk: "#DFJ2KP004", outlet: "Agen Bintang Selatan", kunjungan: "2026-07-11", order: 6.0, harga: 95000, totalBayar: 570000 },
+    { id: "o-kp-001", noInduk: "#DFJ2KP001", outlet: "Toko Abadi", tglDaftar: "2026-07-09", order: 5.0, harga: 95000, totalBayar: 400000 },
+    { id: "o-kp-002", noInduk: "#DFJ2KP002", outlet: "Warung Solo", tglDaftar: "2026-07-10", order: 1.2, harga: 95000, totalBayar: 114000 },
+    { id: "o-kp-003", noInduk: "#DFJ2KP003", outlet: "Toko Jaya Kepanjen", tglDaftar: "2026-07-10", order: 2.8, harga: 95000, totalBayar: 200000 },
+    { id: "o-kp-004", noInduk: "#DFJ2KP004", outlet: "Agen Bintang Selatan", tglDaftar: "2026-07-11", order: 6.0, harga: 95000, totalBayar: 570000 },
   ];
 
   for (const o of outletsKepanjen) {
@@ -299,8 +299,8 @@ async function main() {
 
   // Outlets in Gondanglegi
   const outletsGondanglegi = [
-    { id: "o-gl-001", noInduk: "#DFJ2GL001", outlet: "Toko Gondang Indah", kunjungan: "2026-07-11", order: 3.0, harga: 100000, totalBayar: 200000 },
-    { id: "o-gl-002", noInduk: "#DFJ2GL002", outlet: "Warung Legit", kunjungan: "2026-07-11", order: 1.5, harga: 100000, totalBayar: 150000 },
+    { id: "o-gl-001", noInduk: "#DFJ2GL001", outlet: "Toko Gondang Indah", tglDaftar: "2026-07-11", order: 3.0, harga: 100000, totalBayar: 200000 },
+    { id: "o-gl-002", noInduk: "#DFJ2GL002", outlet: "Warung Legit", tglDaftar: "2026-07-11", order: 1.5, harga: 100000, totalBayar: 150000 },
   ];
 
   for (const o of outletsGondanglegi) {

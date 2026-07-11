@@ -44,7 +44,7 @@ export type OutletMinAggregateOutputType = {
   id: string | null
   noInduk: string | null
   outlet: string | null
-  kunjungan: string | null
+  tglDaftar: string | null
   order: number | null
   harga: number | null
   totalBayar: number | null
@@ -57,7 +57,7 @@ export type OutletMaxAggregateOutputType = {
   id: string | null
   noInduk: string | null
   outlet: string | null
-  kunjungan: string | null
+  tglDaftar: string | null
   order: number | null
   harga: number | null
   totalBayar: number | null
@@ -70,7 +70,7 @@ export type OutletCountAggregateOutputType = {
   id: number
   noInduk: number
   outlet: number
-  kunjungan: number
+  tglDaftar: number
   order: number
   harga: number
   totalBayar: number
@@ -99,7 +99,7 @@ export type OutletMinAggregateInputType = {
   id?: true
   noInduk?: true
   outlet?: true
-  kunjungan?: true
+  tglDaftar?: true
   order?: true
   harga?: true
   totalBayar?: true
@@ -112,7 +112,7 @@ export type OutletMaxAggregateInputType = {
   id?: true
   noInduk?: true
   outlet?: true
-  kunjungan?: true
+  tglDaftar?: true
   order?: true
   harga?: true
   totalBayar?: true
@@ -125,7 +125,7 @@ export type OutletCountAggregateInputType = {
   id?: true
   noInduk?: true
   outlet?: true
-  kunjungan?: true
+  tglDaftar?: true
   order?: true
   harga?: true
   totalBayar?: true
@@ -225,7 +225,7 @@ export type OutletGroupByOutputType = {
   id: string
   noInduk: string
   outlet: string
-  kunjungan: string
+  tglDaftar: string
   order: number
   harga: number
   totalBayar: number
@@ -261,7 +261,7 @@ export type OutletWhereInput = {
   id?: Prisma.StringFilter<"Outlet"> | string
   noInduk?: Prisma.StringFilter<"Outlet"> | string
   outlet?: Prisma.StringFilter<"Outlet"> | string
-  kunjungan?: Prisma.StringFilter<"Outlet"> | string
+  tglDaftar?: Prisma.StringFilter<"Outlet"> | string
   order?: Prisma.FloatFilter<"Outlet"> | number
   harga?: Prisma.FloatFilter<"Outlet"> | number
   totalBayar?: Prisma.FloatFilter<"Outlet"> | number
@@ -275,7 +275,7 @@ export type OutletOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   noInduk?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
-  kunjungan?: Prisma.SortOrder
+  tglDaftar?: Prisma.SortOrder
   order?: Prisma.SortOrder
   harga?: Prisma.SortOrder
   totalBayar?: Prisma.SortOrder
@@ -292,7 +292,7 @@ export type OutletWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.OutletWhereInput | Prisma.OutletWhereInput[]
   noInduk?: Prisma.StringFilter<"Outlet"> | string
   outlet?: Prisma.StringFilter<"Outlet"> | string
-  kunjungan?: Prisma.StringFilter<"Outlet"> | string
+  tglDaftar?: Prisma.StringFilter<"Outlet"> | string
   order?: Prisma.FloatFilter<"Outlet"> | number
   harga?: Prisma.FloatFilter<"Outlet"> | number
   totalBayar?: Prisma.FloatFilter<"Outlet"> | number
@@ -306,7 +306,7 @@ export type OutletOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   noInduk?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
-  kunjungan?: Prisma.SortOrder
+  tglDaftar?: Prisma.SortOrder
   order?: Prisma.SortOrder
   harga?: Prisma.SortOrder
   totalBayar?: Prisma.SortOrder
@@ -327,7 +327,7 @@ export type OutletScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
   noInduk?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
   outlet?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
-  kunjungan?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
+  tglDaftar?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
   order?: Prisma.FloatWithAggregatesFilter<"Outlet"> | number
   harga?: Prisma.FloatWithAggregatesFilter<"Outlet"> | number
   totalBayar?: Prisma.FloatWithAggregatesFilter<"Outlet"> | number
@@ -340,7 +340,7 @@ export type OutletCreateInput = {
   id?: string
   noInduk: string
   outlet: string
-  kunjungan: string
+  tglDaftar: string
   order: number
   harga: number
   totalBayar: number
@@ -353,7 +353,7 @@ export type OutletUncheckedCreateInput = {
   id?: string
   noInduk: string
   outlet: string
-  kunjungan: string
+  tglDaftar: string
   order: number
   harga: number
   totalBayar: number
@@ -366,7 +366,7 @@ export type OutletUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   noInduk?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
-  kunjungan?: Prisma.StringFieldUpdateOperationsInput | string
+  tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.FloatFieldUpdateOperationsInput | number
   harga?: Prisma.FloatFieldUpdateOperationsInput | number
   totalBayar?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -379,7 +379,7 @@ export type OutletUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   noInduk?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
-  kunjungan?: Prisma.StringFieldUpdateOperationsInput | string
+  tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.FloatFieldUpdateOperationsInput | number
   harga?: Prisma.FloatFieldUpdateOperationsInput | number
   totalBayar?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -392,7 +392,7 @@ export type OutletCreateManyInput = {
   id?: string
   noInduk: string
   outlet: string
-  kunjungan: string
+  tglDaftar: string
   order: number
   harga: number
   totalBayar: number
@@ -405,7 +405,7 @@ export type OutletUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   noInduk?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
-  kunjungan?: Prisma.StringFieldUpdateOperationsInput | string
+  tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.FloatFieldUpdateOperationsInput | number
   harga?: Prisma.FloatFieldUpdateOperationsInput | number
   totalBayar?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -417,7 +417,7 @@ export type OutletUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   noInduk?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
-  kunjungan?: Prisma.StringFieldUpdateOperationsInput | string
+  tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.FloatFieldUpdateOperationsInput | number
   harga?: Prisma.FloatFieldUpdateOperationsInput | number
   totalBayar?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -440,7 +440,7 @@ export type OutletCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   noInduk?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
-  kunjungan?: Prisma.SortOrder
+  tglDaftar?: Prisma.SortOrder
   order?: Prisma.SortOrder
   harga?: Prisma.SortOrder
   totalBayar?: Prisma.SortOrder
@@ -460,7 +460,7 @@ export type OutletMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   noInduk?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
-  kunjungan?: Prisma.SortOrder
+  tglDaftar?: Prisma.SortOrder
   order?: Prisma.SortOrder
   harga?: Prisma.SortOrder
   totalBayar?: Prisma.SortOrder
@@ -473,7 +473,7 @@ export type OutletMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   noInduk?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
-  kunjungan?: Prisma.SortOrder
+  tglDaftar?: Prisma.SortOrder
   order?: Prisma.SortOrder
   harga?: Prisma.SortOrder
   totalBayar?: Prisma.SortOrder
@@ -543,7 +543,7 @@ export type OutletCreateWithoutAlamatInput = {
   id?: string
   noInduk: string
   outlet: string
-  kunjungan: string
+  tglDaftar: string
   order: number
   harga: number
   totalBayar: number
@@ -555,7 +555,7 @@ export type OutletUncheckedCreateWithoutAlamatInput = {
   id?: string
   noInduk: string
   outlet: string
-  kunjungan: string
+  tglDaftar: string
   order: number
   harga: number
   totalBayar: number
@@ -596,7 +596,7 @@ export type OutletScalarWhereInput = {
   id?: Prisma.StringFilter<"Outlet"> | string
   noInduk?: Prisma.StringFilter<"Outlet"> | string
   outlet?: Prisma.StringFilter<"Outlet"> | string
-  kunjungan?: Prisma.StringFilter<"Outlet"> | string
+  tglDaftar?: Prisma.StringFilter<"Outlet"> | string
   order?: Prisma.FloatFilter<"Outlet"> | number
   harga?: Prisma.FloatFilter<"Outlet"> | number
   totalBayar?: Prisma.FloatFilter<"Outlet"> | number
@@ -609,7 +609,7 @@ export type OutletCreateManyAlamatInput = {
   id?: string
   noInduk: string
   outlet: string
-  kunjungan: string
+  tglDaftar: string
   order: number
   harga: number
   totalBayar: number
@@ -621,7 +621,7 @@ export type OutletUpdateWithoutAlamatInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   noInduk?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
-  kunjungan?: Prisma.StringFieldUpdateOperationsInput | string
+  tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.FloatFieldUpdateOperationsInput | number
   harga?: Prisma.FloatFieldUpdateOperationsInput | number
   totalBayar?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -633,7 +633,7 @@ export type OutletUncheckedUpdateWithoutAlamatInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   noInduk?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
-  kunjungan?: Prisma.StringFieldUpdateOperationsInput | string
+  tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.FloatFieldUpdateOperationsInput | number
   harga?: Prisma.FloatFieldUpdateOperationsInput | number
   totalBayar?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -645,7 +645,7 @@ export type OutletUncheckedUpdateManyWithoutAlamatInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   noInduk?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
-  kunjungan?: Prisma.StringFieldUpdateOperationsInput | string
+  tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.FloatFieldUpdateOperationsInput | number
   harga?: Prisma.FloatFieldUpdateOperationsInput | number
   totalBayar?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -659,7 +659,7 @@ export type OutletSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   noInduk?: boolean
   outlet?: boolean
-  kunjungan?: boolean
+  tglDaftar?: boolean
   order?: boolean
   harga?: boolean
   totalBayar?: boolean
@@ -673,7 +673,7 @@ export type OutletSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   noInduk?: boolean
   outlet?: boolean
-  kunjungan?: boolean
+  tglDaftar?: boolean
   order?: boolean
   harga?: boolean
   totalBayar?: boolean
@@ -687,7 +687,7 @@ export type OutletSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   noInduk?: boolean
   outlet?: boolean
-  kunjungan?: boolean
+  tglDaftar?: boolean
   order?: boolean
   harga?: boolean
   totalBayar?: boolean
@@ -701,7 +701,7 @@ export type OutletSelectScalar = {
   id?: boolean
   noInduk?: boolean
   outlet?: boolean
-  kunjungan?: boolean
+  tglDaftar?: boolean
   order?: boolean
   harga?: boolean
   totalBayar?: boolean
@@ -710,7 +710,7 @@ export type OutletSelectScalar = {
   alamatId?: boolean
 }
 
-export type OutletOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "noInduk" | "outlet" | "kunjungan" | "order" | "harga" | "totalBayar" | "totalPiutang" | "status" | "alamatId", ExtArgs["result"]["outlet"]>
+export type OutletOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "noInduk" | "outlet" | "tglDaftar" | "order" | "harga" | "totalBayar" | "totalPiutang" | "status" | "alamatId", ExtArgs["result"]["outlet"]>
 export type OutletInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   alamat?: boolean | Prisma.AlamatDefaultArgs<ExtArgs>
 }
@@ -730,7 +730,7 @@ export type $OutletPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     noInduk: string
     outlet: string
-    kunjungan: string
+    tglDaftar: string
     order: number
     harga: number
     totalBayar: number
@@ -1164,7 +1164,7 @@ export interface OutletFieldRefs {
   readonly id: Prisma.FieldRef<"Outlet", 'String'>
   readonly noInduk: Prisma.FieldRef<"Outlet", 'String'>
   readonly outlet: Prisma.FieldRef<"Outlet", 'String'>
-  readonly kunjungan: Prisma.FieldRef<"Outlet", 'String'>
+  readonly tglDaftar: Prisma.FieldRef<"Outlet", 'String'>
   readonly order: Prisma.FieldRef<"Outlet", 'Float'>
   readonly harga: Prisma.FieldRef<"Outlet", 'Float'>
   readonly totalBayar: Prisma.FieldRef<"Outlet", 'Float'>

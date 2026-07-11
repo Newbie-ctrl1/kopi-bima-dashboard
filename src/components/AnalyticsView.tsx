@@ -337,7 +337,7 @@ export default function AnalyticsView({
                         <tr>
                           <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
                           <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Kunjungan</th>
+                          <th className="font-sans text-[10px] tracking-widest font-bold">Tgl Daftar</th>
                           <th className="text-right font-sans text-[10px] tracking-widest font-bold">Order (Kardus)</th>
                           <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
                           <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total Bayar</th>
@@ -351,8 +351,8 @@ export default function AnalyticsView({
                             <td className="font-mono text-xs text-[var(--foreground)] font-semibold">{o.noInduk}</td>
                             <td className="text-[var(--foreground)] font-semibold">{o.outlet}</td>
                             <td className="text-xs uppercase tracking-wide">
-                              {o.kunjungan
-                                ? new Date(o.kunjungan).toLocaleDateString("id-ID", {
+                              {o.tglDaftar
+                                ? new Date(o.tglDaftar).toLocaleDateString("id-ID", {
                                     day: "numeric",
                                     month: "short",
                                     year: "numeric",

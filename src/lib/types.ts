@@ -27,7 +27,7 @@ export interface Outlet {
   alamatId: string;
   noInduk: string;
   outlet: string;
-  kunjungan: string; // date string (YYYY-MM-DD)
+  tglDaftar: string; // date string (YYYY-MM-DD)
   order: number; // jumlah kardus (bisa desimal: 0.2, 0.5, 1, dst)
   harga: number; // harga per kardus (default: 100000)
   totalBayar: number; // nominal yang sudah dibayarkan
@@ -38,7 +38,7 @@ export interface Outlet {
 export interface OutletFormData {
   noInduk: string;
   outlet: string;
-  kunjungan: string;
+  tglDaftar: string;
   order: number;
   harga: number;
   totalBayar: number;

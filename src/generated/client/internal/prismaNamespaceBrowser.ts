@@ -107,7 +107,7 @@ export const OutletScalarFieldEnum = {
   id: 'id',
   noInduk: 'noInduk',
   outlet: 'outlet',
-  kunjungan: 'kunjungan',
+  tglDaftar: 'tglDaftar',
   order: 'order',
   harga: 'harga',
   totalBayar: 'totalBayar',

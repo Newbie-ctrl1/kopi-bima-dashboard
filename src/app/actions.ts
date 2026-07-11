@@ -120,7 +120,7 @@ function parseOutletFormData(formData: FormData): OutletFormData {
   return {
     noInduk: (formData.get("noInduk") as string) || "",
     outlet: (formData.get("outlet") as string) || "",
-    kunjungan: (formData.get("kunjungan") as string) || "",
+    tglDaftar: (formData.get("tglDaftar") as string) || "",
     order: parseFloat(formData.get("order") as string) || 0,
     harga: parseFloat(formData.get("harga") as string) || 100000,
     totalBayar: parseFloat(formData.get("totalBayar") as string) || 0,
@@ -130,7 +130,7 @@ function parseOutletFormData(formData: FormData): OutletFormData {
 function validateOutletData(data: OutletFormData): string | null {
   if (!data.noInduk.trim()) return "No Induk tidak boleh kosong";
   if (!data.outlet.trim()) return "Nama outlet tidak boleh kosong";
-  if (!data.kunjungan) return "Tanggal kunjungan tidak boleh kosong";
+  if (!data.tglDaftar) return "Tanggal daftar tidak boleh kosong";
   if (data.order < 0) return "Order tidak boleh negatif";
   if (data.harga <= 0) return "Harga harus lebih dari 0";
   if (data.totalBayar < 0) return "Total bayar tidak boleh negatif";
@@ -228,8 +228,15 @@ export async function uploadOutletsAction(
         "";
       const outlet =
         row["outlet"] || row["Outlet"] || row["OUTLET"] || row["nama"] || "";
-      const kunjungan =
-        row["kunjungan"] || row["Kunjungan"] || row["KUNJUNGAN"] || row["tanggal"] || "";
+      const tglDaftar =
+        row["tglDaftar"] ||
+        row["tgl_daftar"] ||
+        row["tanggal_daftar"] ||
+        row["kunjungan"] ||
+        row["Kunjungan"] ||
+        row["KUNJUNGAN"] ||
+        row["tanggal"] ||
+        "";
       const order = parseFloat(
         row["order"] || row["Order"] || row["ORDER"] || "0"
       );
@@ -252,7 +259,7 @@ export async function uploadOutletsAction(
       outlets.push({
         noInduk: String(noInduk).trim(),
         outlet: String(outlet).trim(),
-        kunjungan: String(kunjungan).trim(),
+        tglDaftar: String(tglDaftar).trim(),
         order: isNaN(order) ? 0 : order,
         harga: isNaN(harga) || harga <= 0 ? 100000 : harga,
         totalBayar: isNaN(totalBayar) ? 0 : totalBayar,

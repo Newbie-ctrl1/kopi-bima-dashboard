@@ -13,7 +13,7 @@ function calculateFields(input: OutletFormData) {
   return {
     noInduk: input.noInduk,
     outlet: input.outlet,
-    kunjungan: input.kunjungan,
+    tglDaftar: input.tglDaftar,
     order: input.order,
     harga: input.harga,
     totalBayar: input.totalBayar,
@@ -214,7 +214,7 @@ export async function getOutletsByAlamat(alamatId: string): Promise<Outlet[]> {
     alamatId: o.alamatId,
     noInduk: o.noInduk,
     outlet: o.outlet,
-    kunjungan: o.kunjungan,
+    tglDaftar: o.tglDaftar,
     order: o.order,
     harga: o.harga,
     totalBayar: o.totalBayar,
@@ -231,7 +231,7 @@ export async function getOutletById(id: string): Promise<Outlet | undefined> {
     alamatId: o.alamatId,
     noInduk: o.noInduk,
     outlet: o.outlet,
-    kunjungan: o.kunjungan,
+    tglDaftar: o.tglDaftar,
     order: o.order,
     harga: o.harga,
     totalBayar: o.totalBayar,
@@ -256,7 +256,7 @@ export async function createOutlet(
     alamatId: o.alamatId,
     noInduk: o.noInduk,
     outlet: o.outlet,
-    kunjungan: o.kunjungan,
+    tglDaftar: o.tglDaftar,
     order: o.order,
     harga: o.harga,
     totalBayar: o.totalBayar,
@@ -280,7 +280,7 @@ export async function updateOutlet(
       alamatId: o.alamatId,
       noInduk: o.noInduk,
       outlet: o.outlet,
-      kunjungan: o.kunjungan,
+      tglDaftar: o.tglDaftar,
       order: o.order,
       harga: o.harga,
       totalBayar: o.totalBayar,
@@ -366,7 +366,7 @@ export async function getOutletsByDatabase(dbId: string): Promise<Outlet[]> {
     alamatId: o.alamatId,
     noInduk: o.noInduk,
     outlet: o.outlet,
-    kunjungan: o.kunjungan,
+    tglDaftar: o.tglDaftar,
     order: o.order,
     harga: o.harga,
     totalBayar: o.totalBayar,
@@ -398,7 +398,7 @@ export async function getAnalyticsData(
   const groups = new Map<string, Outlet[]>();
 
   for (const o of outlets) {
-    const date = o.kunjungan || "";
+    const date = o.tglDaftar || "";
     let key: string;
 
     if (mode === "harian") {
@@ -581,7 +581,7 @@ export async function getGlobalPeriodSummary() {
   const yearlyMap: Record<string, { order: number; pendapatan: number; bayar: number; piutang: number }> = {};
 
   for (const o of outlets) {
-    const dateStr = o.kunjungan;
+    const dateStr = o.tglDaftar;
     if (!dateStr || dateStr.length < 10) continue;
 
     const day = dateStr;
