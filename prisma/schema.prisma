@@ -1,0 +1,62 @@
+// ============================================
+// Kopi Bima — Prisma Schema (PostgreSQL)
+// ============================================
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/client"
+}
+
+model Database {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  jalurs    Jalur[]
+}
+
+model Jalur {
+  id         String   @id @default(uuid())
+  name       String
+  createdAt  DateTime @default(now())
+  databaseId String
+  database   Database @relation(fields: [databaseId], references: [id], onDelete: Cascade)
+  alamats    Alamat[]
+}
+
+model Alamat {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  jalurId   String
+  jalur     Jalur    @relation(fields: [jalurId], references: [id], onDelete: Cascade)
+  outlets   Outlet[]
+}
+
+model Outlet {
+  id           String   @id @default(uuid())
+  noInduk      String
+  outlet       String
+  kunjungan    String
+  order        Float
+  harga        Float
+  totalBayar   Float
+  totalPiutang Float
+  status       String
+  alamatId     String
+  alamat       Alamat   @relation(fields: [alamatId], references: [id], onDelete: Cascade)
+}
+
+model CoffeeStock {
+  id        String   @id @default(uuid())
+  name      String
+  sku       String   @unique
+  quantity  Float
+  unit      String
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
