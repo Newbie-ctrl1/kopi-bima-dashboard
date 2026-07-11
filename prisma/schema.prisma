@@ -37,17 +37,29 @@ model Alamat {
 }
 
 model Outlet {
+  id        String   @id @default(uuid())
+  noInduk   String
+  outlet    String
+  tglDaftar String
+  alamatId  String
+  alamat    Alamat   @relation(fields: [alamatId], references: [id], onDelete: Cascade)
+  orders    Order[]
+  payments  Payment[]
+}
+
+model Order {
   id           String   @id @default(uuid())
-  noInduk      String
-  outlet       String
-  tglDaftar    String
   order        Float
   harga        Float
   totalBayar   Float
   totalPiutang Float
   status       String
-  alamatId     String
-  alamat       Alamat   @relation(fields: [alamatId], references: [id], onDelete: Cascade)
+  orderStatus  String   @default("Sukses")
+  tglOrder     String
+  createdAt    DateTime @default(now())
+  paymentMethod String   @default("Cash")
+  outletId     String
+  outlet       Outlet   @relation(fields: [outletId], references: [id], onDelete: Cascade)
 }
 
 model CoffeeStock {
@@ -59,4 +71,14 @@ model CoffeeStock {
   price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  amount        Float
+  paymentMethod String   @default("Cash")
+  tglPayment    String
+  createdAt     DateTime @default(now())
+  outletId      String
+  outlet        Outlet   @relation(fields: [outletId], references: [id], onDelete: Cascade)
 }

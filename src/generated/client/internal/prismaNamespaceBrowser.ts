@@ -55,7 +55,9 @@ export const ModelName = {
   Jalur: 'Jalur',
   Alamat: 'Alamat',
   Outlet: 'Outlet',
-  CoffeeStock: 'CoffeeStock'
+  Order: 'Order',
+  CoffeeStock: 'CoffeeStock',
+  Payment: 'Payment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -108,15 +110,27 @@ export const OutletScalarFieldEnum = {
   noInduk: 'noInduk',
   outlet: 'outlet',
   tglDaftar: 'tglDaftar',
+  alamatId: 'alamatId'
+} as const
+
+export type OutletScalarFieldEnum = (typeof OutletScalarFieldEnum)[keyof typeof OutletScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
   order: 'order',
   harga: 'harga',
   totalBayar: 'totalBayar',
   totalPiutang: 'totalPiutang',
   status: 'status',
-  alamatId: 'alamatId'
+  orderStatus: 'orderStatus',
+  tglOrder: 'tglOrder',
+  createdAt: 'createdAt',
+  paymentMethod: 'paymentMethod',
+  outletId: 'outletId'
 } as const
 
-export type OutletScalarFieldEnum = (typeof OutletScalarFieldEnum)[keyof typeof OutletScalarFieldEnum]
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
 export const CoffeeStockScalarFieldEnum = {
@@ -131,6 +145,18 @@ export const CoffeeStockScalarFieldEnum = {
 } as const
 
 export type CoffeeStockScalarFieldEnum = (typeof CoffeeStockScalarFieldEnum)[keyof typeof CoffeeStockScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  paymentMethod: 'paymentMethod',
+  tglPayment: 'tglPayment',
+  createdAt: 'createdAt',
+  outletId: 'outletId'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const SortOrder = {

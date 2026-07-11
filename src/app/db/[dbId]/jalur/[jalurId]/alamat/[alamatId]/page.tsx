@@ -6,7 +6,7 @@ import {
   getDatabaseById,
   getJalurById,
   getAlamatById,
-  getOutletsByAlamat,
+  getOutletsWithSummary,
   getOutletStats,
   getNextNoInduk,
 } from "@/lib/store";
@@ -38,7 +38,7 @@ export default async function AlamatPage({ params }: PageProps) {
   const alamat = await getAlamatById(alamatId);
   if (!db || !jalur || !alamat) notFound();
 
-  const outlets = await getOutletsByAlamat(alamatId);
+  const outlets = await getOutletsWithSummary(alamatId);
   const stats = await getOutletStats(alamatId);
   const nextNoInduk = await getNextNoInduk(alamatId);
   const basePath = `/db/${dbId}/jalur/${jalurId}/alamat/${alamatId}`;
@@ -68,8 +68,28 @@ export default async function AlamatPage({ params }: PageProps) {
       ),
     },
     {
-      label: "Lunas",
-      value: stats.lunas,
+      label: "Total Pendapatan",
+      value: formatCurrency(stats.totalPendapatan),
+      gradient: "gradient-purple",
+      icon: (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <line x1="12" y1="1" x2="12" y2="23" />
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+      ),
+    },
+    {
+      label: "Total Pemasukan",
+      value: formatCurrency(stats.totalPemasukan),
       gradient: "gradient-emerald",
       icon: (
         <svg
@@ -88,8 +108,8 @@ export default async function AlamatPage({ params }: PageProps) {
       ),
     },
     {
-      label: "Piutang",
-      value: stats.piutang,
+      label: "Total Piutang",
+      value: formatCurrency(stats.totalPiutang),
       gradient: "gradient-rose",
       icon: (
         <svg
@@ -105,26 +125,6 @@ export default async function AlamatPage({ params }: PageProps) {
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12.01" y2="16" />
-        </svg>
-      ),
-    },
-    {
-      label: "Total Pendapatan",
-      value: formatCurrency(stats.totalPendapatan),
-      gradient: "gradient-purple",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <line x1="12" y1="1" x2="12" y2="23" />
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
         </svg>
       ),
     },

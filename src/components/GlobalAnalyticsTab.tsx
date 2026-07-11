@@ -26,6 +26,9 @@ interface GlobalSummary {
   pemasukan: number;
   lunas: number;
   piutang: number;
+  pendingCount: number;
+  pendingOrder: number;
+  pendingNominal: number;
 }
 
 interface GlobalAnalyticsTabProps {
@@ -160,12 +163,24 @@ export default function GlobalAnalyticsTab({
         </svg>
       ),
     },
+    {
+      label: "Order Pending",
+      value: `${summary.pendingCount} Outlet`,
+      desc: `${summary.pendingOrder.toFixed(1)} Krd (${formatCurrency(summary.pendingNominal)})`,
+      gradient: "gradient-amber",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      ),
+    },
   ];
 
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         {statsCards.map((card, i) => (
           <div
             key={card.label}

@@ -38,7 +38,17 @@ export type Alamat = Prisma.AlamatModel
  */
 export type Outlet = Prisma.OutletModel
 /**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
  * Model CoffeeStock
  * 
  */
 export type CoffeeStock = Prisma.CoffeeStockModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel

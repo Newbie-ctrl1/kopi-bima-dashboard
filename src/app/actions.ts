@@ -6,7 +6,7 @@
 
 import { revalidatePath } from "next/cache";
 import * as store from "@/lib/store";
-import type { OutletFormData } from "@/lib/types";
+import type { OutletFormData, OrderFormData, PaymentFormData } from "@/lib/types";
 import * as XLSX from "xlsx";
 
 // ============================================
@@ -113,7 +113,7 @@ export async function updateAlamatAction(
 }
 
 // ============================================
-// OUTLET ACTIONS
+// OUTLET ACTIONS (Registration Only)
 // ============================================
 
 function parseOutletFormData(formData: FormData): OutletFormData {
@@ -121,9 +121,6 @@ function parseOutletFormData(formData: FormData): OutletFormData {
     noInduk: (formData.get("noInduk") as string) || "",
     outlet: (formData.get("outlet") as string) || "",
     tglDaftar: (formData.get("tglDaftar") as string) || "",
-    order: parseFloat(formData.get("order") as string) || 0,
-    harga: parseFloat(formData.get("harga") as string) || 100000,
-    totalBayar: parseFloat(formData.get("totalBayar") as string) || 0,
   };
 }
 
@@ -131,9 +128,6 @@ function validateOutletData(data: OutletFormData): string | null {
   if (!data.noInduk.trim()) return "No Induk tidak boleh kosong";
   if (!data.outlet.trim()) return "Nama outlet tidak boleh kosong";
   if (!data.tglDaftar) return "Tanggal daftar tidak boleh kosong";
-  if (data.order < 0) return "Order tidak boleh negatif";
-  if (data.harga <= 0) return "Harga harus lebih dari 0";
-  if (data.totalBayar < 0) return "Total bayar tidak boleh negatif";
   return null;
 }
 
@@ -147,7 +141,7 @@ export async function createOutletAction(
   if (error) return { error };
 
   await store.createOutlet(alamatId, data);
-  revalidatePath(basePath);
+  revalidatePath("/", "layout");
   return { success: true };
 }
 
@@ -163,18 +157,143 @@ export async function updateOutletAction(
   const result = await store.updateOutlet(outletId, data);
   if (!result) return { error: "Data outlet tidak ditemukan" };
 
-  revalidatePath(basePath);
+  revalidatePath("/", "layout");
   return { success: true };
 }
 
 export async function deleteOutletAction(outletId: string, basePath: string) {
   await store.deleteOutlet(outletId);
-  revalidatePath(basePath);
+  revalidatePath("/", "layout");
   return { success: true };
 }
 
 // ============================================
-// UPLOAD (CSV / EXCEL) ACTION
+// ORDER ACTIONS
+// ============================================
+
+function parseOrderFormData(formData: FormData): OrderFormData {
+  return {
+    outletId: (formData.get("outletId") as string) || "",
+    order: parseFloat(formData.get("order") as string) || 0,
+    harga: parseFloat(formData.get("harga") as string) || 100000,
+    totalBayar: parseFloat(formData.get("totalBayar") as string) || 0,
+    orderStatus: (formData.get("orderStatus") as any) || "Sukses",
+    paymentMethod: (formData.get("paymentMethod") as any) || "Cash",
+    tglOrder: (formData.get("tglOrder") as string) || "",
+  };
+}
+
+function validateOrderData(data: OrderFormData): string | null {
+  if (!data.outletId) return "Outlet harus dipilih";
+  if (data.order <= 0) return "Jumlah order harus lebih dari 0";
+  if (data.harga <= 0) return "Harga harus lebih dari 0";
+  if (data.totalBayar < 0) return "Total bayar tidak boleh negatif";
+  if (!data.tglOrder) return "Tanggal order tidak boleh kosong";
+  return null;
+}
+
+export async function createOrderAction(basePath: string, formData: FormData) {
+  const data = parseOrderFormData(formData);
+  const error = validateOrderData(data);
+  if (error) return { error };
+
+  try {
+    await store.createOrder(data);
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message || "Gagal membuat order" };
+  }
+}
+
+export async function updateOrderAction(
+  orderId: string,
+  basePath: string,
+  formData: FormData
+) {
+  const data = parseOrderFormData(formData);
+  const error = validateOrderData(data);
+  if (error) return { error };
+
+  try {
+    const result = await store.updateOrder(orderId, data);
+    if (!result) return { error: "Data order tidak ditemukan" };
+
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message || "Gagal mengubah order" };
+  }
+}
+
+export async function deleteOrderAction(orderId: string, basePath: string) {
+  await store.deleteOrder(orderId);
+  revalidatePath("/", "layout");
+  return { success: true };
+}
+
+// ============================================
+// PAYMENT ACTIONS
+// ============================================
+
+function parsePaymentFormData(formData: FormData): PaymentFormData {
+  return {
+    outletId: (formData.get("outletId") as string) || "",
+    amount: parseFloat(formData.get("amount") as string) || 0,
+    paymentMethod: (formData.get("paymentMethod") as any) || "Cash",
+    tglPayment: (formData.get("tglPayment") as string) || "",
+  };
+}
+
+function validatePaymentData(data: PaymentFormData): string | null {
+  if (!data.outletId) return "Outlet harus dipilih";
+  if (data.amount <= 0) return "Nominal pembayaran harus lebih dari 0";
+  if (!data.tglPayment) return "Tanggal pembayaran tidak boleh kosong";
+  return null;
+}
+
+export async function createPaymentAction(basePath: string, formData: FormData) {
+  const data = parsePaymentFormData(formData);
+  const error = validatePaymentData(data);
+  if (error) return { error };
+
+  try {
+    await store.createPayment(data);
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message || "Gagal membuat pembayaran" };
+  }
+}
+
+export async function updatePaymentAction(
+  paymentId: string,
+  basePath: string,
+  formData: FormData
+) {
+  const data = parsePaymentFormData(formData);
+  const error = validatePaymentData(data);
+  if (error) return { error };
+
+  try {
+    const result = await store.updatePayment(paymentId, data);
+    if (!result) return { error: "Data pembayaran tidak ditemukan" };
+
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message || "Gagal mengubah pembayaran" };
+  }
+}
+
+export async function deletePaymentAction(paymentId: string, basePath: string) {
+  await store.deletePayment(paymentId);
+  revalidatePath("/", "layout");
+  return { success: true };
+}
+
+// ============================================
+// UPLOAD (CSV / EXCEL) ACTION — Outlet Registration Only
 // ============================================
 
 export async function uploadOutletsAction(
@@ -232,24 +351,8 @@ export async function uploadOutletsAction(
         row["tglDaftar"] ||
         row["tgl_daftar"] ||
         row["tanggal_daftar"] ||
-        row["kunjungan"] ||
-        row["Kunjungan"] ||
-        row["KUNJUNGAN"] ||
         row["tanggal"] ||
         "";
-      const order = parseFloat(
-        row["order"] || row["Order"] || row["ORDER"] || "0"
-      );
-      const harga = parseFloat(
-        row["harga"] || row["Harga"] || row["HARGA"] || "100000"
-      );
-      const totalBayar = parseFloat(
-        row["totalBayar"] ||
-          row["total_bayar"] ||
-          row["Total Bayar"] ||
-          row["TOTAL BAYAR"] ||
-          "0"
-      );
 
       if (!noInduk && !outlet) {
         errors.push(`Baris ${rowNum}: No Induk dan Outlet kosong, dilewati`);
@@ -260,9 +363,6 @@ export async function uploadOutletsAction(
         noInduk: String(noInduk).trim(),
         outlet: String(outlet).trim(),
         tglDaftar: String(tglDaftar).trim(),
-        order: isNaN(order) ? 0 : order,
-        harga: isNaN(harga) || harga <= 0 ? 100000 : harga,
-        totalBayar: isNaN(totalBayar) ? 0 : totalBayar,
       });
     }
 
@@ -274,7 +374,7 @@ export async function uploadOutletsAction(
     }
 
     await store.bulkCreateOutlets(alamatId, outlets);
-    revalidatePath(basePath);
+    revalidatePath("/", "layout");
 
     return {
       success: true,

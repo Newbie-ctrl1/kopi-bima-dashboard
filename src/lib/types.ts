@@ -22,26 +22,84 @@ export interface Alamat {
   createdAt: string;
 }
 
+// Outlet = registrasi toko saja
 export interface Outlet {
   id: string;
   alamatId: string;
   noInduk: string;
-  outlet: string;
-  tglDaftar: string; // date string (YYYY-MM-DD)
-  order: number; // jumlah kardus (bisa desimal: 0.2, 0.5, 1, dst)
-  harga: number; // harga per kardus (default: 100000)
-  totalBayar: number; // nominal yang sudah dibayarkan
-  totalPiutang: number; // computed: (order * harga) - totalBayar
-  status: "Lunas" | "Piutang"; // computed: totalPiutang > 0 ? "Piutang" : "Lunas"
+  outlet: string;       // nama toko
+  tglDaftar: string;    // tanggal daftar (YYYY-MM-DD)
 }
 
 export interface OutletFormData {
   noInduk: string;
   outlet: string;
   tglDaftar: string;
+}
+
+// Outlet + ringkasan keuangan (computed dari orders)
+export interface OutletWithSummary extends Outlet {
+  totalOrder: number;       // jumlah kardus dari semua order Sukses
+  totalPendapatan: number;  // order * harga dari semua order Sukses
+  totalBayar: number;       // total pembayaran dari semua order Sukses
+  totalPiutang: number;     // total piutang dari semua order Sukses
+  orderCount: number;       // jumlah order
+}
+
+// Order = transaksi pesanan
+export interface Order {
+  id: string;
+  outletId: string;
+  order: number;            // jumlah kardus
+  harga: number;            // harga per kardus
+  totalBayar: number;       // nominal yang sudah dibayarkan
+  totalPiutang: number;     // computed: (order * harga) - totalBayar
+  status: "Lunas" | "Piutang";
+  orderStatus: "Sukses" | "Pending" | "Cancel" | "Proses";
+  paymentMethod: "Cash" | "Transfer";
+  tglOrder: string;         // tanggal order (YYYY-MM-DD)
+}
+
+export interface OrderFormData {
+  outletId: string;
   order: number;
   harga: number;
   totalBayar: number;
+  orderStatus: "Sukses" | "Pending" | "Cancel" | "Proses";
+  paymentMethod: "Cash" | "Transfer";
+  tglOrder: string;
+}
+
+// Order with outlet & location relations (for Progres Order page)
+export interface OrderWithRelations extends Order {
+  outletName: string;
+  outletNoInduk: string;
+  alamatName: string;
+  jalurName: string;
+  databaseName: string;
+}// Payment = transaksi pembayaran piutang
+export interface Payment {
+  id: string;
+  outletId: string;
+  amount: number;
+  paymentMethod: "Cash" | "Transfer";
+  tglPayment: string;
+  createdAt?: Date;
+}
+
+export interface PaymentFormData {
+  outletId: string;
+  amount: number;
+  paymentMethod: "Cash" | "Transfer";
+  tglPayment: string;
+}
+
+export interface PaymentWithRelations extends Payment {
+  outletName: string;
+  outletNoInduk: string;
+  alamatName: string;
+  jalurName: string;
+  databaseName: string;
 }
 
 export interface StoreData {

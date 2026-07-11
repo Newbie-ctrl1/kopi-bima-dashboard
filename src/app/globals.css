@@ -318,6 +318,28 @@ h1, h2, h3, h4, .font-serif-aww {
   }
 }
 
+.modal-content-lg {
+  max-width: 640px;
+}
+
+/* ---- Gradient Utilities ---- */
+
+.gradient-amber {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.gradient-emerald {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.gradient-rose {
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
+}
+.gradient-purple {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+}
+.gradient-blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
 /* ---- Layout & Sidebar Adjustments ---- */
 
 .sidebar {

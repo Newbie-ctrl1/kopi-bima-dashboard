@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Outlet } from "@/lib/types";
+
 import type { AnalyticsPeriod } from "@/lib/store";
 
 interface AnalyticsViewProps {
@@ -328,69 +328,145 @@ export default function AnalyticsView({
                 <span className="badge badge-piutang text-[9px]">{period.piutang}</span>
               </div>
 
-              {/* Expanded detail table */}
+              {/* Expanded detail summary & orders list */}
               {expandedPeriod === period.key && (
                 <div className="border-t border-[var(--card-border)] bg-[#090909]">
+                  {/* Period Stats Summary Banner */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 border-b border-[var(--card-border)] bg-black/20">
+                    <div>
+                      <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Total Order</p>
+                      <p className="text-xs font-bold font-mono text-[var(--foreground)]">{period.totalOrder.toFixed(1)} Krd</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Pendapatan</p>
+                      <p className="text-xs font-bold font-mono text-purple-400">{formatCurrency(period.totalPendapatan)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Terbayar</p>
+                      <p className="text-xs font-bold font-mono text-[var(--success)]">{formatCurrency(period.totalBayar)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Piutang</p>
+                      <p className="text-xs font-bold font-mono text-[var(--danger)]">{formatCurrency(period.totalPiutang)}</p>
+                    </div>
+                  </div>
+
+                  {/* Table Headers */}
+                  <div className="px-5 py-3 border-b border-[var(--card-border)] bg-black/10">
+                    <h4 className="text-[10px] uppercase font-bold tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+                      <span>📦</span> Daftar Transaksi Order
+                    </h4>
+                  </div>
+
+                  {/* Orders Detail Table */}
                   <div className="overflow-x-auto">
-                    <table className="data-table">
+                    <table className="data-table border-x-0 border-t-0">
                       <thead>
                         <tr>
+                          <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
                           <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
                           <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Tgl Daftar</th>
-                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Order (Kardus)</th>
+                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Order (Krd)</th>
                           <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
-                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total Bayar</th>
-                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total Piutang</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Status</th>
+                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total</th>
+                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Bayar</th>
+                          <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
+                          <th className="text-center font-sans text-[10px] tracking-widest font-bold">Status</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {period.outlets.map((o: Outlet) => (
+                        {period.orders.map((o) => (
                           <tr key={o.id}>
-                            <td className="font-mono text-xs text-[var(--foreground)] font-semibold">{o.noInduk}</td>
-                            <td className="text-[var(--foreground)] font-semibold">{o.outlet}</td>
-                            <td className="text-xs uppercase tracking-wide">
-                              {o.tglDaftar
-                                ? new Date(o.tglDaftar).toLocaleDateString("id-ID", {
-                                    day: "numeric",
-                                    month: "short",
-                                    year: "numeric",
-                                  })
-                                : "-"}
+                            <td className="text-[var(--foreground)] font-semibold text-xs">
+                              <div className="flex flex-col">
+                                <span className="font-serif-aww text-[var(--accent)] text-xs">{o.jalurName}</span>
+                                <span className="text-[9px] text-[var(--muted)] uppercase font-semibold">{o.alamatName}</span>
+                              </div>
                             </td>
-                            <td className="text-right font-mono text-xs font-semibold text-[var(--foreground)]">{o.order}</td>
+                            <td className="font-mono text-xs text-[var(--foreground)] font-semibold">{o.outletNoInduk}</td>
+                            <td className="text-[var(--foreground)] font-semibold">{o.outletName}</td>
+                            <td className="text-right font-mono text-xs font-semibold text-[var(--foreground)]">{o.order} Krd</td>
                             <td className="text-right font-mono text-xs">{formatCurrency(o.harga)}</td>
+                            <td className="text-right font-mono text-xs font-semibold text-purple-400">{formatCurrency(o.order * o.harga)}</td>
                             <td className="text-right font-mono text-xs font-semibold text-[var(--success)]">{formatCurrency(o.totalBayar)}</td>
-                            <td className="text-right font-mono text-xs font-semibold text-[var(--danger)]">{formatCurrency(o.totalPiutang)}</td>
-                            <td>
-                              <span className={`badge ${o.status === "Lunas" ? "badge-lunas" : "badge-piutang"}`}>
-                                <span className={`w-1 h-1 ${o.status === "Lunas" ? "bg-[var(--success)]" : "bg-[var(--danger)]"}`} />
+                            <td className="text-center">
+                              <span className={`badge ${o.paymentMethod === "Cash" ? "text-amber-500 bg-amber-500/5 border-amber-500/15" : "text-blue-500 bg-blue-500/5 border-blue-500/15"}`}>
+                                {o.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
+                              </span>
+                            </td>
+                            <td className="text-center">
+                              <span
+                                className={`badge ${
+                                  o.status === "Lunas"
+                                    ? "badge-lunas"
+                                    : "badge-piutang"
+                                }`}
+                              >
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    o.status === "Lunas"
+                                      ? "bg-[var(--success)]"
+                                      : "bg-[var(--danger)]"
+                                  }`}
+                                />
                                 {o.status}
                               </span>
                             </td>
                           </tr>
                         ))}
                       </tbody>
-                      {/* Period totals footer */}
-                      <tfoot>
-                        <tr className="border-t border-[var(--card-border)] bg-[#090909]">
-                          <td colSpan={3} className="font-bold text-[var(--foreground)] text-xs uppercase tracking-wider p-4">
-                            Total Periode
-                          </td>
-                          <td className="text-right font-mono font-bold text-[var(--foreground)] text-xs p-4">
-                            {period.totalOrder}
-                          </td>
-                          <td className="text-right font-mono text-xs text-[var(--muted)] p-4">—</td>
-                          <td className="text-right font-mono font-bold text-[var(--success)] text-xs p-4">
-                            {formatCurrency(period.totalBayar)}
-                          </td>
-                          <td className="text-right font-mono font-bold text-[var(--danger)] text-xs p-4">
-                            {formatCurrency(period.totalPiutang)}
-                          </td>
-                          <td className="p-4" />
+                    </table>
+                  </div>
+
+                  {/* Payments Header */}
+                  <div className="px-5 py-3 border-t border-b border-[var(--card-border)] bg-black/10">
+                    <h4 className="text-[10px] uppercase font-bold tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+                      <span>💸</span> Daftar Transaksi Pembayaran
+                    </h4>
+                  </div>
+
+                  {/* Payments Detail Table */}
+                  <div className="overflow-x-auto">
+                    <table className="data-table border-x-0 border-t-0 border-b-0">
+                      <thead>
+                        <tr>
+                          <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
+                          <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
+                          <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
+                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Jumlah Bayar</th>
+                          <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
                         </tr>
-                      </tfoot>
+                      </thead>
+                      <tbody>
+                        {period.payments.length === 0 ? (
+                          <tr>
+                            <td colSpan={5}>
+                              <div className="empty-state py-8 text-center text-xs text-[var(--muted-foreground)]">
+                                Tidak ada transaksi pembayaran pada periode ini
+                              </div>
+                            </td>
+                          </tr>
+                        ) : (
+                          period.payments.map((p) => (
+                            <tr key={p.id}>
+                              <td className="text-[var(--foreground)] font-semibold text-xs">
+                                <div className="flex flex-col">
+                                  <span className="font-serif-aww text-[var(--accent)] text-xs">{p.jalurName}</span>
+                                  <span className="text-[9px] text-[var(--muted)] uppercase font-semibold">{p.alamatName}</span>
+                                </div>
+                              </td>
+                              <td className="font-mono text-xs text-[var(--foreground)] font-semibold">{p.outletNoInduk}</td>
+                              <td className="text-[var(--foreground)] font-semibold">{p.outletName}</td>
+                              <td className="text-right font-mono text-xs font-semibold text-[var(--success)]">{formatCurrency(p.amount)}</td>
+                              <td className="text-center">
+                                <span className={`badge ${p.paymentMethod === "Cash" ? "text-amber-500 bg-amber-500/5 border-amber-500/15" : "text-blue-500 bg-blue-500/5 border-blue-500/15"}`}>
+                                  {p.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
                     </table>
                   </div>
                 </div>

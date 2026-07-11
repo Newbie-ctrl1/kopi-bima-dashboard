@@ -178,7 +178,8 @@ export default function Sidebar() {
                 const parts = pathname.split("/");
                 const dbId = parts[2];
                 const isAnalisaActive = pathname.includes("/analisa");
-                const isJalurActive = !isAnalisaActive;
+                const isProgresActive = pathname.includes("/progres-order");
+                const isJalurActive = !isAnalisaActive && !isProgresActive;
 
                 return (
                   <>
@@ -232,6 +233,31 @@ export default function Sidebar() {
                         <line x1="6" y1="20" x2="6" y2="14" />
                       </svg>
                       <span className="text-xs uppercase tracking-wider font-semibold">Analisa Data</span>
+                    </Link>
+
+                    <Link
+                      href={`/db/${dbId}/progres-order`}
+                      id="nav-progres-order"
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-3 border transition-all duration-300 ${
+                        isProgresActive
+                          ? "border-[var(--accent)] text-[var(--accent)] bg-gradient-to-r from-[rgba(201,154,107,0.03)] to-transparent"
+                          : "border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--card-border)]"
+                      }`}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                      </svg>
+                      <span className="text-xs uppercase tracking-wider font-semibold">Progres Order</span>
                     </Link>
                   </>
                 );
