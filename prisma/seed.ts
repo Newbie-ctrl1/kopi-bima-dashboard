@@ -1,3 +1,7 @@
+import { config } from "dotenv";
+import { resolve } from "path";
+config({ path: resolve(process.cwd(), ".env") });
+
 import { PrismaClient } from "../src/generated/client/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
@@ -7,400 +11,376 @@ const pool = new pg.Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+function day(offset: number): string {
+  return new Date(Date.now() + offset * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+}
+
 async function main() {
-  console.log("Seeding Kopi Bima (Outlet + Order architecture)...");
+  console.log("🌱 Seeding Kopi Bima (fresh data)...\n");
 
-  // Dynamic dates relative to today's date
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const yesterdayStr = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  const twoDaysAgoStr = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  const threeDaysAgoStr = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  const fourDaysAgoStr = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const today        = day(0);
+  const yesterday    = day(-1);
+  const twoDaysAgo   = day(-2);
+  const threeDaysAgo = day(-3);
+  const fourDaysAgo  = day(-4);
 
-  // ============================================
-  // 1. SEED DATABASE RENDI
-  // ============================================
-  console.log("Seeding Database Rendi...");
-  const dbRendi = await prisma.database.upsert({
-    where: { id: "db-rendi" },
-    update: { name: "Database Rendi" },
-    create: {
-      id: "db-rendi",
-      name: "Database Rendi",
-      createdAt: new Date("2026-07-01T00:00:00Z"),
-    },
+  // ============================================================
+  // RESET — hapus semua data lama agar seed bersih
+  // ============================================================
+  console.log("🗑️  Clearing old data...");
+  await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Order", "Payment", "Outlet", "Alamat", "Jalur", "Database", "CoffeeStock" RESTART IDENTITY CASCADE`);
+  console.log("   ✓ Cleared\n");
+
+  // ============================================================
+  // 1. DATABASE RENDI
+  // ============================================================
+  console.log("📂 Seeding Database Rendi...");
+  const dbRendi = await prisma.database.create({
+    data: { id: "db-rendi", name: "Database Rendi" },
   });
 
-  // Jalurs in Rendi
-  const jRendi1 = await prisma.jalur.upsert({
-    where: { id: "jalur-rendi-1" },
-    update: { name: "Jalur 1", databaseId: dbRendi.id },
-    create: {
-      id: "jalur-rendi-1",
-      name: "Jalur 1",
-      databaseId: dbRendi.id,
-      createdAt: new Date("2026-07-01T01:00:00Z"),
-    },
+  const jR1 = await prisma.jalur.create({
+    data: { id: "jr-1", name: "Jalur 1", databaseId: dbRendi.id },
+  });
+  const jR2 = await prisma.jalur.create({
+    data: { id: "jr-2", name: "Jalur 2", databaseId: dbRendi.id },
+  });
+  const jR3 = await prisma.jalur.create({
+    data: { id: "jr-3", name: "Jalur 3", databaseId: dbRendi.id },
   });
 
-  const jRendi2 = await prisma.jalur.upsert({
-    where: { id: "jalur-rendi-2" },
-    update: { name: "Jalur 2", databaseId: dbRendi.id },
-    create: {
-      id: "jalur-rendi-2",
-      name: "Jalur 2",
-      databaseId: dbRendi.id,
-      createdAt: new Date("2026-07-01T02:00:00Z"),
-    },
-  });
+  const aSananrejo  = await prisma.alamat.create({ data: { id: "a-sn", name: "Sananrejo",   jalurId: jR1.id } });
+  const aWonokerto  = await prisma.alamat.create({ data: { id: "a-wn", name: "Wonokerto",   jalurId: jR1.id } });
+  const aBululawang = await prisma.alamat.create({ data: { id: "a-bl", name: "Bululawang",  jalurId: jR2.id } });
+  const aKrebet     = await prisma.alamat.create({ data: { id: "a-kb", name: "Krebet",      jalurId: jR2.id } });
+  const aGondang    = await prisma.alamat.create({ data: { id: "a-gl", name: "Gondanglegi", jalurId: jR3.id } });
+  const aTuren      = await prisma.alamat.create({ data: { id: "a-tr", name: "Turen",       jalurId: jR3.id } });
 
-  // Alamats
-  const aSananrejo = await prisma.alamat.upsert({
-    where: { id: "alamat-sananrejo" },
-    update: { name: "Sananrejo", jalurId: jRendi1.id },
-    create: {
-      id: "alamat-sananrejo",
-      name: "Sananrejo",
-      jalurId: jRendi1.id,
-      createdAt: new Date("2026-07-01T03:00:00Z"),
-    },
-  });
-
-  const aWonokerto = await prisma.alamat.upsert({
-    where: { id: "alamat-wonokerto" },
-    update: { name: "Wonokerto", jalurId: jRendi1.id },
-    create: {
-      id: "alamat-wonokerto",
-      name: "Wonokerto",
-      jalurId: jRendi1.id,
-      createdAt: new Date("2026-07-01T04:00:00Z"),
-    },
-  });
-
-  const aBululawang = await prisma.alamat.upsert({
-    where: { id: "alamat-bululawang" },
-    update: { name: "Bululawang", jalurId: jRendi2.id },
-    create: {
-      id: "alamat-bululawang",
-      name: "Bululawang",
-      jalurId: jRendi2.id,
-      createdAt: new Date("2026-07-01T05:00:00Z"),
-    },
-  });
-
-  const aKrebet = await prisma.alamat.upsert({
-    where: { id: "alamat-krebet" },
-    update: { name: "Krebet", jalurId: jRendi2.id },
-    create: {
-      id: "alamat-krebet",
-      name: "Krebet",
-      jalurId: jRendi2.id,
-      createdAt: new Date("2026-07-01T06:00:00Z"),
-    },
-  });
-
-  // ============================================
-  // OUTLETS (Registration Only)
-  // ============================================
-  const outletData = [
-    { id: "o-sn-001", noInduk: "#DRJ1SN001", outlet: "Toko Sejahtera", tglDaftar: fourDaysAgoStr, alamatId: aSananrejo.id },
-    { id: "o-sn-002", noInduk: "#DRJ1SN002", outlet: "Warung Barokah", tglDaftar: fourDaysAgoStr, alamatId: aSananrejo.id },
-    { id: "o-sn-003", noInduk: "#DRJ1SN003", outlet: "Toko Makmur Jaya", tglDaftar: threeDaysAgoStr, alamatId: aSananrejo.id },
-    { id: "o-sn-004", noInduk: "#DRJ1SN004", outlet: "Kios Berkah Sanan", tglDaftar: twoDaysAgoStr, alamatId: aSananrejo.id },
-    { id: "o-sn-005", noInduk: "#DRJ1SN005", outlet: "Toko Roti Lezat", tglDaftar: yesterdayStr, alamatId: aSananrejo.id },
-    { id: "o-wn-001", noInduk: "#DRJ1WN001", outlet: "Toko Berkah", tglDaftar: threeDaysAgoStr, alamatId: aWonokerto.id },
-    { id: "o-wn-002", noInduk: "#DRJ1WN002", outlet: "Warung Bu Sri", tglDaftar: twoDaysAgoStr, alamatId: aWonokerto.id },
-    { id: "o-wn-003", noInduk: "#DRJ1WN003", outlet: "Toko Rejeki Wono", tglDaftar: twoDaysAgoStr, alamatId: aWonokerto.id },
-    { id: "o-bl-001", noInduk: "#DRJ2BL001", outlet: "Kios Mandiri", tglDaftar: twoDaysAgoStr, alamatId: aBululawang.id },
-    { id: "o-bl-002", noInduk: "#DRJ2BL002", outlet: "Toko Sumber Sari", tglDaftar: yesterdayStr, alamatId: aBululawang.id },
-    { id: "o-bl-003", noInduk: "#DRJ2BL003", outlet: "Agen Sembako Bulu", tglDaftar: yesterdayStr, alamatId: aBululawang.id },
-    { id: "o-kb-001", noInduk: "#DRJ2KB001", outlet: "Warung Hj. Mimin", tglDaftar: yesterdayStr, alamatId: aKrebet.id },
-    { id: "o-kb-002", noInduk: "#DRJ2KB002", outlet: "Toko Krebet Indah", tglDaftar: todayStr, alamatId: aKrebet.id },
+  // OUTLETS — Rendi
+  const rendiOutlets = [
+    { id: "o-sn-1", noInduk: "#DRJ1SN001", outlet: "Toko Sejahtera",     tglDaftar: fourDaysAgo, alamatId: aSananrejo.id },
+    { id: "o-sn-2", noInduk: "#DRJ1SN002", outlet: "Warung Barokah",     tglDaftar: fourDaysAgo, alamatId: aSananrejo.id },
+    { id: "o-sn-3", noInduk: "#DRJ1SN003", outlet: "Kios Makmur Jaya",   tglDaftar: threeDaysAgo, alamatId: aSananrejo.id },
+    { id: "o-sn-4", noInduk: "#DRJ1SN004", outlet: "Toko Bahagia",       tglDaftar: threeDaysAgo, alamatId: aSananrejo.id },
+    { id: "o-sn-5", noInduk: "#DRJ1SN005", outlet: "Warung Pak Harto",   tglDaftar: twoDaysAgo,   alamatId: aSananrejo.id },
+    { id: "o-wn-1", noInduk: "#DRJ1WN001", outlet: "Toko Berkah Wono",   tglDaftar: threeDaysAgo, alamatId: aWonokerto.id },
+    { id: "o-wn-2", noInduk: "#DRJ1WN002", outlet: "Warung Bu Sri",      tglDaftar: twoDaysAgo,   alamatId: aWonokerto.id },
+    { id: "o-wn-3", noInduk: "#DRJ1WN003", outlet: "Kios Maju Wono",     tglDaftar: twoDaysAgo,   alamatId: aWonokerto.id },
+    { id: "o-bl-1", noInduk: "#DRJ2BL001", outlet: "Kios Mandiri Bulu",  tglDaftar: twoDaysAgo,   alamatId: aBululawang.id },
+    { id: "o-bl-2", noInduk: "#DRJ2BL002", outlet: "Toko Sumber Sari",   tglDaftar: yesterday,    alamatId: aBululawang.id },
+    { id: "o-bl-3", noInduk: "#DRJ2BL003", outlet: "Agen Sembako Bulu",  tglDaftar: yesterday,    alamatId: aBululawang.id },
+    { id: "o-kb-1", noInduk: "#DRJ2KB001", outlet: "Warung Hj. Mimin",   tglDaftar: yesterday,    alamatId: aKrebet.id },
+    { id: "o-kb-2", noInduk: "#DRJ2KB002", outlet: "Toko Krebet Indah",  tglDaftar: today,        alamatId: aKrebet.id },
+    { id: "o-gl-1", noInduk: "#DRJ3GL001", outlet: "Toko Abadi Gondang", tglDaftar: twoDaysAgo,   alamatId: aGondang.id },
+    { id: "o-gl-2", noInduk: "#DRJ3GL002", outlet: "Warung Sari Rasa",   tglDaftar: yesterday,    alamatId: aGondang.id },
+    { id: "o-tr-1", noInduk: "#DRJ3TR001", outlet: "Kios Maju Turen",    tglDaftar: yesterday,    alamatId: aTuren.id },
+    { id: "o-tr-2", noInduk: "#DRJ3TR002", outlet: "Toko Rezeki Turen",  tglDaftar: today,        alamatId: aTuren.id },
   ];
 
-  for (const o of outletData) {
-    await prisma.outlet.upsert({
-      where: { id: o.id },
-      update: { noInduk: o.noInduk, outlet: o.outlet, tglDaftar: o.tglDaftar, alamatId: o.alamatId },
-      create: o,
-    });
+  for (const o of rendiOutlets) {
+    await prisma.outlet.create({ data: o });
   }
-  console.log(`  ✓ ${outletData.length} outlets registered`);
+  console.log(`   ✓ ${rendiOutlets.length} outlets`);
 
-  // ============================================
-  // ORDERS (Separate transaction values)
-  // ============================================
-  const orderData = [
-    // --- July 2026 (Daily July) ---
-    { id: "ord-001", outletId: "o-sn-001", order: 2.0, harga: 100000, orderStatus: "Sukses", tglOrder: twoDaysAgoStr },
-    { id: "ord-002", outletId: "o-sn-001", order: 1.0, harga: 100000, orderStatus: "Sukses", tglOrder: yesterdayStr },
-    { id: "ord-003", outletId: "o-sn-002", order: 1.5, harga: 100000, orderStatus: "Sukses", tglOrder: yesterdayStr },
-    { id: "ord-004", outletId: "o-sn-003", order: 3.0, harga: 100000, orderStatus: "Sukses", tglOrder: twoDaysAgoStr },
-    { id: "ord-013", outletId: "o-bl-003", order: 5.0, harga: 110000, orderStatus: "Cancel", tglOrder: yesterdayStr },
-    { id: "ord-005", outletId: "o-sn-004", order: 0.5, harga: 100000, orderStatus: "Pending", tglOrder: yesterdayStr },
-    { id: "ord-010", outletId: "o-wn-003", order: 1.5, harga: 100000, orderStatus: "Proses", tglOrder: yesterdayStr },
-    { id: "ord-006", outletId: "o-sn-005", order: 2.2, harga: 100000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-007", outletId: "o-wn-001", order: 1.0, harga: 100000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-008", outletId: "o-wn-002", order: 2.5, harga: 100000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-009", outletId: "o-wn-003", order: 4.0, harga: 100000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-011", outletId: "o-bl-001", order: 2.0, harga: 110000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-012", outletId: "o-bl-002", order: 1.8, harga: 110000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-014", outletId: "o-bl-003", order: 3.0, harga: 110000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-015", outletId: "o-kb-001", order: 1.5, harga: 105000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-016", outletId: "o-kb-002", order: 2.0, harga: 105000, orderStatus: "Sukses", tglOrder: todayStr },
+  // ORDERS — Rendi (with keterangan on some)
+  type OrderSeed = {
+    id: string; outletId: string; order: number; harga: number;
+    orderStatus: string; tglOrder: string; keterangan?: string;
+  };
 
-    // --- June 2026 (Monthly June) ---
-    { id: "ord-rendi-jun-01", outletId: "o-sn-001", order: 10.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-06-15" },
-    { id: "ord-rendi-jun-02", outletId: "o-sn-002", order: 5.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-06-20" },
+  const rendiOrders: OrderSeed[] = [
+    // --- Hari ini ---
+    { id: "ro-t01", outletId: "o-sn-5", order: 2.0, harga: 100000, orderStatus: "Sukses", tglOrder: today, keterangan: "Titip salesman pagi" },
+    { id: "ro-t02", outletId: "o-wn-1", order: 1.5, harga: 100000, orderStatus: "Sukses", tglOrder: today },
+    { id: "ro-t03", outletId: "o-wn-2", order: 2.5, harga: 100000, orderStatus: "Sukses", tglOrder: today, keterangan: "Bayar 50% dulu" },
+    { id: "ro-t04", outletId: "o-wn-3", order: 3.0, harga: 100000, orderStatus: "Sukses", tglOrder: today },
+    { id: "ro-t05", outletId: "o-bl-1", order: 2.0, harga: 110000, orderStatus: "Sukses", tglOrder: today },
+    { id: "ro-t06", outletId: "o-bl-2", order: 1.8, harga: 110000, orderStatus: "Sukses", tglOrder: today, keterangan: "Transfer BRI sudah masuk" },
+    { id: "ro-t07", outletId: "o-bl-3", order: 3.0, harga: 110000, orderStatus: "Sukses", tglOrder: today },
+    { id: "ro-t08", outletId: "o-kb-1", order: 1.5, harga: 105000, orderStatus: "Sukses", tglOrder: today },
+    { id: "ro-t09", outletId: "o-kb-2", order: 2.0, harga: 105000, orderStatus: "Proses", tglOrder: today, keterangan: "Menunggu konfirmasi toko" },
+    { id: "ro-t10", outletId: "o-gl-1", order: 4.0, harga: 100000, orderStatus: "Sukses", tglOrder: today },
+    { id: "ro-t11", outletId: "o-gl-2", order: 2.5, harga: 100000, orderStatus: "Sukses", tglOrder: today },
+    { id: "ro-t12", outletId: "o-tr-1", order: 3.0, harga: 100000, orderStatus: "Sukses", tglOrder: today },
+    { id: "ro-t13", outletId: "o-tr-2", order: 1.0, harga: 100000, orderStatus: "Sukses", tglOrder: today, keterangan: "Order perdana, harga promo" },
 
-    // --- May 2026 (Monthly May) ---
-    { id: "ord-rendi-may-01", outletId: "o-sn-003", order: 8.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-05-10" },
+    // --- Kemarin ---
+    { id: "ro-y01", outletId: "o-sn-1", order: 2.0, harga: 100000, orderStatus: "Sukses", tglOrder: yesterday },
+    { id: "ro-y02", outletId: "o-sn-2", order: 1.5, harga: 100000, orderStatus: "Sukses", tglOrder: yesterday, keterangan: "Pembayaran cicilan ke-2" },
+    { id: "ro-y03", outletId: "o-sn-3", order: 3.0, harga: 100000, orderStatus: "Sukses", tglOrder: yesterday },
+    { id: "ro-y04", outletId: "o-sn-4", order: 0.5, harga: 100000, orderStatus: "Pending", tglOrder: yesterday, keterangan: "Tunggu konfirmasi pemilik" },
+    { id: "ro-y05", outletId: "o-wn-3", order: 1.5, harga: 100000, orderStatus: "Cancel", tglOrder: yesterday, keterangan: "Dibatalkan — stok habis" },
+    { id: "ro-y06", outletId: "o-bl-3", order: 5.0, harga: 110000, orderStatus: "Sukses", tglOrder: yesterday },
 
-    // --- Year 2025 (Yearly 2025) ---
-    { id: "ord-rendi-2025-01", outletId: "o-wn-001", order: 12.0, harga: 95000, orderStatus: "Sukses", tglOrder: "2025-11-12" },
+    // --- 2 hari lalu ---
+    { id: "ro-d01", outletId: "o-sn-1", order: 2.0, harga: 100000, orderStatus: "Sukses", tglOrder: twoDaysAgo },
+    { id: "ro-d02", outletId: "o-sn-3", order: 3.0, harga: 100000, orderStatus: "Sukses", tglOrder: twoDaysAgo },
+    { id: "ro-d03", outletId: "o-gl-1", order: 2.0, harga: 100000, orderStatus: "Sukses", tglOrder: twoDaysAgo },
 
-    // --- Year 2024 (Yearly 2024) ---
-    { id: "ord-rendi-2024-01", outletId: "o-wn-002", order: 20.0, harga: 90000, orderStatus: "Sukses", tglOrder: "2024-08-08" },
+    // --- Juni 2026 ---
+    { id: "ro-jun01", outletId: "o-sn-1", order: 10.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-06-15" },
+    { id: "ro-jun02", outletId: "o-sn-2", order:  5.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-06-20", keterangan: "Repeat order bulan lalu" },
+    { id: "ro-jun03", outletId: "o-wn-1", order:  8.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-06-25" },
+    { id: "ro-jun04", outletId: "o-bl-1", order:  6.0, harga: 110000, orderStatus: "Sukses", tglOrder: "2026-06-28" },
+
+    // --- Mei 2026 ---
+    { id: "ro-may01", outletId: "o-sn-3", order:  8.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-05-10" },
+    { id: "ro-may02", outletId: "o-wn-2", order: 12.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-05-18" },
+    { id: "ro-may03", outletId: "o-kb-1", order:  5.0, harga: 105000, orderStatus: "Sukses", tglOrder: "2026-05-25" },
+
+    // --- April 2026 ---
+    { id: "ro-apr01", outletId: "o-sn-1", order: 15.0, harga: 98000, orderStatus: "Sukses", tglOrder: "2026-04-05" },
+    { id: "ro-apr02", outletId: "o-gl-1", order:  9.0, harga: 98000, orderStatus: "Sukses", tglOrder: "2026-04-20" },
+
+    // --- Tahun 2025 ---
+    { id: "ro-2025-01", outletId: "o-wn-1", order: 12.0, harga: 95000, orderStatus: "Sukses", tglOrder: "2025-11-12" },
+    { id: "ro-2025-02", outletId: "o-bl-2", order:  7.0, harga: 95000, orderStatus: "Sukses", tglOrder: "2025-09-03" },
+    { id: "ro-2025-03", outletId: "o-sn-2", order: 20.0, harga: 93000, orderStatus: "Sukses", tglOrder: "2025-03-15" },
+
+    // --- Tahun 2024 ---
+    { id: "ro-2024-01", outletId: "o-wn-2", order: 20.0, harga: 90000, orderStatus: "Sukses", tglOrder: "2024-08-08" },
+    { id: "ro-2024-02", outletId: "o-sn-1", order: 18.0, harga: 88000, orderStatus: "Sukses", tglOrder: "2024-04-22" },
   ];
 
-  for (const o of orderData) {
-    const isCancelled = o.orderStatus === "Cancel";
-    const totalPiutang = isCancelled ? 0 : o.order * o.harga;
-    const status = totalPiutang > 0 ? "Piutang" : "Lunas";
-
-    await prisma.order.upsert({
-      where: { id: o.id },
-      update: {
-        outletId: o.outletId,
-        order: o.order,
-        harga: o.harga,
-        totalBayar: 0,
-        totalPiutang,
-        status,
-        orderStatus: o.orderStatus,
-        tglOrder: o.tglOrder,
-      },
-      create: {
-        id: o.id,
-        outletId: o.outletId,
-        order: o.order,
-        harga: o.harga,
-        totalBayar: 0,
-        totalPiutang,
-        status,
-        orderStatus: o.orderStatus,
-        tglOrder: o.tglOrder,
+  for (const o of rendiOrders) {
+    const isCancelled   = o.orderStatus === "Cancel";
+    const isPending     = o.orderStatus === "Pending" || o.orderStatus === "Proses";
+    const totalPiutang  = (isCancelled || isPending) ? 0 : o.order * o.harga;
+    const status        = totalPiutang > 0 ? "Piutang" : "Lunas";
+    await prisma.order.create({
+      data: {
+        id: o.id, outletId: o.outletId,
+        order: o.order, harga: o.harga,
+        totalBayar: 0, totalPiutang, status,
+        orderStatus: o.orderStatus, tglOrder: o.tglOrder,
+        keterangan: o.keterangan ?? null,
       },
     });
   }
-  console.log(`  ✓ ${orderData.length} orders seeded`);
+  console.log(`   ✓ ${rendiOrders.length} orders`);
 
-  // ============================================
-  // PAYMENTS (Separate transactions)
-  // ============================================
-  const paymentData = [
-    // --- July 2026 ---
-    { id: "pay-001", outletId: "o-sn-001", amount: 200000, paymentMethod: "Cash", tglPayment: twoDaysAgoStr },
-    { id: "pay-002", outletId: "o-sn-001", amount: 100000, paymentMethod: "Cash", tglPayment: yesterdayStr },
-    { id: "pay-003", outletId: "o-sn-002", amount: 100000, paymentMethod: "Cash", tglPayment: yesterdayStr },
-    { id: "pay-004", outletId: "o-sn-003", amount: 300000, paymentMethod: "Cash", tglPayment: twoDaysAgoStr },
-    { id: "pay-006", outletId: "o-sn-005", amount: 150000, paymentMethod: "Transfer", tglPayment: todayStr },
-    { id: "pay-007", outletId: "o-wn-001", amount: 50000, paymentMethod: "Cash", tglPayment: todayStr },
-    { id: "pay-008", outletId: "o-wn-002", amount: 250000, paymentMethod: "Transfer", tglPayment: todayStr },
-    { id: "pay-009", outletId: "o-wn-003", amount: 350000, paymentMethod: "Cash", tglPayment: todayStr },
-    { id: "pay-011", outletId: "o-bl-001", amount: 150000, paymentMethod: "Transfer", tglPayment: todayStr },
-    { id: "pay-012", outletId: "o-bl-002", amount: 198000, paymentMethod: "Cash", tglPayment: todayStr },
-    { id: "pay-014", outletId: "o-bl-003", amount: 330000, paymentMethod: "Transfer", tglPayment: todayStr },
-    { id: "pay-015", outletId: "o-kb-001", amount: 100000, paymentMethod: "Cash", tglPayment: todayStr },
-    { id: "pay-016", outletId: "o-kb-002", amount: 210000, paymentMethod: "Transfer", tglPayment: todayStr },
+  // PAYMENTS — Rendi (with keterangan on some)
+  type PaySeed = {
+    id: string; outletId: string; amount: number;
+    paymentMethod: string; tglPayment: string; keterangan?: string;
+  };
 
-    // --- June 2026 ---
-    { id: "pay-rendi-jun-01", outletId: "o-sn-001", amount: 1000000, paymentMethod: "Transfer", tglPayment: "2026-06-15" },
-    { id: "pay-rendi-jun-02", outletId: "o-sn-002", amount: 300000, paymentMethod: "Cash", tglPayment: "2026-06-21" },
+  const rendiPayments: PaySeed[] = [
+    // --- Hari ini ---
+    { id: "rp-t01", outletId: "o-sn-5", amount: 220000, paymentMethod: "Cash",     tglPayment: today, keterangan: "Bayar lunas order pagi" },
+    { id: "rp-t02", outletId: "o-wn-1", amount: 150000, paymentMethod: "Cash",     tglPayment: today },
+    { id: "rp-t03", outletId: "o-wn-2", amount: 125000, paymentMethod: "Transfer", tglPayment: today, keterangan: "Transfer BCA jam 09:12" },
+    { id: "rp-t04", outletId: "o-wn-3", amount: 300000, paymentMethod: "Cash",     tglPayment: today },
+    { id: "rp-t05", outletId: "o-bl-1", amount: 220000, paymentMethod: "Transfer", tglPayment: today },
+    { id: "rp-t06", outletId: "o-bl-2", amount: 198000, paymentMethod: "Cash",     tglPayment: today },
+    { id: "rp-t07", outletId: "o-gl-1", amount: 400000, paymentMethod: "Cash",     tglPayment: today, keterangan: "Pembayaran tunai lengkap" },
+    { id: "rp-t08", outletId: "o-gl-2", amount: 250000, paymentMethod: "Transfer", tglPayment: today },
+    { id: "rp-t09", outletId: "o-tr-1", amount: 300000, paymentMethod: "Cash",     tglPayment: today },
 
-    // --- May 2026 ---
-    { id: "pay-rendi-may-01", outletId: "o-sn-003", amount: 800000, paymentMethod: "Transfer", tglPayment: "2026-05-10" },
+    // --- Kemarin ---
+    { id: "rp-y01", outletId: "o-sn-1", amount: 200000, paymentMethod: "Cash",     tglPayment: yesterday },
+    { id: "rp-y02", outletId: "o-sn-2", amount: 150000, paymentMethod: "Transfer", tglPayment: yesterday, keterangan: "Cicilan bulan ini" },
+    { id: "rp-y03", outletId: "o-bl-3", amount: 550000, paymentMethod: "Transfer", tglPayment: yesterday },
 
-    // --- Year 2025 ---
-    { id: "pay-rendi-2025-01", outletId: "o-wn-001", amount: 1140000, paymentMethod: "Transfer", tglPayment: "2025-11-12" },
+    // --- 2 hari lalu ---
+    { id: "rp-d01", outletId: "o-sn-1", amount: 200000, paymentMethod: "Cash",     tglPayment: twoDaysAgo },
+    { id: "rp-d02", outletId: "o-sn-3", amount: 300000, paymentMethod: "Cash",     tglPayment: twoDaysAgo },
 
-    // --- Year 2024 ---
-    { id: "pay-rendi-2024-01", outletId: "o-wn-002", amount: 1800000, paymentMethod: "Transfer", tglPayment: "2024-08-08" },
+    // --- Juni 2026 ---
+    { id: "rp-jun01", outletId: "o-sn-1", amount: 1000000, paymentMethod: "Transfer", tglPayment: "2026-06-15", keterangan: "Pelunasan piutang Juni" },
+    { id: "rp-jun02", outletId: "o-sn-2", amount:  500000, paymentMethod: "Cash",     tglPayment: "2026-06-21" },
+    { id: "rp-jun03", outletId: "o-wn-1", amount:  800000, paymentMethod: "Transfer", tglPayment: "2026-06-26" },
+    { id: "rp-jun04", outletId: "o-bl-1", amount:  660000, paymentMethod: "Transfer", tglPayment: "2026-06-28" },
+
+    // --- Mei 2026 ---
+    { id: "rp-may01", outletId: "o-sn-3", amount:  800000, paymentMethod: "Transfer", tglPayment: "2026-05-11" },
+    { id: "rp-may02", outletId: "o-wn-2", amount: 1200000, paymentMethod: "Transfer", tglPayment: "2026-05-19" },
+
+    // --- April 2026 ---
+    { id: "rp-apr01", outletId: "o-sn-1", amount: 1470000, paymentMethod: "Transfer", tglPayment: "2026-04-06", keterangan: "Pelunasan piutang April" },
+
+    // --- Tahun 2025 ---
+    { id: "rp-2025-01", outletId: "o-wn-1", amount: 1140000, paymentMethod: "Transfer", tglPayment: "2025-11-13" },
+    { id: "rp-2025-02", outletId: "o-bl-2", amount:  665000, paymentMethod: "Cash",     tglPayment: "2025-09-04" },
+
+    // --- Tahun 2024 ---
+    { id: "rp-2024-01", outletId: "o-wn-2", amount: 1800000, paymentMethod: "Transfer", tglPayment: "2024-08-09" },
   ];
 
-  for (const p of paymentData) {
-    await prisma.payment.upsert({
-      where: { id: p.id },
-      update: {
-        amount: p.amount,
-        paymentMethod: p.paymentMethod,
+  for (const p of rendiPayments) {
+    await prisma.payment.create({
+      data: {
+        id: p.id, outletId: p.outletId,
+        amount: p.amount, paymentMethod: p.paymentMethod,
         tglPayment: p.tglPayment,
-        outletId: p.outletId,
+        keterangan: p.keterangan ?? null,
       },
-      create: p,
     });
   }
-  console.log(`  ✓ ${paymentData.length} payments seeded`);
+  console.log(`   ✓ ${rendiPayments.length} payments`);
 
-  // ============================================
-  // 2. SEED DATABASE FARID
-  // ============================================
-  console.log("Seeding Database Farid...");
-  const dbFarid = await prisma.database.upsert({
-    where: { id: "db-farid" },
-    update: { name: "Database Farid" },
-    create: {
-      id: "db-farid",
-      name: "Database Farid",
-      createdAt: new Date("2026-07-02T00:00:00Z"),
-    },
+  // ============================================================
+  // 2. DATABASE FARID
+  // ============================================================
+  console.log("\n📂 Seeding Database Farid...");
+  const dbFarid = await prisma.database.create({
+    data: { id: "db-farid", name: "Database Farid" },
   });
 
-  const jFarid1 = await prisma.jalur.upsert({
-    where: { id: "jalur-farid-1" },
-    update: { name: "Jalur 1", databaseId: dbFarid.id },
-    create: {
-      id: "jalur-farid-1",
-      name: "Jalur 1",
-      databaseId: dbFarid.id,
-      createdAt: new Date("2026-07-02T01:00:00Z"),
-    },
-  });
+  const jF1 = await prisma.jalur.create({ data: { id: "jf-1", name: "Jalur 1", databaseId: dbFarid.id } });
+  const jF2 = await prisma.jalur.create({ data: { id: "jf-2", name: "Jalur 2", databaseId: dbFarid.id } });
 
-  const aTajinan = await prisma.alamat.upsert({
-    where: { id: "alamat-tajinan" },
-    update: { name: "Tajinan", jalurId: jFarid1.id },
-    create: {
-      id: "alamat-tajinan",
-      name: "Tajinan",
-      jalurId: jFarid1.id,
-      createdAt: new Date("2026-07-02T02:00:00Z"),
-    },
-  });
-
-  const aPakisaji = await prisma.alamat.upsert({
-    where: { id: "alamat-pakisaji" },
-    update: { name: "Pakisaji", jalurId: jFarid1.id },
-    create: {
-      id: "alamat-pakisaji",
-      name: "Pakisaji",
-      jalurId: jFarid1.id,
-      createdAt: new Date("2026-07-02T03:00:00Z"),
-    },
-  });
+  const aTajinan  = await prisma.alamat.create({ data: { id: "a-tj", name: "Tajinan",  jalurId: jF1.id } });
+  const aPakisaji = await prisma.alamat.create({ data: { id: "a-pk", name: "Pakisaji", jalurId: jF1.id } });
+  const aKepanjen = await prisma.alamat.create({ data: { id: "a-kp", name: "Kepanjen", jalurId: jF2.id } });
+  const aDampit   = await prisma.alamat.create({ data: { id: "a-dm", name: "Dampit",   jalurId: jF2.id } });
 
   const faridOutlets = [
-    { id: "o-tj-001", noInduk: "#DFJ1TJ001", outlet: "Toko Abadi", tglDaftar: twoDaysAgoStr, alamatId: aTajinan.id },
-    { id: "o-tj-002", noInduk: "#DFJ1TJ002", outlet: "Warung Pojok", tglDaftar: twoDaysAgoStr, alamatId: aTajinan.id },
-    { id: "o-tj-003", noInduk: "#DFJ1TJ003", outlet: "Kios Maju Bersama", tglDaftar: yesterdayStr, alamatId: aTajinan.id },
-    { id: "o-pk-001", noInduk: "#DFJ1PK001", outlet: "Toko Pak Bambang", tglDaftar: yesterdayStr, alamatId: aPakisaji.id },
-    { id: "o-pk-002", noInduk: "#DFJ1PK002", outlet: "Warung Sederhana", tglDaftar: yesterdayStr, alamatId: aPakisaji.id },
-    { id: "o-pk-003", noInduk: "#DFJ1PK003", outlet: "Toko Sembako 99", tglDaftar: todayStr, alamatId: aPakisaji.id },
+    { id: "o-tj-1", noInduk: "#DFJ1TJ001", outlet: "Toko Abadi",        tglDaftar: twoDaysAgo,   alamatId: aTajinan.id },
+    { id: "o-tj-2", noInduk: "#DFJ1TJ002", outlet: "Warung Pojok",      tglDaftar: twoDaysAgo,   alamatId: aTajinan.id },
+    { id: "o-tj-3", noInduk: "#DFJ1TJ003", outlet: "Kios Maju Bersama", tglDaftar: yesterday,    alamatId: aTajinan.id },
+    { id: "o-pk-1", noInduk: "#DFJ1PK001", outlet: "Toko Pak Bambang",  tglDaftar: yesterday,    alamatId: aPakisaji.id },
+    { id: "o-pk-2", noInduk: "#DFJ1PK002", outlet: "Warung Sederhana",  tglDaftar: yesterday,    alamatId: aPakisaji.id },
+    { id: "o-pk-3", noInduk: "#DFJ1PK003", outlet: "Toko Sembako 99",   tglDaftar: today,        alamatId: aPakisaji.id },
+    { id: "o-kp-1", noInduk: "#DFJ2KP001", outlet: "Toko Jaya Kepanjen",tglDaftar: twoDaysAgo,   alamatId: aKepanjen.id },
+    { id: "o-kp-2", noInduk: "#DFJ2KP002", outlet: "Warung Bu Dewi",    tglDaftar: yesterday,    alamatId: aKepanjen.id },
+    { id: "o-dm-1", noInduk: "#DFJ2DM001", outlet: "Agen Dampit Raya",  tglDaftar: yesterday,    alamatId: aDampit.id },
+    { id: "o-dm-2", noInduk: "#DFJ2DM002", outlet: "Kios Berkah Dampit",tglDaftar: today,        alamatId: aDampit.id },
   ];
 
   for (const o of faridOutlets) {
-    await prisma.outlet.upsert({
-      where: { id: o.id },
-      update: { noInduk: o.noInduk, outlet: o.outlet, tglDaftar: o.tglDaftar, alamatId: o.alamatId },
-      create: o,
-    });
+    await prisma.outlet.create({ data: o });
   }
+  console.log(`   ✓ ${faridOutlets.length} outlets`);
 
-  const faridOrders = [
-    // --- July 2026 ---
-    { id: "ord-f01", outletId: "o-tj-001", order: 3.0, harga: 95000, orderStatus: "Sukses", tglOrder: twoDaysAgoStr },
-    { id: "ord-f02", outletId: "o-tj-002", order: 1.0, harga: 95000, orderStatus: "Sukses", tglOrder: twoDaysAgoStr },
-    { id: "ord-f03", outletId: "o-tj-003", order: 2.0, harga: 95000, orderStatus: "Sukses", tglOrder: yesterdayStr },
-    { id: "ord-f04", outletId: "o-pk-001", order: 4.0, harga: 100000, orderStatus: "Sukses", tglOrder: yesterdayStr },
-    { id: "ord-f05", outletId: "o-pk-002", order: 1.5, harga: 100000, orderStatus: "Pending", tglOrder: yesterdayStr },
-    { id: "ord-f06", outletId: "o-pk-003", order: 2.5, harga: 100000, orderStatus: "Sukses", tglOrder: todayStr },
-    { id: "ord-f07", outletId: "o-tj-001", order: 2.0, harga: 95000, orderStatus: "Sukses", tglOrder: todayStr },
+  const faridOrders: OrderSeed[] = [
+    // --- Hari ini ---
+    { id: "fo-t01", outletId: "o-pk-3", order: 2.5, harga: 100000, orderStatus: "Sukses", tglOrder: today, keterangan: "Order baru daftar hari ini" },
+    { id: "fo-t02", outletId: "o-tj-1", order: 2.0, harga:  95000, orderStatus: "Sukses", tglOrder: today },
+    { id: "fo-t03", outletId: "o-kp-1", order: 3.0, harga: 100000, orderStatus: "Sukses", tglOrder: today },
+    { id: "fo-t04", outletId: "o-kp-2", order: 1.5, harga: 100000, orderStatus: "Proses", tglOrder: today, keterangan: "Konfirmasi dikirim via WA" },
+    { id: "fo-t05", outletId: "o-dm-1", order: 4.0, harga: 105000, orderStatus: "Sukses", tglOrder: today },
+    { id: "fo-t06", outletId: "o-dm-2", order: 1.0, harga: 105000, orderStatus: "Sukses", tglOrder: today, keterangan: "Order percobaan stok baru" },
 
-    // --- June 2026 ---
-    { id: "ord-farid-jun-01", outletId: "o-tj-001", order: 6.0, harga: 95000, orderStatus: "Sukses", tglOrder: "2026-06-12" },
+    // --- Kemarin ---
+    { id: "fo-y01", outletId: "o-tj-3", order: 2.0, harga:  95000, orderStatus: "Sukses", tglOrder: yesterday },
+    { id: "fo-y02", outletId: "o-pk-1", order: 4.0, harga: 100000, orderStatus: "Sukses", tglOrder: yesterday, keterangan: "Pesanan rutin mingguan" },
+    { id: "fo-y03", outletId: "o-pk-2", order: 1.5, harga: 100000, orderStatus: "Pending", tglOrder: yesterday, keterangan: "Tagih ke pemilik besok" },
+    { id: "fo-y04", outletId: "o-dm-1", order: 3.0, harga: 105000, orderStatus: "Sukses", tglOrder: yesterday },
 
-    // --- Year 2025 ---
-    { id: "ord-farid-2025-01", outletId: "o-tj-002", order: 15.0, harga: 90000, orderStatus: "Sukses", tglOrder: "2025-10-10" },
+    // --- 2 hari lalu ---
+    { id: "fo-d01", outletId: "o-tj-1", order: 3.0, harga: 95000, orderStatus: "Sukses", tglOrder: twoDaysAgo },
+    { id: "fo-d02", outletId: "o-tj-2", order: 1.0, harga: 95000, orderStatus: "Sukses", tglOrder: twoDaysAgo },
+
+    // --- Juni 2026 ---
+    { id: "fo-jun01", outletId: "o-tj-1", order:  6.0, harga:  95000, orderStatus: "Sukses", tglOrder: "2026-06-12" },
+    { id: "fo-jun02", outletId: "o-kp-1", order: 10.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-06-22", keterangan: "Repeat order bulanan" },
+
+    // --- Mei 2026 ---
+    { id: "fo-may01", outletId: "o-pk-1", order: 8.0, harga: 100000, orderStatus: "Sukses", tglOrder: "2026-05-14" },
+
+    // --- Tahun 2025 ---
+    { id: "fo-2025-01", outletId: "o-tj-2", order: 15.0, harga: 90000, orderStatus: "Sukses", tglOrder: "2025-10-10" },
+    { id: "fo-2025-02", outletId: "o-kp-1", order: 11.0, harga: 92000, orderStatus: "Sukses", tglOrder: "2025-07-07" },
+
+    // --- Tahun 2024 ---
+    { id: "fo-2024-01", outletId: "o-dm-1", order: 25.0, harga: 88000, orderStatus: "Sukses", tglOrder: "2024-11-20" },
   ];
 
   for (const o of faridOrders) {
-    const isCancelled = o.orderStatus === "Cancel";
-    const totalPiutang = isCancelled ? 0 : o.order * o.harga;
-    const status = totalPiutang > 0 ? "Piutang" : "Lunas";
-
-    await prisma.order.upsert({
-      where: { id: o.id },
-      update: {
-        outletId: o.outletId, order: o.order, harga: o.harga,
-        totalBayar: 0, totalPiutang, status, orderStatus: o.orderStatus, tglOrder: o.tglOrder,
-      },
-      create: {
-        id: o.id, outletId: o.outletId, order: o.order, harga: o.harga,
-        totalBayar: 0, totalPiutang, status, orderStatus: o.orderStatus, tglOrder: o.tglOrder,
+    const isCancelled   = o.orderStatus === "Cancel";
+    const isPending     = o.orderStatus === "Pending" || o.orderStatus === "Proses";
+    const totalPiutang  = (isCancelled || isPending) ? 0 : o.order * o.harga;
+    const status        = totalPiutang > 0 ? "Piutang" : "Lunas";
+    await prisma.order.create({
+      data: {
+        id: o.id, outletId: o.outletId,
+        order: o.order, harga: o.harga,
+        totalBayar: 0, totalPiutang, status,
+        orderStatus: o.orderStatus, tglOrder: o.tglOrder,
+        keterangan: o.keterangan ?? null,
       },
     });
   }
+  console.log(`   ✓ ${faridOrders.length} orders`);
 
-  const faridPayments = [
-    // --- July 2026 ---
-    { id: "pay-f01", outletId: "o-tj-001", amount: 285000, paymentMethod: "Cash", tglPayment: twoDaysAgoStr },
-    { id: "pay-f02", outletId: "o-tj-002", amount: 50000, paymentMethod: "Cash", tglPayment: twoDaysAgoStr },
-    { id: "pay-f03", outletId: "o-tj-003", amount: 190000, paymentMethod: "Cash", tglPayment: yesterdayStr },
-    { id: "pay-f04", outletId: "o-pk-001", amount: 400000, paymentMethod: "Cash", tglPayment: yesterdayStr },
-    { id: "pay-f06", outletId: "o-pk-003", amount: 200000, paymentMethod: "Transfer", tglPayment: todayStr },
-    { id: "pay-f07", outletId: "o-tj-001", amount: 190000, paymentMethod: "Cash", tglPayment: todayStr },
+  const faridPayments: PaySeed[] = [
+    // --- Hari ini ---
+    { id: "fp-t01", outletId: "o-pk-3", amount: 250000, paymentMethod: "Cash",     tglPayment: today, keterangan: "Bayar tunai saat daftar" },
+    { id: "fp-t02", outletId: "o-tj-1", amount: 190000, paymentMethod: "Cash",     tglPayment: today },
+    { id: "fp-t03", outletId: "o-kp-1", amount: 300000, paymentMethod: "Transfer", tglPayment: today, keterangan: "Transfer Mandiri verified" },
+    { id: "fp-t04", outletId: "o-dm-1", amount: 420000, paymentMethod: "Cash",     tglPayment: today },
 
-    // --- June 2026 ---
-    { id: "pay-farid-jun-01", outletId: "o-tj-001", amount: 570000, paymentMethod: "Transfer", tglPayment: "2026-06-12" },
+    // --- Kemarin ---
+    { id: "fp-y01", outletId: "o-tj-3", amount: 190000, paymentMethod: "Cash",     tglPayment: yesterday },
+    { id: "fp-y02", outletId: "o-pk-1", amount: 400000, paymentMethod: "Cash",     tglPayment: yesterday, keterangan: "Lunas order kemarin" },
 
-    // --- Year 2025 ---
-    { id: "pay-farid-2025-01", outletId: "o-tj-002", amount: 1350000, paymentMethod: "Transfer", tglPayment: "2025-10-10" },
+    // --- 2 hari lalu ---
+    { id: "fp-d01", outletId: "o-tj-1", amount: 285000, paymentMethod: "Cash",     tglPayment: twoDaysAgo },
+    { id: "fp-d02", outletId: "o-tj-2", amount:  95000, paymentMethod: "Cash",     tglPayment: twoDaysAgo },
+
+    // --- Juni 2026 ---
+    { id: "fp-jun01", outletId: "o-tj-1", amount:  570000, paymentMethod: "Transfer", tglPayment: "2026-06-13" },
+    { id: "fp-jun02", outletId: "o-kp-1", amount: 1000000, paymentMethod: "Transfer", tglPayment: "2026-06-23", keterangan: "Lunas piutang Juni" },
+
+    // --- Tahun 2025 ---
+    { id: "fp-2025-01", outletId: "o-tj-2", amount: 1350000, paymentMethod: "Transfer", tglPayment: "2025-10-11" },
+
+    // --- Tahun 2024 ---
+    { id: "fp-2024-01", outletId: "o-dm-1", amount: 2200000, paymentMethod: "Transfer", tglPayment: "2024-11-21", keterangan: "Pelunasan akhir tahun" },
   ];
 
   for (const p of faridPayments) {
-    await prisma.payment.upsert({
-      where: { id: p.id },
-      update: {
-        amount: p.amount,
-        paymentMethod: p.paymentMethod,
+    await prisma.payment.create({
+      data: {
+        id: p.id, outletId: p.outletId,
+        amount: p.amount, paymentMethod: p.paymentMethod,
         tglPayment: p.tglPayment,
-        outletId: p.outletId,
+        keterangan: p.keterangan ?? null,
       },
-      create: p,
     });
   }
+  console.log(`   ✓ ${faridPayments.length} payments`);
 
-  console.log(`  ✓ ${faridOutlets.length} outlets + ${faridOrders.length} orders + ${faridPayments.length} payments seeded for Farid`);
-
-  // ============================================
+  // ============================================================
   // 3. COFFEE STOCK
-  // ============================================
-  console.log("Seeding Coffee Stock...");
-  await prisma.coffeeStock.upsert({
-    where: { id: "stock-bima-01" },
-    update: {
-      name: "Kopi Cap Bima",
-      sku: "KOPI-BIMA-001",
-      quantity: 100,
-      unit: "Kardus",
-      price: 100000,
-    },
-    create: {
+  // ============================================================
+  console.log("\n📦 Seeding Coffee Stock...");
+  await prisma.coffeeStock.create({
+    data: {
       id: "stock-bima-01",
       name: "Kopi Cap Bima",
       sku: "KOPI-BIMA-001",
-      quantity: 100,
+      quantity: 500,
       unit: "Kardus",
       price: 100000,
     },
   });
+  console.log("   ✓ 1 coffee stock");
 
-  console.log("✅ Seeding complete!");
+  // ============================================================
+  // SUMMARY
+  // ============================================================
+  const totalOutlets  = rendiOutlets.length + faridOutlets.length;
+  const totalOrders   = rendiOrders.length  + faridOrders.length;
+  const totalPayments = rendiPayments.length + faridPayments.length;
+
+  console.log(`
+✅ Seeding selesai!
+   📦 Database   : 2 (Rendi, Farid)
+   🏪 Outlet     : ${totalOutlets}
+   🛒 Orders     : ${totalOrders} (incl. Sukses, Pending, Proses, Cancel)
+   💰 Payments   : ${totalPayments}
+   📝 Keterangan : ✓ beberapa order & pembayaran punya keterangan
+   ☕ Stock      : 500 Kardus
+  `);
 }
 
 main()
   .catch((e) => {
-    console.error("Seeding error:", e);
+    console.error("❌ Seeding error:", e);
     process.exit(1);
   })
   .finally(async () => {

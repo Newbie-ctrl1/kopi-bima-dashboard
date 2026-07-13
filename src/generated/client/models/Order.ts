@@ -49,6 +49,7 @@ export type OrderMinAggregateOutputType = {
   status: string | null
   orderStatus: string | null
   tglOrder: string | null
+  keterangan: string | null
   createdAt: Date | null
   paymentMethod: string | null
   outletId: string | null
@@ -63,6 +64,7 @@ export type OrderMaxAggregateOutputType = {
   status: string | null
   orderStatus: string | null
   tglOrder: string | null
+  keterangan: string | null
   createdAt: Date | null
   paymentMethod: string | null
   outletId: string | null
@@ -77,6 +79,7 @@ export type OrderCountAggregateOutputType = {
   status: number
   orderStatus: number
   tglOrder: number
+  keterangan: number
   createdAt: number
   paymentMethod: number
   outletId: number
@@ -107,6 +110,7 @@ export type OrderMinAggregateInputType = {
   status?: true
   orderStatus?: true
   tglOrder?: true
+  keterangan?: true
   createdAt?: true
   paymentMethod?: true
   outletId?: true
@@ -121,6 +125,7 @@ export type OrderMaxAggregateInputType = {
   status?: true
   orderStatus?: true
   tglOrder?: true
+  keterangan?: true
   createdAt?: true
   paymentMethod?: true
   outletId?: true
@@ -135,6 +140,7 @@ export type OrderCountAggregateInputType = {
   status?: true
   orderStatus?: true
   tglOrder?: true
+  keterangan?: true
   createdAt?: true
   paymentMethod?: true
   outletId?: true
@@ -236,6 +242,7 @@ export type OrderGroupByOutputType = {
   status: string
   orderStatus: string
   tglOrder: string
+  keterangan: string | null
   createdAt: Date
   paymentMethod: string
   outletId: string
@@ -273,6 +280,7 @@ export type OrderWhereInput = {
   status?: Prisma.StringFilter<"Order"> | string
   orderStatus?: Prisma.StringFilter<"Order"> | string
   tglOrder?: Prisma.StringFilter<"Order"> | string
+  keterangan?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   paymentMethod?: Prisma.StringFilter<"Order"> | string
   outletId?: Prisma.StringFilter<"Order"> | string
@@ -288,6 +296,7 @@ export type OrderOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   orderStatus?: Prisma.SortOrder
   tglOrder?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
@@ -306,6 +315,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Order"> | string
   orderStatus?: Prisma.StringFilter<"Order"> | string
   tglOrder?: Prisma.StringFilter<"Order"> | string
+  keterangan?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   paymentMethod?: Prisma.StringFilter<"Order"> | string
   outletId?: Prisma.StringFilter<"Order"> | string
@@ -321,6 +331,7 @@ export type OrderOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   orderStatus?: Prisma.SortOrder
   tglOrder?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
@@ -343,6 +354,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"Order"> | string
   orderStatus?: Prisma.StringWithAggregatesFilter<"Order"> | string
   tglOrder?: Prisma.StringWithAggregatesFilter<"Order"> | string
+  keterangan?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   paymentMethod?: Prisma.StringWithAggregatesFilter<"Order"> | string
   outletId?: Prisma.StringWithAggregatesFilter<"Order"> | string
@@ -357,6 +369,7 @@ export type OrderCreateInput = {
   status: string
   orderStatus?: string
   tglOrder: string
+  keterangan?: string | null
   createdAt?: Date | string
   paymentMethod?: string
   outlet: Prisma.OutletCreateNestedOneWithoutOrdersInput
@@ -371,6 +384,7 @@ export type OrderUncheckedCreateInput = {
   status: string
   orderStatus?: string
   tglOrder: string
+  keterangan?: string | null
   createdAt?: Date | string
   paymentMethod?: string
   outletId: string
@@ -385,6 +399,7 @@ export type OrderUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   orderStatus?: Prisma.StringFieldUpdateOperationsInput | string
   tglOrder?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.OutletUpdateOneRequiredWithoutOrdersNestedInput
@@ -399,6 +414,7 @@ export type OrderUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   orderStatus?: Prisma.StringFieldUpdateOperationsInput | string
   tglOrder?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   outletId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -413,6 +429,7 @@ export type OrderCreateManyInput = {
   status: string
   orderStatus?: string
   tglOrder: string
+  keterangan?: string | null
   createdAt?: Date | string
   paymentMethod?: string
   outletId: string
@@ -427,6 +444,7 @@ export type OrderUpdateManyMutationInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   orderStatus?: Prisma.StringFieldUpdateOperationsInput | string
   tglOrder?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -440,6 +458,7 @@ export type OrderUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   orderStatus?: Prisma.StringFieldUpdateOperationsInput | string
   tglOrder?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   outletId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -464,6 +483,7 @@ export type OrderCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   orderStatus?: Prisma.SortOrder
   tglOrder?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
@@ -485,6 +505,7 @@ export type OrderMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   orderStatus?: Prisma.SortOrder
   tglOrder?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
@@ -499,6 +520,7 @@ export type OrderMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   orderStatus?: Prisma.SortOrder
   tglOrder?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
@@ -561,6 +583,10 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
 export type OrderCreateWithoutOutletInput = {
   id?: string
   order: number
@@ -570,6 +596,7 @@ export type OrderCreateWithoutOutletInput = {
   status: string
   orderStatus?: string
   tglOrder: string
+  keterangan?: string | null
   createdAt?: Date | string
   paymentMethod?: string
 }
@@ -583,6 +610,7 @@ export type OrderUncheckedCreateWithoutOutletInput = {
   status: string
   orderStatus?: string
   tglOrder: string
+  keterangan?: string | null
   createdAt?: Date | string
   paymentMethod?: string
 }
@@ -625,6 +653,7 @@ export type OrderScalarWhereInput = {
   status?: Prisma.StringFilter<"Order"> | string
   orderStatus?: Prisma.StringFilter<"Order"> | string
   tglOrder?: Prisma.StringFilter<"Order"> | string
+  keterangan?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   paymentMethod?: Prisma.StringFilter<"Order"> | string
   outletId?: Prisma.StringFilter<"Order"> | string
@@ -639,6 +668,7 @@ export type OrderCreateManyOutletInput = {
   status: string
   orderStatus?: string
   tglOrder: string
+  keterangan?: string | null
   createdAt?: Date | string
   paymentMethod?: string
 }
@@ -652,6 +682,7 @@ export type OrderUpdateWithoutOutletInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   orderStatus?: Prisma.StringFieldUpdateOperationsInput | string
   tglOrder?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -665,6 +696,7 @@ export type OrderUncheckedUpdateWithoutOutletInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   orderStatus?: Prisma.StringFieldUpdateOperationsInput | string
   tglOrder?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -678,6 +710,7 @@ export type OrderUncheckedUpdateManyWithoutOutletInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   orderStatus?: Prisma.StringFieldUpdateOperationsInput | string
   tglOrder?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -693,6 +726,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   status?: boolean
   orderStatus?: boolean
   tglOrder?: boolean
+  keterangan?: boolean
   createdAt?: boolean
   paymentMethod?: boolean
   outletId?: boolean
@@ -708,6 +742,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   status?: boolean
   orderStatus?: boolean
   tglOrder?: boolean
+  keterangan?: boolean
   createdAt?: boolean
   paymentMethod?: boolean
   outletId?: boolean
@@ -723,6 +758,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   status?: boolean
   orderStatus?: boolean
   tglOrder?: boolean
+  keterangan?: boolean
   createdAt?: boolean
   paymentMethod?: boolean
   outletId?: boolean
@@ -738,12 +774,13 @@ export type OrderSelectScalar = {
   status?: boolean
   orderStatus?: boolean
   tglOrder?: boolean
+  keterangan?: boolean
   createdAt?: boolean
   paymentMethod?: boolean
   outletId?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "order" | "harga" | "totalBayar" | "totalPiutang" | "status" | "orderStatus" | "tglOrder" | "createdAt" | "paymentMethod" | "outletId", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "order" | "harga" | "totalBayar" | "totalPiutang" | "status" | "orderStatus" | "tglOrder" | "keterangan" | "createdAt" | "paymentMethod" | "outletId", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   outlet?: boolean | Prisma.OutletDefaultArgs<ExtArgs>
 }
@@ -768,6 +805,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     status: string
     orderStatus: string
     tglOrder: string
+    keterangan: string | null
     createdAt: Date
     paymentMethod: string
     outletId: string
@@ -1203,6 +1241,7 @@ export interface OrderFieldRefs {
   readonly status: Prisma.FieldRef<"Order", 'String'>
   readonly orderStatus: Prisma.FieldRef<"Order", 'String'>
   readonly tglOrder: Prisma.FieldRef<"Order", 'String'>
+  readonly keterangan: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly paymentMethod: Prisma.FieldRef<"Order", 'String'>
   readonly outletId: Prisma.FieldRef<"Order", 'String'>

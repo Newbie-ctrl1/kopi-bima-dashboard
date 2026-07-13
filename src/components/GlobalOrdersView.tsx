@@ -369,13 +369,14 @@ export default function GlobalOrdersView({
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total Harga</th>
                     <th className="text-center font-sans text-[10px] tracking-widest font-bold">Status</th>
+                    <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
                     {isAdmin && <th className="text-center font-sans text-[10px] tracking-widest font-bold">Aksi</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {filteredOrders.length === 0 ? (
                     <tr>
-                      <td colSpan={isAdmin ? 8 : 7}>
+                      <td colSpan={isAdmin ? 9 : 8}>
                         <div className="empty-state py-16">
                           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--muted)] mb-2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -434,6 +435,13 @@ export default function GlobalOrdersView({
                             {o.orderStatus}
                           </span>
                         </td>
+                        <td className="text-xs text-[var(--muted-foreground)] max-w-[140px]">
+                          {o.keterangan ? (
+                            <span className="block truncate" title={o.keterangan}>{o.keterangan}</span>
+                          ) : (
+                            <span className="text-[var(--muted)] italic">—</span>
+                          )}
+                        </td>
                         {isAdmin && (
                           <td>
                             <div className="flex items-center justify-center gap-1.5">
@@ -474,13 +482,14 @@ export default function GlobalOrdersView({
                     <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Jumlah Bayar</th>
                     <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
+                    <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
                     {isAdmin && <th className="text-center font-sans text-[10px] tracking-widest font-bold">Aksi</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {filteredPayments.length === 0 ? (
                     <tr>
-                      <td colSpan={isAdmin ? 6 : 5}>
+                      <td colSpan={isAdmin ? 7 : 6}>
                         <div className="empty-state py-16">
                           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--muted)] mb-2">
                             <rect width="20" height="12" x="2" y="6" rx="2" />
@@ -519,6 +528,13 @@ export default function GlobalOrdersView({
                           >
                             {p.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
                           </span>
+                        </td>
+                        <td className="text-xs text-[var(--muted-foreground)] max-w-[140px]">
+                          {p.keterangan ? (
+                            <span className="block truncate" title={p.keterangan}>{p.keterangan}</span>
+                          ) : (
+                            <span className="text-[var(--muted)] italic">—</span>
+                          )}
                         </td>
                         {isAdmin && (
                           <td>

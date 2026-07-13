@@ -39,6 +39,7 @@ export type PaymentMinAggregateOutputType = {
   amount: number | null
   paymentMethod: string | null
   tglPayment: string | null
+  keterangan: string | null
   createdAt: Date | null
   outletId: string | null
 }
@@ -48,6 +49,7 @@ export type PaymentMaxAggregateOutputType = {
   amount: number | null
   paymentMethod: string | null
   tglPayment: string | null
+  keterangan: string | null
   createdAt: Date | null
   outletId: string | null
 }
@@ -57,6 +59,7 @@ export type PaymentCountAggregateOutputType = {
   amount: number
   paymentMethod: number
   tglPayment: number
+  keterangan: number
   createdAt: number
   outletId: number
   _all: number
@@ -76,6 +79,7 @@ export type PaymentMinAggregateInputType = {
   amount?: true
   paymentMethod?: true
   tglPayment?: true
+  keterangan?: true
   createdAt?: true
   outletId?: true
 }
@@ -85,6 +89,7 @@ export type PaymentMaxAggregateInputType = {
   amount?: true
   paymentMethod?: true
   tglPayment?: true
+  keterangan?: true
   createdAt?: true
   outletId?: true
 }
@@ -94,6 +99,7 @@ export type PaymentCountAggregateInputType = {
   amount?: true
   paymentMethod?: true
   tglPayment?: true
+  keterangan?: true
   createdAt?: true
   outletId?: true
   _all?: true
@@ -190,6 +196,7 @@ export type PaymentGroupByOutputType = {
   amount: number
   paymentMethod: string
   tglPayment: string
+  keterangan: string | null
   createdAt: Date
   outletId: string
   _count: PaymentCountAggregateOutputType | null
@@ -222,6 +229,7 @@ export type PaymentWhereInput = {
   amount?: Prisma.FloatFilter<"Payment"> | number
   paymentMethod?: Prisma.StringFilter<"Payment"> | string
   tglPayment?: Prisma.StringFilter<"Payment"> | string
+  keterangan?: Prisma.StringNullableFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   outletId?: Prisma.StringFilter<"Payment"> | string
   outlet?: Prisma.XOR<Prisma.OutletScalarRelationFilter, Prisma.OutletWhereInput>
@@ -232,6 +240,7 @@ export type PaymentOrderByWithRelationInput = {
   amount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   tglPayment?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
   outlet?: Prisma.OutletOrderByWithRelationInput
@@ -245,6 +254,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   amount?: Prisma.FloatFilter<"Payment"> | number
   paymentMethod?: Prisma.StringFilter<"Payment"> | string
   tglPayment?: Prisma.StringFilter<"Payment"> | string
+  keterangan?: Prisma.StringNullableFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   outletId?: Prisma.StringFilter<"Payment"> | string
   outlet?: Prisma.XOR<Prisma.OutletScalarRelationFilter, Prisma.OutletWhereInput>
@@ -255,6 +265,7 @@ export type PaymentOrderByWithAggregationInput = {
   amount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   tglPayment?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
   _count?: Prisma.PaymentCountOrderByAggregateInput
@@ -272,6 +283,7 @@ export type PaymentScalarWhereWithAggregatesInput = {
   amount?: Prisma.FloatWithAggregatesFilter<"Payment"> | number
   paymentMethod?: Prisma.StringWithAggregatesFilter<"Payment"> | string
   tglPayment?: Prisma.StringWithAggregatesFilter<"Payment"> | string
+  keterangan?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Payment"> | Date | string
   outletId?: Prisma.StringWithAggregatesFilter<"Payment"> | string
 }
@@ -281,6 +293,7 @@ export type PaymentCreateInput = {
   amount: number
   paymentMethod?: string
   tglPayment: string
+  keterangan?: string | null
   createdAt?: Date | string
   outlet: Prisma.OutletCreateNestedOneWithoutPaymentsInput
 }
@@ -290,6 +303,7 @@ export type PaymentUncheckedCreateInput = {
   amount: number
   paymentMethod?: string
   tglPayment: string
+  keterangan?: string | null
   createdAt?: Date | string
   outletId: string
 }
@@ -299,6 +313,7 @@ export type PaymentUpdateInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   tglPayment?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   outlet?: Prisma.OutletUpdateOneRequiredWithoutPaymentsNestedInput
 }
@@ -308,6 +323,7 @@ export type PaymentUncheckedUpdateInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   tglPayment?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   outletId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -317,6 +333,7 @@ export type PaymentCreateManyInput = {
   amount: number
   paymentMethod?: string
   tglPayment: string
+  keterangan?: string | null
   createdAt?: Date | string
   outletId: string
 }
@@ -326,6 +343,7 @@ export type PaymentUpdateManyMutationInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   tglPayment?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -334,6 +352,7 @@ export type PaymentUncheckedUpdateManyInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   tglPayment?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   outletId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -353,6 +372,7 @@ export type PaymentCountOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   tglPayment?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
 }
@@ -366,6 +386,7 @@ export type PaymentMaxOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   tglPayment?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
 }
@@ -375,6 +396,7 @@ export type PaymentMinOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   tglPayment?: Prisma.SortOrder
+  keterangan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   outletId?: Prisma.SortOrder
 }
@@ -430,6 +452,7 @@ export type PaymentCreateWithoutOutletInput = {
   amount: number
   paymentMethod?: string
   tglPayment: string
+  keterangan?: string | null
   createdAt?: Date | string
 }
 
@@ -438,6 +461,7 @@ export type PaymentUncheckedCreateWithoutOutletInput = {
   amount: number
   paymentMethod?: string
   tglPayment: string
+  keterangan?: string | null
   createdAt?: Date | string
 }
 
@@ -475,6 +499,7 @@ export type PaymentScalarWhereInput = {
   amount?: Prisma.FloatFilter<"Payment"> | number
   paymentMethod?: Prisma.StringFilter<"Payment"> | string
   tglPayment?: Prisma.StringFilter<"Payment"> | string
+  keterangan?: Prisma.StringNullableFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   outletId?: Prisma.StringFilter<"Payment"> | string
 }
@@ -484,6 +509,7 @@ export type PaymentCreateManyOutletInput = {
   amount: number
   paymentMethod?: string
   tglPayment: string
+  keterangan?: string | null
   createdAt?: Date | string
 }
 
@@ -492,6 +518,7 @@ export type PaymentUpdateWithoutOutletInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   tglPayment?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -500,6 +527,7 @@ export type PaymentUncheckedUpdateWithoutOutletInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   tglPayment?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -508,6 +536,7 @@ export type PaymentUncheckedUpdateManyWithoutOutletInput = {
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   tglPayment?: Prisma.StringFieldUpdateOperationsInput | string
+  keterangan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -518,6 +547,7 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   amount?: boolean
   paymentMethod?: boolean
   tglPayment?: boolean
+  keterangan?: boolean
   createdAt?: boolean
   outletId?: boolean
   outlet?: boolean | Prisma.OutletDefaultArgs<ExtArgs>
@@ -528,6 +558,7 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   amount?: boolean
   paymentMethod?: boolean
   tglPayment?: boolean
+  keterangan?: boolean
   createdAt?: boolean
   outletId?: boolean
   outlet?: boolean | Prisma.OutletDefaultArgs<ExtArgs>
@@ -538,6 +569,7 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   amount?: boolean
   paymentMethod?: boolean
   tglPayment?: boolean
+  keterangan?: boolean
   createdAt?: boolean
   outletId?: boolean
   outlet?: boolean | Prisma.OutletDefaultArgs<ExtArgs>
@@ -548,11 +580,12 @@ export type PaymentSelectScalar = {
   amount?: boolean
   paymentMethod?: boolean
   tglPayment?: boolean
+  keterangan?: boolean
   createdAt?: boolean
   outletId?: boolean
 }
 
-export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "amount" | "paymentMethod" | "tglPayment" | "createdAt" | "outletId", ExtArgs["result"]["payment"]>
+export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "amount" | "paymentMethod" | "tglPayment" | "keterangan" | "createdAt" | "outletId", ExtArgs["result"]["payment"]>
 export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   outlet?: boolean | Prisma.OutletDefaultArgs<ExtArgs>
 }
@@ -573,6 +606,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     amount: number
     paymentMethod: string
     tglPayment: string
+    keterangan: string | null
     createdAt: Date
     outletId: string
   }, ExtArgs["result"]["payment"]>
@@ -1003,6 +1037,7 @@ export interface PaymentFieldRefs {
   readonly amount: Prisma.FieldRef<"Payment", 'Float'>
   readonly paymentMethod: Prisma.FieldRef<"Payment", 'String'>
   readonly tglPayment: Prisma.FieldRef<"Payment", 'String'>
+  readonly keterangan: Prisma.FieldRef<"Payment", 'String'>
   readonly createdAt: Prisma.FieldRef<"Payment", 'DateTime'>
   readonly outletId: Prisma.FieldRef<"Payment", 'String'>
 }

@@ -46,7 +46,6 @@ export interface OutletWithSummary extends Outlet {
   orderCount: number;       // jumlah order
 }
 
-// Order = transaksi pesanan
 export interface Order {
   id: string;
   outletId: string;
@@ -58,6 +57,7 @@ export interface Order {
   orderStatus: "Sukses" | "Pending" | "Cancel" | "Proses";
   paymentMethod: "Cash" | "Transfer";
   tglOrder: string;         // tanggal order (YYYY-MM-DD)
+  keterangan?: string;      // catatan tambahan (opsional)
 }
 
 export interface OrderFormData {
@@ -68,6 +68,7 @@ export interface OrderFormData {
   orderStatus: "Sukses" | "Pending" | "Cancel" | "Proses";
   paymentMethod: "Cash" | "Transfer";
   tglOrder: string;
+  keterangan?: string;
 }
 
 // Order with outlet & location relations (for Progres Order page)
@@ -78,12 +79,14 @@ export interface OrderWithRelations extends Order {
   jalurName: string;
   databaseName: string;
 }// Payment = transaksi pembayaran piutang
+// Payment = transaksi pembayaran piutang
 export interface Payment {
   id: string;
   outletId: string;
   amount: number;
   paymentMethod: "Cash" | "Transfer";
   tglPayment: string;
+  keterangan?: string;      // catatan tambahan (opsional)
   createdAt?: Date;
 }
 
@@ -92,6 +95,7 @@ export interface PaymentFormData {
   amount: number;
   paymentMethod: "Cash" | "Transfer";
   tglPayment: string;
+  keterangan?: string;
 }
 
 export interface PaymentWithRelations extends Payment {

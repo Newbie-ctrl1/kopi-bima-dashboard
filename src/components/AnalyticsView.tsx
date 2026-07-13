@@ -136,7 +136,7 @@ export default function AnalyticsView({
     // Generate CSV for orders
     const orderLines = [
       "--- DAFTAR TRANSAKSI ORDER ---",
-      ["Jalur/Alamat", "No Induk", "Nama Outlet", "Volume Order (Krd)", "Harga (Rp)", "Total Harga (Rp)", "Jumlah Bayar (Rp)", "Status"].join(",")
+      ["Jalur/Alamat", "No Induk", "Nama Outlet", "Volume Order (Krd)", "Harga (Rp)", "Total Harga (Rp)", "Jumlah Bayar (Rp)", "Status", "Keterangan"].join(",")
     ];
     
     periodData.orders.forEach(o => {
@@ -148,7 +148,8 @@ export default function AnalyticsView({
         o.harga,
         o.order * o.harga,
         o.totalBayar,
-        o.status
+        o.status,
+        `"${o.keterangan ?? ""}"`
       ].join(","));
     });
 
@@ -156,7 +157,7 @@ export default function AnalyticsView({
     const paymentLines = [
       "",
       "--- DAFTAR TRANSAKSI PEMBAYARAN ---",
-      ["Jalur/Alamat", "No Induk", "Nama Outlet", "Jumlah Bayar (Rp)", "Metode Pembayaran"].join(",")
+      ["Jalur/Alamat", "No Induk", "Nama Outlet", "Jumlah Bayar (Rp)", "Metode Pembayaran", "Keterangan"].join(",")
     ];
 
     periodData.payments.forEach(p => {
@@ -165,7 +166,8 @@ export default function AnalyticsView({
         `"${p.outletNoInduk}"`,
         `"${p.outletName}"`,
         p.amount,
-        p.paymentMethod
+        p.paymentMethod,
+        `"${p.keterangan ?? ""}"`
       ].join(","));
     });
 
@@ -394,14 +396,24 @@ export default function AnalyticsView({
         ) : (
           currentData.map((period) => (
             <div key={period.key} className="card-static overflow-hidden border border-[var(--card-border)] bg-[#0d0d0c]">
-              {/* Period header */}
-              <button
+              {/* Period header — div to avoid nested <button> */}
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() =>
                   setExpandedPeriod(
                     expandedPeriod === period.key ? null : period.key
                   )
                 }
-                className="w-full p-5 flex items-center justify-between hover:bg-[var(--card-hover)] transition-colors text-left"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setExpandedPeriod(
+                      expandedPeriod === period.key ? null : period.key
+                    );
+                  }
+                }}
+                className="w-full p-5 flex items-center justify-between hover:bg-[var(--card-hover)] transition-colors text-left cursor-pointer select-none"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 border border-[var(--card-border)] flex items-center justify-center shrink-0 text-[var(--accent)] bg-black/40">
@@ -474,7 +486,7 @@ export default function AnalyticsView({
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </div>
-              </button>
+              </div>
 
               {/* Mobile stats (visible on small screens) */}
               <div className="sm:hidden px-5 pb-4 flex items-center gap-3 border-t border-[var(--card-border)]/30 pt-3">
@@ -543,6 +555,7 @@ export default function AnalyticsView({
                           <th className="text-right font-sans text-[10px] tracking-widest font-bold">Bayar</th>
                           <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
                           <th className="text-center font-sans text-[10px] tracking-widest font-bold">Status</th>
+                          <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -583,6 +596,13 @@ export default function AnalyticsView({
                                 {o.status}
                               </span>
                             </td>
+                            <td className="text-xs text-[var(--muted-foreground)] max-w-[140px]">
+                              {o.keterangan ? (
+                                <span className="block truncate" title={o.keterangan}>{o.keterangan}</span>
+                              ) : (
+                                <span className="text-[var(--muted)] italic">—</span>
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -606,12 +626,13 @@ export default function AnalyticsView({
                           <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
                           <th className="text-right font-sans text-[10px] tracking-widest font-bold">Jumlah Bayar</th>
                           <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
+                          <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
                         </tr>
                       </thead>
                       <tbody>
                         {period.payments.length === 0 ? (
                           <tr>
-                            <td colSpan={5}>
+                            <td colSpan={6}>
                               <div className="empty-state py-8 text-center text-xs text-[var(--muted-foreground)]">
                                 Tidak ada transaksi pembayaran pada periode ini
                               </div>
@@ -633,6 +654,13 @@ export default function AnalyticsView({
                                 <span className={`badge ${p.paymentMethod === "Cash" ? "text-amber-500 bg-amber-500/5 border-amber-500/15" : "text-blue-500 bg-blue-500/5 border-blue-500/15"}`}>
                                   {p.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
                                 </span>
+                              </td>
+                              <td className="text-xs text-[var(--muted-foreground)] max-w-[140px]">
+                                {p.keterangan ? (
+                                  <span className="block truncate" title={p.keterangan}>{p.keterangan}</span>
+                                ) : (
+                                  <span className="text-[var(--muted)] italic">—</span>
+                                )}
                               </td>
                             </tr>
                           ))

@@ -126,6 +126,7 @@ export const OrderScalarFieldEnum = {
   status: 'status',
   orderStatus: 'orderStatus',
   tglOrder: 'tglOrder',
+  keterangan: 'keterangan',
   createdAt: 'createdAt',
   paymentMethod: 'paymentMethod',
   outletId: 'outletId'
@@ -153,6 +154,7 @@ export const PaymentScalarFieldEnum = {
   amount: 'amount',
   paymentMethod: 'paymentMethod',
   tglPayment: 'tglPayment',
+  keterangan: 'keterangan',
   createdAt: 'createdAt',
   outletId: 'outletId'
 } as const
@@ -185,4 +187,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

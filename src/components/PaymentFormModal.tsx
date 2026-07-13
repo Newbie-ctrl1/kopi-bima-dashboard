@@ -17,6 +17,7 @@ interface PaymentFormModalProps {
     amount: number;
     paymentMethod: "Cash" | "Transfer";
     tglPayment: string;
+    keterangan?: string;
   } | null;
   outlets: Array<{
     id: string;
@@ -41,6 +42,7 @@ export default function PaymentFormModal({
   const [tglPayment, setTglPayment] = useState(
     payment?.tglPayment ?? new Date().toISOString().slice(0, 10)
   );
+  const [keterangan, setKeterangan] = useState(payment?.keterangan ?? "");
 
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -71,6 +73,7 @@ export default function PaymentFormModal({
       setAmount(payment.amount);
       setPaymentMethod(payment.paymentMethod);
       setTglPayment(payment.tglPayment);
+      setKeterangan(payment.keterangan ?? "");
     }
   }, [payment]);
 
@@ -95,6 +98,9 @@ export default function PaymentFormModal({
     formData.append("amount", String(amount));
     formData.append("paymentMethod", paymentMethod);
     formData.append("tglPayment", tglPayment);
+    if (keterangan.trim()) {
+      formData.append("keterangan", keterangan.trim());
+    }
 
     startTransition(async () => {
       const res = await onSave(formData);
@@ -281,6 +287,22 @@ export default function PaymentFormModal({
                   Sama Dengan: {formatCurrency(amount)}
                 </p>
               )}
+            </div>
+
+            {/* Keterangan */}
+            <div>
+              <label htmlFor="keterangan" className="block text-sm font-medium text-[var(--muted-foreground)] mb-1.5">
+                Keterangan <span className="text-[var(--muted)] font-normal">(Opsional)</span>
+              </label>
+              <textarea
+                id="keterangan"
+                name="keterangan"
+                className="input resize-none"
+                rows={2}
+                placeholder="Misal: Pembayaran cicilan, transfer BRI, dll..."
+                value={keterangan}
+                onChange={(e) => setKeterangan(e.target.value)}
+              />
             </div>
           </div>
 

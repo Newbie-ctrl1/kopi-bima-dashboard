@@ -15,6 +15,7 @@ interface OrderFormModalProps {
     orderStatus: "Sukses" | "Pending" | "Cancel" | "Proses";
     paymentMethod: "Cash" | "Transfer";
     tglOrder: string;
+    keterangan?: string;
   } | null;
   onClose: () => void;
   onSubmit: (formData: FormData) => Promise<{ error?: string; success?: boolean }>;
@@ -43,6 +44,7 @@ export default function OrderFormModal({
   const [harga, setHarga] = useState<number | "">(order?.harga ?? 100000);
   const [orderStatus, setOrderStatus] = useState<"Sukses" | "Pending" | "Cancel" | "Proses">(order?.orderStatus ?? "Sukses");
   const [tglOrder, setTglOrder] = useState(order?.tglOrder ?? new Date().toISOString().slice(0, 10));
+  const [keterangan, setKeterangan] = useState(order?.keterangan ?? "");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -74,6 +76,7 @@ export default function OrderFormModal({
       setHarga(order.harga);
       setOrderStatus(order.orderStatus);
       setTglOrder(order.tglOrder);
+      setKeterangan(order.keterangan ?? "");
     }
   }, [order]);
 
@@ -331,6 +334,25 @@ export default function OrderFormModal({
                   setHarga(val === "" ? "" : parseFloat(val));
                 }}
                 required
+              />
+            </div>
+
+            {/* Keterangan */}
+            <div className="sm:col-span-2">
+              <label
+                htmlFor="keterangan"
+                className="block text-sm font-medium text-[var(--muted-foreground)] mb-1.5"
+              >
+                Keterangan <span className="text-[var(--muted)] font-normal">(Opsional)</span>
+              </label>
+              <textarea
+                id="keterangan"
+                name="keterangan"
+                className="input resize-none"
+                rows={2}
+                placeholder="Misal: Titip salesman, order khusus, dll..."
+                value={keterangan}
+                onChange={(e) => setKeterangan(e.target.value)}
               />
             </div>
           </div>

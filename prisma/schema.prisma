@@ -56,6 +56,7 @@ model Order {
   status       String
   orderStatus  String   @default("Sukses")
   tglOrder     String
+  keterangan   String?
   createdAt    DateTime @default(now())
   paymentMethod String   @default("Cash")
   outletId     String
@@ -78,6 +79,7 @@ model Payment {
   amount        Float
   paymentMethod String   @default("Cash")
   tglPayment    String
+  keterangan    String?
   createdAt     DateTime @default(now())
   outletId      String
   outlet        Outlet   @relation(fields: [outletId], references: [id], onDelete: Cascade)

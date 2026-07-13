@@ -21,6 +21,7 @@ function calculateOrderFields(input: OrderFormData) {
     orderStatus: input.orderStatus ?? "Sukses",
     paymentMethod: input.paymentMethod ?? "Cash",
     tglOrder: input.tglOrder,
+    keterangan: input.keterangan ?? null,
     outletId: input.outletId,
   };
 }
@@ -470,6 +471,7 @@ export async function createOrder(input: OrderFormData): Promise<Order> {
     orderStatus: o.orderStatus as "Sukses" | "Pending" | "Cancel" | "Proses",
     paymentMethod: o.paymentMethod as "Cash" | "Transfer",
     tglOrder: o.tglOrder,
+    keterangan: o.keterangan ?? undefined,
   };
 }
 
@@ -516,6 +518,7 @@ export async function updateOrder(
     orderStatus: o.orderStatus as "Sukses" | "Pending" | "Cancel" | "Proses",
     paymentMethod: o.paymentMethod as "Cash" | "Transfer",
     tglOrder: o.tglOrder,
+    keterangan: o.keterangan ?? undefined,
   };
 }
 
@@ -601,6 +604,7 @@ export async function getOrdersByDatabase(dbId: string): Promise<OrderWithRelati
     orderStatus: o.orderStatus as "Sukses" | "Pending" | "Cancel" | "Proses",
     paymentMethod: o.paymentMethod as "Cash" | "Transfer",
     tglOrder: o.tglOrder,
+    keterangan: o.keterangan ?? undefined,
     outletName: o.outlet.outlet,
     outletNoInduk: o.outlet.noInduk,
     alamatName: o.outlet.alamat.name,
@@ -1268,6 +1272,7 @@ export async function createPayment(input: PaymentFormData): Promise<Payment> {
       paymentMethod: input.paymentMethod,
       tglPayment: input.tglPayment,
       outletId: input.outletId,
+      keterangan: input.keterangan ?? null,
     },
   });
 
@@ -1277,6 +1282,7 @@ export async function createPayment(input: PaymentFormData): Promise<Payment> {
     amount: p.amount,
     paymentMethod: p.paymentMethod as "Cash" | "Transfer",
     tglPayment: p.tglPayment,
+    keterangan: p.keterangan ?? undefined,
     createdAt: p.createdAt,
   };
 }
@@ -1293,6 +1299,7 @@ export async function updatePayment(
         paymentMethod: input.paymentMethod,
         tglPayment: input.tglPayment,
         outletId: input.outletId,
+        keterangan: input.keterangan ?? null,
       },
     });
 
@@ -1302,6 +1309,7 @@ export async function updatePayment(
       amount: p.amount,
       paymentMethod: p.paymentMethod as "Cash" | "Transfer",
       tglPayment: p.tglPayment,
+      keterangan: p.keterangan ?? undefined,
       createdAt: p.createdAt,
     };
   } catch {
@@ -1348,6 +1356,7 @@ export async function getPaymentsByDatabase(dbId: string): Promise<PaymentWithRe
     amount: p.amount,
     paymentMethod: p.paymentMethod as "Cash" | "Transfer",
     tglPayment: p.tglPayment,
+    keterangan: p.keterangan ?? undefined,
     createdAt: p.createdAt,
     outletName: p.outlet.outlet,
     outletNoInduk: p.outlet.noInduk,

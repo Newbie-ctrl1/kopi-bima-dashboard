@@ -224,6 +224,7 @@ function parseOrderFormData(formData: FormData): OrderFormData {
     orderStatus: (formData.get("orderStatus") as any) || "Sukses",
     paymentMethod: (formData.get("paymentMethod") as any) || "Cash",
     tglOrder: (formData.get("tglOrder") as string) || "",
+    keterangan: (formData.get("keterangan") as string) || undefined,
   };
 }
 
@@ -295,6 +296,7 @@ function parsePaymentFormData(formData: FormData): PaymentFormData {
     amount: parseFloat(formData.get("amount") as string) || 0,
     paymentMethod: (formData.get("paymentMethod") as any) || "Cash",
     tglPayment: (formData.get("tglPayment") as string) || "",
+    keterangan: (formData.get("keterangan") as string) || undefined,
   };
 }
 
