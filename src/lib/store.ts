@@ -11,7 +11,7 @@ import type { Database, Jalur, Alamat, Outlet, OutletFormData, OutletWithSummary
 function calculateOrderFields(input: OrderFormData) {
   const isCancelled = input.orderStatus === "Cancel";
   const totalPiutang = isCancelled ? 0 : Math.max(0, input.order * input.harga - input.totalBayar);
-  const status = totalPiutang > 0 ? "Piutang" : "Lunas";
+  const status = isCancelled ? "Cancel" : totalPiutang > 0 ? "Piutang" : "Lunas";
   return {
     order: input.order,
     harga: input.harga,

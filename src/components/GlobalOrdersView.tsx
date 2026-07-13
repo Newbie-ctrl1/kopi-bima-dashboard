@@ -62,7 +62,11 @@ export default function GlobalOrdersView({
 
   // Filter & Stats for Orders
   const activeOrders = initialOrders.filter(
-    (o) => o.tglOrder === today || o.orderStatus === "Pending" || o.orderStatus === "Proses"
+    (o) =>
+      o.tglOrder === today ||
+      o.orderStatus === "Pending" ||
+      o.orderStatus === "Proses" ||
+      o.orderStatus === "Cancel"
   );
 
   const filteredOrders = activeOrders.filter((o) => {
@@ -75,8 +79,9 @@ export default function GlobalOrdersView({
   });
 
   const totalOrders = filteredOrders.length;
-  const totalVolume = filteredOrders.reduce((sum, o) => sum + o.order, 0);
-  const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.order * o.harga, 0);
+  const nonCancelledOrders = filteredOrders.filter((o) => o.orderStatus !== "Cancel");
+  const totalVolume = nonCancelledOrders.reduce((sum, o) => sum + o.order, 0);
+  const totalRevenue = nonCancelledOrders.reduce((sum, o) => sum + o.order * o.harga, 0);
   const suksesCount = activeOrders.filter((o) => o.orderStatus === "Sukses").length;
   const prosesCount = activeOrders.filter((o) => o.orderStatus === "Proses").length;
   const pendingCount = activeOrders.filter((o) => o.orderStatus === "Pending").length;
