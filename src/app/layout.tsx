@@ -25,7 +25,12 @@ import { AuthProvider } from "@/components/AuthProvider";
 export const metadata: Metadata = {
   title: "Kopi Bima — Dashboard Admin",
   description:
-    "Dashboard Admin untuk mengelola data outlet, jalur, dan keuangan Kopi Bima",
+    "Dashboard Admin untuk mengelola data dan keuangan Kopi Bima",
+  icons: {
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export default async function RootLayout({
