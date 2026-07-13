@@ -872,6 +872,7 @@ export async function getAnalyticsData(
           harga: number;
           total: number;
           bayar: number;
+          keteranganList: string[];
         }
       >;
     }
@@ -913,12 +914,18 @@ export async function getAnalyticsData(
         harga: o.harga,
         total: 0,
         bayar: 0,
+        keteranganList: [],
       };
     }
     const cell = map[key].outletMap[o.outletId];
     cell.order += o.order;
     cell.total += o.order * o.harga;
     cell.harga = o.harga; // Keep latest price
+    if (o.keterangan && o.keterangan.trim()) {
+      if (!cell.keteranganList.includes(o.keterangan.trim())) {
+        cell.keteranganList.push(o.keterangan.trim());
+      }
+    }
   }
 
   // Group payments
@@ -956,6 +963,7 @@ export async function getAnalyticsData(
         harga: 0,
         total: 0,
         bayar: 0,
+        keteranganList: [],
       };
     }
     map[key].outletMap[p.outletId].bayar += p.amount;
@@ -977,6 +985,7 @@ export async function getAnalyticsData(
           orderStatus: "Sukses" as const,
           paymentMethod: "Cash" as const,
           tglOrder: key,
+          keterangan: oCell.keteranganList.length > 0 ? oCell.keteranganList.join("; ") : undefined,
           outletName: oCell.outletName,
           outletNoInduk: oCell.outletNoInduk,
           alamatName: oCell.alamatName,
@@ -999,6 +1008,7 @@ export async function getAnalyticsData(
           amount: p.amount,
           paymentMethod: p.paymentMethod as "Cash" | "Transfer",
           tglPayment: p.tglPayment,
+          keterangan: p.keterangan ?? undefined,
           outletName: p.outlet.outlet,
           outletNoInduk: p.outlet.noInduk,
           alamatName: p.outlet.alamat.name,
