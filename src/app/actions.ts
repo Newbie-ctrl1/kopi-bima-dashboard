@@ -152,10 +152,17 @@ export async function updateAlamatAction(
 // ============================================
 
 function parseOutletFormData(formData: FormData): OutletFormData {
+  const rawOrder = (formData.get("order") as string) || "";
+  const rawHarga = (formData.get("harga") as string) || "";
+  const rawTotalBayar = (formData.get("totalBayar") as string) || (formData.get("total_bayar") as string) || "";
+
   return {
-    noInduk: (formData.get("noInduk") as string) || "",
+    noInduk: (formData.get("noInduk") as string) || (formData.get("no_induk") as string) || "",
     outlet: (formData.get("outlet") as string) || "",
-    tglDaftar: (formData.get("tglDaftar") as string) || "",
+    tglDaftar: (formData.get("tglDaftar") as string) || (formData.get("tgl_daftar") as string) || "",
+    order: rawOrder ? parseFloat(rawOrder) : undefined,
+    harga: rawHarga ? parseFloat(rawHarga) : undefined,
+    totalBayar: rawTotalBayar ? parseFloat(rawTotalBayar) : undefined,
   };
 }
 

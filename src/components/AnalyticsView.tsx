@@ -30,6 +30,13 @@ export default function AnalyticsView({
 }: AnalyticsViewProps) {
   const [activeTab, setActiveTab] = useState<TabMode>("harian");
   const [expandedPeriod, setExpandedPeriod] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const ITEMS_PER_PAGE: Record<TabMode, number> = {
+    harian: 5,
+    bulanan: 5,
+    tahunan: 5,
+  };
 
   const dataMap: Record<TabMode, AnalyticsPeriod[]> = {
     harian: harianData,
@@ -38,6 +45,11 @@ export default function AnalyticsView({
   };
 
   const currentData = dataMap[activeTab];
+  const itemsPerPage = ITEMS_PER_PAGE[activeTab];
+  const totalPages = Math.ceil(currentData.length / itemsPerPage);
+  const validPage = Math.max(1, Math.min(currentPage, totalPages || 1));
+  const startIndex = (validPage - 1) * itemsPerPage;
+  const paginatedData = currentData.slice(startIndex, startIndex + itemsPerPage);
 
   const tabs: { key: TabMode; label: string; icon: React.ReactNode }[] = [
     {
@@ -346,6 +358,7 @@ export default function AnalyticsView({
               id={`tab-${tab.key}`}
               onClick={() => {
                 setActiveTab(tab.key);
+                setCurrentPage(1);
                 setExpandedPeriod(null);
               }}
               className={`flex items-center gap-2.5 px-5 py-3 border text-xs uppercase tracking-wider font-bold transition-all duration-300 ${
@@ -386,7 +399,7 @@ export default function AnalyticsView({
             <p className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Belum ada data untuk periode ini</p>
           </div>
         ) : (
-          currentData.map((period) => (
+          paginatedData.map((period) => (
             <div key={period.key} className="card-static overflow-hidden border border-[var(--card-border)] bg-[#0d0d0c]">
               {/* Period header — div to avoid nested <button> */}
               <div
@@ -491,180 +504,313 @@ export default function AnalyticsView({
 
               {/* Expanded detail summary & orders list */}
               {expandedPeriod === period.key && (
-                <div className="border-t border-[var(--card-border)] bg-[#090909]">
-                  {/* Period Stats Summary Banner */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 border-b border-[var(--card-border)] bg-black/20">
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 flex-1">
-                      <div>
-                        <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Total Order</p>
-                        <p className="text-xs font-bold font-mono text-[var(--foreground)]">{period.totalOrder.toFixed(1)} Krd</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Pendapatan</p>
-                        <p className="text-xs font-bold font-mono text-purple-400">{formatCurrency(period.totalPendapatan)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Terbayar</p>
-                        <p className="text-xs font-bold font-mono text-[var(--success)]">{formatCurrency(period.totalBayar)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Piutang</p>
-                        <p className="text-xs font-bold font-mono text-[var(--danger)]">{formatCurrency(period.totalPiutang)}</p>
-                      </div>
-                    </div>
-                    
-                    <button
-                      onClick={() => downloadPeriodDetailsCSV(period)}
-                      className="btn btn-secondary text-[10px] flex items-center gap-1.5 py-2 px-3 border border-[var(--card-border)] bg-[#0d0d0c] hover:bg-[#121211] text-[var(--foreground)] font-bold uppercase tracking-wider h-fit self-end sm:self-center"
-                    >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accent)]">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                      </svg>
-                      Unduh CSV Rincian
-                    </button>
-                  </div>
-
-                  {/* Table Headers */}
-                  <div className="px-5 py-3 border-b border-[var(--card-border)] bg-black/10">
-                    <h4 className="text-[10px] uppercase font-bold tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
-                      <span>📦</span> Daftar Transaksi Order
-                    </h4>
-                  </div>
-
-                  {/* Orders Detail Table */}
-                  <div className="overflow-x-auto">
-                    <table className="data-table border-x-0 border-t-0">
-                      <thead>
-                        <tr>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
-                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Order (Krd)</th>
-                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
-                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total</th>
-                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Bayar</th>
-                          <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
-                          <th className="text-center font-sans text-[10px] tracking-widest font-bold">Status</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {period.orders.map((o) => (
-                          <tr key={o.id}>
-                            <td className="text-[var(--foreground)] font-semibold text-xs">
-                              <div className="flex flex-col">
-                                <span className="font-serif-aww text-[var(--accent)] text-xs">{o.jalurName}</span>
-                                <span className="text-[9px] text-[var(--muted)] uppercase font-semibold">{o.alamatName}</span>
-                              </div>
-                            </td>
-                            <td className="font-mono text-xs text-[var(--foreground)] font-semibold">{o.outletNoInduk}</td>
-                            <td className="text-[var(--foreground)] font-semibold">{o.outletName}</td>
-                            <td className="text-right font-mono text-xs font-semibold text-[var(--foreground)]">{o.order} Krd</td>
-                            <td className="text-right font-mono text-xs">{formatCurrency(o.harga)}</td>
-                            <td className="text-right font-mono text-xs font-semibold text-purple-400">{formatCurrency(o.order * o.harga)}</td>
-                            <td className="text-right font-mono text-xs font-semibold text-[var(--success)]">{formatCurrency(o.totalBayar)}</td>
-                            <td className="text-center">
-                              <span className={`badge ${o.paymentMethod === "Cash" ? "text-amber-500 bg-amber-500/5 border-amber-500/15" : "text-blue-500 bg-blue-500/5 border-blue-500/15"}`}>
-                                {o.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
-                              </span>
-                            </td>
-                            <td className="text-center">
-                              <span
-                                className={`badge ${
-                                  o.status === "Lunas"
-                                    ? "badge-lunas"
-                                    : "badge-piutang"
-                                }`}
-                              >
-                                <span
-                                  className={`w-1.5 h-1.5 rounded-full ${
-                                    o.status === "Lunas"
-                                      ? "bg-[var(--success)]"
-                                      : "bg-[var(--danger)]"
-                                  }`}
-                                />
-                                {o.status}
-                              </span>
-                            </td>
-                            <td className="text-xs text-[var(--muted-foreground)] max-w-[140px]">
-                              {o.keterangan ? (
-                                <span className="block truncate" title={o.keterangan}>{o.keterangan}</span>
-                              ) : (
-                                <span className="text-[var(--muted)] italic">—</span>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Payments Header */}
-                  <div className="px-5 py-3 border-t border-b border-[var(--card-border)] bg-black/10">
-                    <h4 className="text-[10px] uppercase font-bold tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
-                      <span>💸</span> Daftar Transaksi Pembayaran
-                    </h4>
-                  </div>
-
-                  {/* Payments Detail Table */}
-                  <div className="overflow-x-auto">
-                    <table className="data-table border-x-0 border-t-0 border-b-0">
-                      <thead>
-                        <tr>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
-                          <th className="text-right font-sans text-[10px] tracking-widest font-bold">Jumlah Bayar</th>
-                          <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
-                          <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {period.payments.length === 0 ? (
-                          <tr>
-                            <td colSpan={6}>
-                              <div className="empty-state py-8 text-center text-xs text-[var(--muted-foreground)]">
-                                Tidak ada transaksi pembayaran pada periode ini
-                              </div>
-                            </td>
-                          </tr>
-                        ) : (
-                          period.payments.map((p) => (
-                            <tr key={p.id}>
-                              <td className="text-[var(--foreground)] font-semibold text-xs">
-                                <div className="flex flex-col">
-                                  <span className="font-serif-aww text-[var(--accent)] text-xs">{p.jalurName}</span>
-                                  <span className="text-[9px] text-[var(--muted)] uppercase font-semibold">{p.alamatName}</span>
-                                </div>
-                              </td>
-                              <td className="font-mono text-xs text-[var(--foreground)] font-semibold">{p.outletNoInduk}</td>
-                              <td className="text-[var(--foreground)] font-semibold">{p.outletName}</td>
-                              <td className="text-right font-mono text-xs font-semibold text-[var(--success)]">{formatCurrency(p.amount)}</td>
-                              <td className="text-center">
-                                <span className={`badge ${p.paymentMethod === "Cash" ? "text-amber-500 bg-amber-500/5 border-amber-500/15" : "text-blue-500 bg-blue-500/5 border-blue-500/15"}`}>
-                                  {p.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
-                                </span>
-                              </td>
-                              <td className="text-xs text-[var(--muted-foreground)] max-w-[140px]">
-                                {p.keterangan ? (
-                                  <span className="block truncate" title={p.keterangan}>{p.keterangan}</span>
-                                ) : (
-                                  <span className="text-[var(--muted)] italic">—</span>
-                                )}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                <ExpandedPeriodDetails
+                  period={period}
+                  onDownloadCSV={downloadPeriodDetailsCSV}
+                />
               )}
             </div>
           ))
         )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[var(--card-border)]/60">
+            <p className="text-xs text-[var(--muted-foreground)]">
+              Menampilkan <strong className="text-[var(--foreground)] font-mono">{startIndex + 1}</strong>–
+              <strong className="text-[var(--foreground)] font-mono">
+                {Math.min(startIndex + itemsPerPage, currentData.length)}
+              </strong> dari{" "}
+              <strong className="text-[var(--foreground)] font-mono">{currentData.length}</strong> {activeTab === "harian" ? "hari" : activeTab === "bulanan" ? "bulan" : "tahun"}
+            </p>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setCurrentPage((prev) => Math.max(1, prev - 1));
+                  setExpandedPeriod(null);
+                }}
+                disabled={validPage === 1}
+                className="px-3 py-1.5 border border-[var(--card-border)] bg-[#0d0d0c] text-xs font-semibold text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-30 disabled:hover:border-[var(--card-border)] disabled:hover:text-[var(--foreground)] disabled:cursor-not-allowed transition-all flex items-center gap-1"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Sebelumnya
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      setExpandedPeriod(null);
+                    }}
+                    className={`w-7 h-7 flex items-center justify-center text-xs font-mono font-bold transition-all border ${
+                      validPage === page
+                        ? "bg-[var(--accent)] border-[var(--accent)] text-white shadow-md shadow-[var(--accent)]/20"
+                        : "bg-[#0d0d0c] border-[var(--card-border)] text-[var(--muted-foreground)] hover:border-[var(--muted)] hover:text-[var(--foreground)]"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => {
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+                  setExpandedPeriod(null);
+                }}
+                disabled={validPage === totalPages}
+                className="px-3 py-1.5 border border-[var(--card-border)] bg-[#0d0d0c] text-xs font-semibold text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-30 disabled:hover:border-[var(--card-border)] disabled:hover:text-[var(--foreground)] disabled:cursor-not-allowed transition-all flex items-center gap-1"
+              >
+                Selanjutnya
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ExpandedPeriodDetails({
+  period,
+  onDownloadCSV,
+}: {
+  period: AnalyticsPeriod;
+  onDownloadCSV: (period: AnalyticsPeriod) => void;
+}) {
+  const [orderPage, setOrderPage] = useState(1);
+  const [paymentPage, setPaymentPage] = useState(1);
+  const LIMIT = 5;
+
+  const orderTotalPages = Math.ceil(period.orders.length / LIMIT);
+  const validOrderPage = Math.max(1, Math.min(orderPage, orderTotalPages || 1));
+  const orderStartIndex = (validOrderPage - 1) * LIMIT;
+  const paginatedOrders = period.orders.slice(orderStartIndex, orderStartIndex + LIMIT);
+
+  const paymentTotalPages = Math.ceil(period.payments.length / LIMIT);
+  const validPaymentPage = Math.max(1, Math.min(paymentPage, paymentTotalPages || 1));
+  const paymentStartIndex = (validPaymentPage - 1) * LIMIT;
+  const paginatedPayments = period.payments.slice(paymentStartIndex, paymentStartIndex + LIMIT);
+
+  return (
+    <div className="border-t border-[var(--card-border)] bg-[#090909]">
+      {/* Period Stats Summary Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 border-b border-[var(--card-border)] bg-black/20">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 flex-1">
+          <div>
+            <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Total Order</p>
+            <p className="text-xs font-bold font-mono text-[var(--foreground)]">{period.totalOrder.toFixed(1)} Krd</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Pendapatan</p>
+            <p className="text-xs font-bold font-mono text-purple-400">{formatCurrency(period.totalPendapatan)}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Terbayar</p>
+            <p className="text-xs font-bold font-mono text-[var(--success)]">{formatCurrency(period.totalBayar)}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-wider mb-1">Piutang</p>
+            <p className="text-xs font-bold font-mono text-[var(--danger)]">{formatCurrency(period.totalPiutang)}</p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => onDownloadCSV(period)}
+          className="btn btn-secondary text-[10px] flex items-center gap-1.5 py-2 px-3 border border-[var(--card-border)] bg-[#0d0d0c] hover:bg-[#121211] text-[var(--foreground)] font-bold uppercase tracking-wider h-fit self-end sm:self-center"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accent)]">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Unduh CSV Rincian
+        </button>
+      </div>
+
+      {/* Table Headers */}
+      <div className="px-5 py-3 border-b border-[var(--card-border)] bg-black/10 flex items-center justify-between">
+        <h4 className="text-[10px] uppercase font-bold tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+          <span>📦</span> Daftar Transaksi Order ({period.orders.length})
+        </h4>
+        {orderTotalPages > 1 && (
+          <div className="flex items-center gap-2 text-[10px]">
+            <span className="text-[var(--muted-foreground)] font-mono">
+              Hal {validOrderPage}/{orderTotalPages}
+            </span>
+            <button
+              onClick={() => setOrderPage((p) => Math.max(1, p - 1))}
+              disabled={validOrderPage === 1}
+              className="px-2 py-0.5 border border-[var(--card-border)] bg-black/40 text-[var(--foreground)] hover:border-[var(--accent)] disabled:opacity-30 disabled:hover:border-[var(--card-border)] rounded text-[9px]"
+            >
+              ‹ Prev
+            </button>
+            <button
+              onClick={() => setOrderPage((p) => Math.min(orderTotalPages, p + 1))}
+              disabled={validOrderPage === orderTotalPages}
+              className="px-2 py-0.5 border border-[var(--card-border)] bg-black/40 text-[var(--foreground)] hover:border-[var(--accent)] disabled:opacity-30 disabled:hover:border-[var(--card-border)] rounded text-[9px]"
+            >
+              Next ›
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Orders Detail Table */}
+      <div className="overflow-x-auto">
+        <table className="data-table border-x-0 border-t-0">
+          <thead>
+            <tr>
+              <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
+              <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
+              <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
+              <th className="text-right font-sans text-[10px] tracking-widest font-bold">Order (Krd)</th>
+              <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
+              <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total</th>
+              <th className="text-right font-sans text-[10px] tracking-widest font-bold">Bayar</th>
+              <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
+              <th className="text-center font-sans text-[10px] tracking-widest font-bold">Status</th>
+              <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedOrders.map((o) => (
+              <tr key={o.id}>
+                <td className="text-[var(--foreground)] font-semibold text-xs">
+                  <div className="flex flex-col">
+                    <span className="font-serif-aww text-[var(--accent)] text-xs">{o.jalurName}</span>
+                    <span className="text-[9px] text-[var(--muted)] uppercase font-semibold">{o.alamatName}</span>
+                  </div>
+                </td>
+                <td className="font-mono text-xs text-[var(--foreground)] font-semibold">{o.outletNoInduk}</td>
+                <td className="text-[var(--foreground)] font-semibold">{o.outletName}</td>
+                <td className="text-right font-mono text-xs font-semibold text-[var(--foreground)]">{o.order} Krd</td>
+                <td className="text-right font-mono text-xs">{formatCurrency(o.harga)}</td>
+                <td className="text-right font-mono text-xs font-semibold text-purple-400">{formatCurrency(o.order * o.harga)}</td>
+                <td className="text-right font-mono text-xs font-semibold text-[var(--success)]">{formatCurrency(o.totalBayar)}</td>
+                <td className="text-center">
+                  <span className={`badge ${o.paymentMethod === "Cash" ? "text-amber-500 bg-amber-500/5 border-amber-500/15" : "text-blue-500 bg-blue-500/5 border-blue-500/15"}`}>
+                    {o.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
+                  </span>
+                </td>
+                <td className="text-center">
+                  <span
+                    className={`badge ${
+                      o.status === "Lunas"
+                        ? "badge-lunas"
+                        : "badge-piutang"
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        o.status === "Lunas"
+                          ? "bg-[var(--success)]"
+                          : "bg-[var(--danger)]"
+                      }`}
+                    />
+                    {o.status}
+                  </span>
+                </td>
+                <td className="text-xs text-[var(--muted-foreground)] max-w-[140px]">
+                  {o.keterangan ? (
+                    <span className="block truncate" title={o.keterangan}>{o.keterangan}</span>
+                  ) : (
+                    <span className="text-[var(--muted)] italic">—</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Payments Header */}
+      <div className="px-5 py-3 border-t border-b border-[var(--card-border)] bg-black/10 flex items-center justify-between">
+        <h4 className="text-[10px] uppercase font-bold tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+          <span>💸</span> Daftar Transaksi Pembayaran ({period.payments.length})
+        </h4>
+        {paymentTotalPages > 1 && (
+          <div className="flex items-center gap-2 text-[10px]">
+            <span className="text-[var(--muted-foreground)] font-mono">
+              Hal {validPaymentPage}/{paymentTotalPages}
+            </span>
+            <button
+              onClick={() => setPaymentPage((p) => Math.max(1, p - 1))}
+              disabled={validPaymentPage === 1}
+              className="px-2 py-0.5 border border-[var(--card-border)] bg-black/40 text-[var(--foreground)] hover:border-[var(--accent)] disabled:opacity-30 disabled:hover:border-[var(--card-border)] rounded text-[9px]"
+            >
+              ‹ Prev
+            </button>
+            <button
+              onClick={() => setPaymentPage((p) => Math.min(paymentTotalPages, p + 1))}
+              disabled={validPaymentPage === paymentTotalPages}
+              className="px-2 py-0.5 border border-[var(--card-border)] bg-black/40 text-[var(--foreground)] hover:border-[var(--accent)] disabled:opacity-30 disabled:hover:border-[var(--card-border)] rounded text-[9px]"
+            >
+              Next ›
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Payments Detail Table */}
+      <div className="overflow-x-auto">
+        <table className="data-table border-x-0 border-t-0 border-b-0">
+          <thead>
+            <tr>
+              <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
+              <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
+              <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
+              <th className="text-right font-sans text-[10px] tracking-widest font-bold">Jumlah Bayar</th>
+              <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
+              <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedPayments.length === 0 ? (
+              <tr>
+                <td colSpan={6}>
+                  <div className="empty-state py-8 text-center text-xs text-[var(--muted-foreground)]">
+                    Tidak ada transaksi pembayaran pada periode ini
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              paginatedPayments.map((p) => (
+                <tr key={p.id}>
+                  <td className="text-[var(--foreground)] font-semibold text-xs">
+                    <div className="flex flex-col">
+                      <span className="font-serif-aww text-[var(--accent)] text-xs">{p.jalurName}</span>
+                      <span className="text-[9px] text-[var(--muted)] uppercase font-semibold">{p.alamatName}</span>
+                    </div>
+                  </td>
+                  <td className="font-mono text-xs text-[var(--foreground)] font-semibold">{p.outletNoInduk}</td>
+                  <td className="text-[var(--foreground)] font-semibold">{p.outletName}</td>
+                  <td className="text-right font-mono text-xs font-semibold text-[var(--success)]">{formatCurrency(p.amount)}</td>
+                  <td className="text-center">
+                    <span className={`badge ${p.paymentMethod === "Cash" ? "text-amber-500 bg-amber-500/5 border-amber-500/15" : "text-blue-500 bg-blue-500/5 border-blue-500/15"}`}>
+                      {p.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
+                    </span>
+                  </td>
+                  <td className="text-xs text-[var(--muted-foreground)] max-w-[140px]">
+                    {p.keterangan ? (
+                      <span className="block truncate" title={p.keterangan}>{p.keterangan}</span>
+                    ) : (
+                      <span className="text-[var(--muted)] italic">—</span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

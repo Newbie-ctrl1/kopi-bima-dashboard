@@ -52,6 +52,9 @@ export default function DataTable({
 }: DataTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "Lunas" | "Piutang">("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+
   const auth = useAuth();
   const isAdmin = auth?.role === "ADMIN";
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -72,6 +75,11 @@ export default function DataTable({
         : o.totalPiutang === 0;
     return matchesSearch && matchesStatus;
   });
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const validPage = Math.max(1, Math.min(currentPage, totalPages || 1));
+  const startIndex = (validPage - 1) * ITEMS_PER_PAGE;
+  const paginatedOutlets = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -107,7 +115,10 @@ export default function DataTable({
               className="input pl-10"
               placeholder="Cari No Induk / Nama Outlet..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
             />
           </div>
 
@@ -116,7 +127,10 @@ export default function DataTable({
             {(["all", "Lunas", "Piutang"] as const).map((filter) => (
               <button
                 key={filter}
-                onClick={() => setStatusFilter(filter)}
+                onClick={() => {
+                  setStatusFilter(filter);
+                  setCurrentPage(1);
+                }}
                 className={`px-3 py-1.5 rounded-md text-[9px] uppercase font-bold tracking-wider transition-all duration-200 ${
                   statusFilter === filter
                     ? filter === "Lunas"
@@ -224,7 +238,7 @@ export default function DataTable({
                   </td>
                 </tr>
               ) : (
-                filtered.map((o) => (
+                paginatedOutlets.map((o) => (
                   <tr key={o.id}>
                     <td className="font-mono text-[var(--foreground)] font-semibold text-xs tracking-tight">
                       {o.noInduk}
@@ -321,6 +335,59 @@ export default function DataTable({
           </table>
         </div>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 px-2">
+          <p className="text-xs text-[var(--muted-foreground)]">
+            Menampilkan <strong className="text-[var(--foreground)] font-mono">{startIndex + 1}</strong>–
+            <strong className="text-[var(--foreground)] font-mono">
+              {Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)}
+            </strong> dari{" "}
+            <strong className="text-[var(--foreground)] font-mono">{filtered.length}</strong> outlet
+          </p>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={validPage === 1}
+              className="px-3 py-1.5 border border-[var(--card-border)] bg-[#0d0d0c] text-xs font-semibold text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-30 disabled:hover:border-[var(--card-border)] disabled:hover:text-[var(--foreground)] disabled:cursor-not-allowed transition-all flex items-center gap-1"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              Sebelumnya
+            </button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-7 h-7 flex items-center justify-center text-xs font-mono font-bold transition-all border ${
+                    validPage === page
+                      ? "bg-[var(--accent)] border-[var(--accent)] text-white shadow-md shadow-[var(--accent)]/20"
+                      : "bg-[#0d0d0c] border-[var(--card-border)] text-[var(--muted-foreground)] hover:border-[var(--muted)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={validPage === totalPages}
+              className="px-3 py-1.5 border border-[var(--card-border)] bg-[#0d0d0c] text-xs font-semibold text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-30 disabled:hover:border-[var(--card-border)] disabled:hover:text-[var(--foreground)] disabled:cursor-not-allowed transition-all flex items-center gap-1"
+            >
+              Selanjutnya
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       {showCreateModal && (

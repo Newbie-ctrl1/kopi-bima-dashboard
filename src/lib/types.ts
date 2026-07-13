@@ -35,6 +35,9 @@ export interface OutletFormData {
   noInduk: string;
   outlet: string;
   tglDaftar: string;
+  order?: number;
+  harga?: number;
+  totalBayar?: number;
 }
 
 // Outlet + ringkasan keuangan (computed dari orders)

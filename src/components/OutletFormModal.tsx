@@ -4,7 +4,14 @@ import { useState } from "react";
 
 interface OutletFormModalProps {
   mode: "create" | "edit";
-  outlet?: { noInduk: string; outlet: string; tglDaftar: string } | null;
+  outlet?: {
+    noInduk: string;
+    outlet: string;
+    tglDaftar: string;
+    totalOrder?: number;
+    totalPendapatan?: number;
+    totalBayar?: number;
+  } | null;
   nextNoInduk?: string | null;
   onClose: () => void;
   onSubmit: (formData: FormData) => Promise<{ error?: string; success?: boolean }>;
@@ -159,6 +166,70 @@ export default function OutletFormModal({
               defaultValue={outlet?.tglDaftar ?? new Date().toISOString().slice(0, 10)}
               required
             />
+          </div>
+
+          {/* Transaction / Financial Fields (Opsional) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-[var(--card-border)]/50 pt-3">
+            <div>
+              <label
+                htmlFor="order"
+                className="block text-xs font-medium text-[var(--muted-foreground)] mb-1"
+              >
+                Order <span className="text-[10px] text-[var(--muted)]">(Opsional)</span>
+              </label>
+              <input
+                id="order"
+                name="order"
+                type="number"
+                step="any"
+                min="0"
+                className="input text-xs font-mono"
+                placeholder="Order (Krd)"
+                defaultValue={outlet?.totalOrder ?? ""}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="harga"
+                className="block text-xs font-medium text-[var(--muted-foreground)] mb-1"
+              >
+                Harga / Krd <span className="text-[10px] text-[var(--muted)]">(Opsional)</span>
+              </label>
+              <input
+                id="harga"
+                name="harga"
+                type="number"
+                step="any"
+                min="0"
+                className="input text-xs font-mono"
+                placeholder="Format Rp"
+                defaultValue={
+                  outlet && outlet.totalOrder && outlet.totalOrder > 0 && outlet.totalPendapatan
+                    ? Math.round(outlet.totalPendapatan / outlet.totalOrder)
+                    : ""
+                }
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="totalBayar"
+                className="block text-xs font-medium text-[var(--muted-foreground)] mb-1"
+              >
+                Total Bayar <span className="text-[10px] text-[var(--muted)]">(Opsional)</span>
+              </label>
+              <input
+                id="totalBayar"
+                name="totalBayar"
+                type="number"
+                step="any"
+                min="0"
+                className="input text-xs font-mono"
+                placeholder="Bayar Rp"
+                defaultValue={outlet?.totalBayar ?? ""}
+              />
+            </div>
           </div>
 
           {/* Actions */}

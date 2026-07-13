@@ -10,36 +10,67 @@ export async function createOutlet(
   alamatId: string,
   input: OutletFormData
 ): Promise<Outlet> {
-  const o = await prisma.outlet.create({
-    data: {
-      alamatId,
-      noInduk: input.noInduk,
-      outlet: input.outlet,
-      tglDaftar: input.tglDaftar,
-    },
-  });
-  return {
-    id: o.id,
-    alamatId: o.alamatId,
-    noInduk: o.noInduk,
-    outlet: o.outlet,
-    tglDaftar: o.tglDaftar,
-  };
-}
+  const orderQty = input.order ?? 0;
+  if (orderQty > 0) {
+    const currentStock = await getCoffeeStockQuantity();
+    if (orderQty > currentStock) {
+      throw new Error(`Stok kopi tidak mencukupi untuk pendaftaran outlet. (Stok tersedia: ${currentStock} Kardus, Diminta: ${orderQty} Kardus)`);
+    }
+  }
 
-export async function updateOutlet(
-  id: string,
-  input: OutletFormData
-): Promise<Outlet | null> {
-  try {
-    const o = await prisma.outlet.update({
-      where: { id },
+  const stocks = await prisma.coffeeStock.findMany({ take: 1 });
+  const defaultPrice = stocks.length > 0 ? stocks[0].price : 100000;
+  const price = input.harga && input.harga > 0 ? input.harga : defaultPrice;
+
+  return await prisma.$transaction(async (tx) => {
+    const o = await tx.outlet.create({
       data: {
+        alamatId,
         noInduk: input.noInduk,
         outlet: input.outlet,
         tglDaftar: input.tglDaftar,
       },
     });
+
+    if (orderQty > 0) {
+      const totalPiutang = orderQty * price;
+      await tx.order.create({
+        data: {
+          outletId: o.id,
+          order: orderQty,
+          harga: price,
+          totalBayar: 0,
+          totalPiutang: totalPiutang,
+          status: "Piutang",
+          orderStatus: "Sukses",
+          tglOrder: input.tglDaftar || new Date().toISOString().slice(0, 10),
+        },
+      });
+
+      if (stocks.length > 0) {
+        await tx.coffeeStock.update({
+          where: { id: stocks[0].id },
+          data: {
+            quantity: {
+              decrement: orderQty,
+            },
+          },
+        });
+      }
+    }
+
+    const payAmount = input.totalBayar ?? 0;
+    if (payAmount > 0) {
+      await tx.payment.create({
+        data: {
+          outletId: o.id,
+          amount: payAmount,
+          paymentMethod: "Cash",
+          tglPayment: input.tglDaftar || new Date().toISOString().slice(0, 10),
+        },
+      });
+    }
+
     return {
       id: o.id,
       alamatId: o.alamatId,
@@ -47,7 +78,134 @@ export async function updateOutlet(
       outlet: o.outlet,
       tglDaftar: o.tglDaftar,
     };
-  } catch {
+  });
+}
+
+export async function updateOutlet(
+  id: string,
+  input: OutletFormData
+): Promise<Outlet | null> {
+  try {
+    const existingOutlet = await prisma.outlet.findUnique({
+      where: { id },
+      include: {
+        orders: { orderBy: { createdAt: "asc" }, take: 1 },
+        payments: { orderBy: { createdAt: "asc" }, take: 1 },
+      },
+    });
+    if (!existingOutlet) return null;
+
+    const stocks = await prisma.coffeeStock.findMany({ take: 1 });
+    const defaultPrice = stocks.length > 0 ? stocks[0].price : 100000;
+
+    const newOrderQty = input.order;
+    const newPrice = input.harga && input.harga > 0 ? input.harga : defaultPrice;
+    const newPayAmount = input.totalBayar;
+
+    const existingOrder = existingOutlet.orders[0];
+    const existingPayment = existingOutlet.payments[0];
+
+    // Calculate stock diff if order is updated
+    if (newOrderQty !== undefined) {
+      const oldQty = existingOrder && existingOrder.orderStatus === "Sukses" ? existingOrder.order : 0;
+      const qtyDiff = newOrderQty - oldQty;
+      if (qtyDiff > 0) {
+        const currentStock = await getCoffeeStockQuantity();
+        if (qtyDiff > currentStock) {
+          throw new Error(`Stok kopi tidak mencukupi untuk memperbarui order. (Stok tersedia: ${currentStock} Kardus, Butuh tambahan: ${qtyDiff} Kardus)`);
+        }
+      }
+    }
+
+    return await prisma.$transaction(async (tx) => {
+      const o = await tx.outlet.update({
+        where: { id },
+        data: {
+          noInduk: input.noInduk,
+          outlet: input.outlet,
+          tglDaftar: input.tglDaftar,
+        },
+      });
+
+      // Update or Create Order
+      if (newOrderQty !== undefined) {
+        const oldQty = existingOrder && existingOrder.orderStatus === "Sukses" ? existingOrder.order : 0;
+        const qtyDiff = newOrderQty - oldQty;
+
+        if (existingOrder) {
+          const currentPaid = newPayAmount !== undefined ? newPayAmount : existingOrder.totalBayar;
+          const totalPiutang = Math.max(0, newOrderQty * newPrice - currentPaid);
+          const status = totalPiutang > 0 ? "Piutang" : "Lunas";
+          await tx.order.update({
+            where: { id: existingOrder.id },
+            data: {
+              order: newOrderQty,
+              harga: newPrice,
+              totalPiutang,
+              status,
+              tglOrder: input.tglDaftar,
+            },
+          });
+        } else if (newOrderQty > 0) {
+          const totalPiutang = newOrderQty * newPrice;
+          await tx.order.create({
+            data: {
+              outletId: o.id,
+              order: newOrderQty,
+              harga: newPrice,
+              totalBayar: 0,
+              totalPiutang: totalPiutang,
+              status: "Piutang",
+              orderStatus: "Sukses",
+              tglOrder: input.tglDaftar,
+            },
+          });
+        }
+
+        if (qtyDiff !== 0 && stocks.length > 0) {
+          await tx.coffeeStock.update({
+            where: { id: stocks[0].id },
+            data: {
+              quantity: {
+                decrement: qtyDiff,
+              },
+            },
+          });
+        }
+      }
+
+      // Update or Create Payment
+      if (newPayAmount !== undefined) {
+        if (existingPayment) {
+          await tx.payment.update({
+            where: { id: existingPayment.id },
+            data: {
+              amount: newPayAmount,
+              tglPayment: input.tglDaftar,
+            },
+          });
+        } else if (newPayAmount > 0) {
+          await tx.payment.create({
+            data: {
+              outletId: o.id,
+              amount: newPayAmount,
+              paymentMethod: "Cash",
+              tglPayment: input.tglDaftar,
+            },
+          });
+        }
+      }
+
+      return {
+        id: o.id,
+        alamatId: o.alamatId,
+        noInduk: o.noInduk,
+        outlet: o.outlet,
+        tglDaftar: o.tglDaftar,
+      };
+    });
+  } catch (err: any) {
+    if (err.message && err.message.includes("Stok kopi")) throw err;
     return null;
   }
 }
