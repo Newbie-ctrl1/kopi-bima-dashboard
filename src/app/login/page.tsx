@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { loginAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
 
+import LogoBima from "@/components/LogoBima";
+
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -39,24 +41,10 @@ export default function LoginPage() {
 
         {/* Brand / Logo */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 border border-[var(--accent)] flex items-center justify-center mx-auto mb-4 relative overflow-hidden group shadow-[0_0_25px_rgba(201,154,107,0.15)] bg-black/40">
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-              <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-              <line x1="6" y1="2" x2="6" y2="4" />
-              <line x1="10" y1="2" x2="10" y2="4" />
-              <line x1="14" y1="2" x2="14" y2="4" />
-            </svg>
+          <div className="w-16 h-16 border border-[var(--accent)] flex items-center justify-center mx-auto mb-4 relative overflow-hidden group shadow-[0_0_25px_rgba(201,154,107,0.2)] bg-black/50 p-2">
+            <LogoBima className="w-11 h-11 text-[var(--accent)] group-hover:scale-110 transition-transform duration-500" />
           </div>
+
           <h1 className="text-xl font-bold text-[var(--foreground)] tracking-tight font-serif-aww">
             Kopi Bima
           </h1>

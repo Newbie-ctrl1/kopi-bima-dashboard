@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { logoutAction } from "@/app/actions";
+import LogoBima from "@/components/LogoBima";
 import { useAuth } from "@/components/AuthProvider";
 
 export default function Sidebar() {
@@ -73,25 +74,8 @@ export default function Sidebar() {
             onClick={() => setMobileOpen(false)}
             className="flex items-center gap-3.5 group"
           >
-            <div className="w-10 h-10 border border-[var(--accent)] flex items-center justify-center relative overflow-hidden group-hover:shadow-[0_0_20px_rgba(201,154,107,0.25)] transition-all duration-500">
-              <span className="absolute inset-0 bg-[var(--accent)] translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="relative z-10 text-[var(--accent)] group-hover:text-[#050505] transition-colors duration-500"
-              >
-                <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-                <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-                <line x1="6" y1="2" x2="6" y2="4" />
-                <line x1="10" y1="2" x2="10" y2="4" />
-                <line x1="14" y1="2" x2="14" y2="4" />
-              </svg>
+            <div className="w-10 h-10 border border-[var(--accent)] flex items-center justify-center relative overflow-hidden group-hover:shadow-[0_0_20px_rgba(201,154,107,0.3)] transition-all duration-500 bg-black/40 p-1">
+              <LogoBima className="w-7 h-7 text-[var(--accent)] group-hover:scale-110 transition-transform duration-500" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-[var(--foreground)] tracking-tight font-serif-aww group-hover:text-[var(--accent)] transition-colors duration-500">
