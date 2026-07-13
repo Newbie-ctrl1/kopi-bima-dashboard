@@ -16,19 +16,13 @@ import {
   deleteOutletAction,
   uploadOutletsAction,
 } from "@/app/actions";
+import { formatCurrency } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ dbId: string; jalurId: string; alamatId: string }>;
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+
 
 export default async function AlamatPage({ params }: PageProps) {
   const { dbId, jalurId, alamatId } = await params;

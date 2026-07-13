@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import CoffeeStockFormModal from "./CoffeeStockFormModal";
+import { formatCurrency } from "@/lib/utils";
 
 interface CoffeeStock {
   id: string;
@@ -18,14 +19,7 @@ interface SingleStockViewProps {
   onUpdateStock: (id: string, formData: FormData) => Promise<{ error?: string; success?: boolean }>;
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+
 
 export default function SingleStockView({
   stock,

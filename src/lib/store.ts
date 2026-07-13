@@ -231,31 +231,6 @@ export async function updateAlamat(id: string, name: string): Promise<Alamat | n
 // OUTLET CRUD (Registration Only)
 // ============================================
 
-export async function getOutletsByAlamat(alamatId: string): Promise<Outlet[]> {
-  const list = await prisma.outlet.findMany({
-    where: { alamatId },
-    orderBy: { noInduk: "asc" },
-  });
-  return list.map((o: any) => ({
-    id: o.id,
-    alamatId: o.alamatId,
-    noInduk: o.noInduk,
-    outlet: o.outlet,
-    tglDaftar: o.tglDaftar,
-  }));
-}
-
-export async function getOutletById(id: string): Promise<Outlet | undefined> {
-  const o = await prisma.outlet.findUnique({ where: { id } });
-  if (!o) return undefined;
-  return {
-    id: o.id,
-    alamatId: o.alamatId,
-    noInduk: o.noInduk,
-    outlet: o.outlet,
-    tglDaftar: o.tglDaftar,
-  };
-}
 
 export async function createOutlet(
   alamatId: string,
@@ -315,18 +290,6 @@ export async function deleteOutlet(id: string): Promise<void> {
   await prisma.outlet.delete({ where: { id } });
 }
 
-export async function bulkCreateOutlets(
-  alamatId: string,
-  inputs: OutletFormData[]
-): Promise<void> {
-  const data = inputs.map((input) => ({
-    alamatId,
-    noInduk: input.noInduk,
-    outlet: input.outlet,
-    tglDaftar: input.tglDaftar,
-  }));
-  await prisma.outlet.createMany({ data });
-}
 
 export async function bulkImportOutlets(
   alamatId: string,

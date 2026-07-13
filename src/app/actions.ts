@@ -536,31 +536,6 @@ function parseCsvLine(line: string): string[] {
 // COFFEE STOCK ACTIONS
 // ============================================
 
-export async function createCoffeeStockAction(formData: FormData) {
-  const admin = await getCurrentUser();
-  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
-
-  const name = formData.get("name") as string;
-  const sku = formData.get("sku") as string;
-  const quantity = parseFloat(formData.get("quantity") as string) || 0;
-  const unit = formData.get("unit") as string;
-  const price = parseFloat(formData.get("price") as string) || 0;
-
-  if (!name || !name.trim()) return { error: "Nama stok kopi tidak boleh kosong" };
-  if (!sku || !sku.trim()) return { error: "SKU tidak boleh kosong" };
-  if (!unit || !unit.trim()) return { error: "Satuan tidak boleh kosong" };
-
-  try {
-    await store.createCoffeeStock(name.trim(), sku.trim(), quantity, unit.trim(), price);
-    revalidatePath("/");
-    return { success: true };
-  } catch (err: any) {
-    if (err.code === "P2002") {
-      return { error: "SKU sudah digunakan oleh item stok lain" };
-    }
-    return { error: err.message || "Gagal membuat item stok baru" };
-  }
-}
 
 export async function updateCoffeeStockAction(id: string, formData: FormData) {
   const admin = await getCurrentUser();
@@ -591,19 +566,6 @@ export async function updateCoffeeStockAction(id: string, formData: FormData) {
       return { error: "SKU sudah digunakan oleh item stok lain" };
     }
     return { error: err.message || "Gagal mengubah item stok" };
-  }
-}
-
-export async function deleteCoffeeStockAction(id: string) {
-  const admin = await getCurrentUser();
-  if (!admin || admin.role !== "ADMIN") return { error: "Akses ditolak: Hanya Admin yang dapat melakukan tindakan ini" };
-
-  try {
-    await store.deleteCoffeeStock(id);
-    revalidatePath("/");
-    return { success: true };
-  } catch (err: any) {
-    return { error: err.message || "Gagal menghapus item stok" };
   }
 }
 

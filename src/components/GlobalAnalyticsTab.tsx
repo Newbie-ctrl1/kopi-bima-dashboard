@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatCurrency } from "@/lib/utils";
 
 interface DataPoint {
   label: string;
@@ -36,14 +37,7 @@ interface GlobalAnalyticsTabProps {
   periodSummary: PeriodSummary;
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+
 
 export default function GlobalAnalyticsTab({
   summary,

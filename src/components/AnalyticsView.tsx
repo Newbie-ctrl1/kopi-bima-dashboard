@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { AnalyticsPeriod } from "@/lib/store";
+import { formatCurrency } from "@/lib/utils";
 
 interface AnalyticsViewProps {
   harianData: AnalyticsPeriod[];
@@ -20,15 +21,6 @@ interface AnalyticsViewProps {
 }
 
 type TabMode = "harian" | "bulanan" | "tahunan";
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 export default function AnalyticsView({
   harianData,

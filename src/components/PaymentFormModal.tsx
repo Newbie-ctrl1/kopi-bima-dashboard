@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useTransition } from "react";
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+import { formatCurrency } from "@/lib/utils";
 
 interface PaymentFormModalProps {
   payment: {

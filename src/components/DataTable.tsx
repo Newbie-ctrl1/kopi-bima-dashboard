@@ -5,6 +5,7 @@ import type { OutletWithSummary } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
 import OutletFormModal from "./OutletFormModal";
 import UploadModal from "./UploadModal";
+import { formatCurrency } from "@/lib/utils";
 
 interface DataTableProps {
   outlets: OutletWithSummary[];
@@ -37,14 +38,7 @@ interface DataTableProps {
   }>;
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+
 
 export default function DataTable({
   outlets,

@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getCurrentUser, createUserAction, deleteUserAction } from "@/app/actions";
 import * as store from "@/lib/store";
 import Breadcrumb from "@/components/Breadcrumb";

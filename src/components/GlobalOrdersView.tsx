@@ -5,6 +5,7 @@ import type { Outlet, OrderWithRelations, PaymentWithRelations } from "@/lib/typ
 import { useAuth } from "@/components/AuthProvider";
 import OrderFormModal from "./OrderFormModal";
 import PaymentFormModal from "./PaymentFormModal";
+import { formatCurrency } from "@/lib/utils";
 
 interface GlobalOrdersViewProps {
   initialOrders: OrderWithRelations[];
@@ -19,14 +20,7 @@ interface GlobalOrdersViewProps {
   onDeletePayment?: (paymentId: string, basePath: string) => Promise<{ error?: string; success?: boolean }>;
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+
 
 export default function GlobalOrdersView({
   initialOrders,

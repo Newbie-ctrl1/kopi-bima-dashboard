@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { Outlet } from "@/lib/types";
+import { formatCurrency } from "@/lib/utils";
 
 interface OrderFormModalProps {
   mode: "create" | "edit";
@@ -21,14 +22,7 @@ interface OrderFormModalProps {
   onSubmit: (formData: FormData) => Promise<{ error?: string; success?: boolean }>;
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+
 
 export default function OrderFormModal({
   mode,

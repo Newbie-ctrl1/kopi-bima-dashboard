@@ -78,7 +78,8 @@ export interface OrderWithRelations extends Order {
   alamatName: string;
   jalurName: string;
   databaseName: string;
-}// Payment = transaksi pembayaran piutang
+}
+
 // Payment = transaksi pembayaran piutang
 export interface Payment {
   id: string;
@@ -104,11 +105,4 @@ export interface PaymentWithRelations extends Payment {
   alamatName: string;
   jalurName: string;
   databaseName: string;
-}
-
-export interface StoreData {
-  databases: Database[];
-  jalur: Jalur[];
-  alamat: Alamat[];
-  outlets: Outlet[];
 }
