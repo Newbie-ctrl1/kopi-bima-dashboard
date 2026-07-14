@@ -168,7 +168,7 @@ export default function OutletFormModal({
             />
           </div>
 
-          {/* Transaction / Financial Fields (Opsional) */}
+          {/* Transaction / Legacy Financial Fields (Opsional) */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-[var(--card-border)]/50 pt-3">
             <div>
               <label
@@ -191,24 +191,20 @@ export default function OutletFormModal({
 
             <div>
               <label
-                htmlFor="harga"
+                htmlFor="pendapatan"
                 className="block text-xs font-medium text-[var(--muted-foreground)] mb-1"
               >
-                Harga / Krd <span className="text-[10px] text-[var(--muted)]">(Opsional)</span>
+                Pendapatan <span className="text-[10px] text-[var(--muted)]">(Opsional)</span>
               </label>
               <input
-                id="harga"
-                name="harga"
+                id="pendapatan"
+                name="pendapatan"
                 type="number"
                 step="any"
                 min="0"
                 className="input text-xs font-mono"
-                placeholder="Format Rp"
-                defaultValue={
-                  outlet && outlet.totalOrder && outlet.totalOrder > 0 && outlet.totalPendapatan
-                    ? Math.round(outlet.totalPendapatan / outlet.totalOrder)
-                    : ""
-                }
+                placeholder="Pendapatan (Rp)"
+                defaultValue={outlet?.totalPendapatan ?? ""}
               />
             </div>
 
@@ -226,7 +222,7 @@ export default function OutletFormModal({
                 step="any"
                 min="0"
                 className="input text-xs font-mono"
-                placeholder="Bayar Rp"
+                placeholder="Bayar (Rp)"
                 defaultValue={outlet?.totalBayar ?? ""}
               />
             </div>

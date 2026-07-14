@@ -10,17 +10,19 @@ export async function createOutlet(
   alamatId: string,
   input: OutletFormData
 ): Promise<Outlet> {
-  const orderQty = input.order ?? 0;
+  let orderQty = input.order ?? 0;
+  const inputPendapatan = input.pendapatan ?? 0;
+  const payAmount = input.totalBayar ?? 0;
+
+  const stocks = await prisma.coffeeStock.findMany({ take: 1 });
+  const defaultPrice = stocks.length > 0 ? stocks[0].price : 100000;
+
   if (orderQty > 0) {
     const currentStock = await getCoffeeStockQuantity();
     if (orderQty > currentStock) {
       throw new Error(`Stok kopi tidak mencukupi untuk pendaftaran outlet. (Stok tersedia: ${currentStock} Kardus, Diminta: ${orderQty} Kardus)`);
     }
   }
-
-  const stocks = await prisma.coffeeStock.findMany({ take: 1 });
-  const defaultPrice = stocks.length > 0 ? stocks[0].price : 100000;
-  const price = input.harga && input.harga > 0 ? input.harga : defaultPrice;
 
   return await prisma.$transaction(async (tx) => {
     const o = await tx.outlet.create({
@@ -32,22 +34,30 @@ export async function createOutlet(
       },
     });
 
-    if (orderQty > 0) {
-      const totalPiutang = orderQty * price;
+    const hasFinancials = orderQty > 0 || inputPendapatan > 0 || payAmount > 0;
+    if (hasFinancials) {
+      if (orderQty === 0 && inputPendapatan > 0) {
+        orderQty = 1;
+      }
+      const price = inputPendapatan > 0 ? (orderQty > 0 ? inputPendapatan / orderQty : defaultPrice) : defaultPrice;
+      const totalOrderVal = inputPendapatan > 0 ? inputPendapatan : orderQty * price;
+      const totalPiutang = Math.max(0, totalOrderVal - payAmount);
+      const status: "Lunas" | "Piutang" = totalPiutang > 0 ? "Piutang" : "Lunas";
+
       await tx.order.create({
         data: {
           outletId: o.id,
           order: orderQty,
           harga: price,
-          totalBayar: 0,
+          totalBayar: payAmount,
           totalPiutang: totalPiutang,
-          status: "Piutang",
+          status: status,
           orderStatus: "Sukses",
           tglOrder: input.tglDaftar || new Date().toISOString().slice(0, 10),
         },
       });
 
-      if (stocks.length > 0) {
+      if (orderQty > 0 && stocks.length > 0) {
         await tx.coffeeStock.update({
           where: { id: stocks[0].id },
           data: {
@@ -59,7 +69,6 @@ export async function createOutlet(
       }
     }
 
-    const payAmount = input.totalBayar ?? 0;
     if (payAmount > 0) {
       await tx.payment.create({
         data: {
@@ -98,15 +107,15 @@ export async function updateOutlet(
     const stocks = await prisma.coffeeStock.findMany({ take: 1 });
     const defaultPrice = stocks.length > 0 ? stocks[0].price : 100000;
 
-    const newOrderQty = input.order;
-    const newPrice = input.harga && input.harga > 0 ? input.harga : defaultPrice;
-    const newPayAmount = input.totalBayar;
-
     const existingOrder = existingOutlet.orders[0];
     const existingPayment = existingOutlet.payments[0];
 
-    // Calculate stock diff if order is updated
-    if (newOrderQty !== undefined) {
+    let newOrderQty = input.order !== undefined ? input.order : (existingOrder ? existingOrder.order : 0);
+    const inputPendapatan = input.pendapatan !== undefined ? input.pendapatan : (existingOrder ? existingOrder.order * existingOrder.harga : 0);
+    const newPayAmount = input.totalBayar !== undefined ? input.totalBayar : (existingOrder ? existingOrder.totalBayar : 0);
+
+    // Stock check
+    if (newOrderQty > 0) {
       const oldQty = existingOrder && existingOrder.orderStatus === "Sukses" ? existingOrder.order : 0;
       const qtyDiff = newOrderQty - oldQty;
       if (qtyDiff > 0) {
@@ -127,35 +136,40 @@ export async function updateOutlet(
         },
       });
 
-      // Update or Create Order
-      if (newOrderQty !== undefined) {
+      const hasFinancials = newOrderQty > 0 || inputPendapatan > 0 || newPayAmount > 0;
+      if (hasFinancials) {
+        if (newOrderQty === 0 && inputPendapatan > 0) {
+          newOrderQty = 1;
+        }
+        const price = inputPendapatan > 0 ? (newOrderQty > 0 ? inputPendapatan / newOrderQty : defaultPrice) : (existingOrder ? existingOrder.harga : defaultPrice);
+        const totalOrderVal = inputPendapatan > 0 ? inputPendapatan : newOrderQty * price;
+        const totalPiutang = Math.max(0, totalOrderVal - newPayAmount);
+        const status: "Lunas" | "Piutang" = totalPiutang > 0 ? "Piutang" : "Lunas";
+
         const oldQty = existingOrder && existingOrder.orderStatus === "Sukses" ? existingOrder.order : 0;
         const qtyDiff = newOrderQty - oldQty;
 
         if (existingOrder) {
-          const currentPaid = newPayAmount !== undefined ? newPayAmount : existingOrder.totalBayar;
-          const totalPiutang = Math.max(0, newOrderQty * newPrice - currentPaid);
-          const status = totalPiutang > 0 ? "Piutang" : "Lunas";
           await tx.order.update({
             where: { id: existingOrder.id },
             data: {
               order: newOrderQty,
-              harga: newPrice,
+              harga: price,
+              totalBayar: newPayAmount,
               totalPiutang,
               status,
               tglOrder: input.tglDaftar,
             },
           });
-        } else if (newOrderQty > 0) {
-          const totalPiutang = newOrderQty * newPrice;
+        } else {
           await tx.order.create({
             data: {
               outletId: o.id,
               order: newOrderQty,
-              harga: newPrice,
-              totalBayar: 0,
+              harga: price,
+              totalBayar: newPayAmount,
               totalPiutang: totalPiutang,
-              status: "Piutang",
+              status,
               orderStatus: "Sukses",
               tglOrder: input.tglDaftar,
             },
@@ -174,8 +188,7 @@ export async function updateOutlet(
         }
       }
 
-      // Update or Create Payment
-      if (newPayAmount !== undefined) {
+      if (input.totalBayar !== undefined) {
         if (existingPayment) {
           await tx.payment.update({
             where: { id: existingPayment.id },
@@ -229,7 +242,7 @@ export async function bulkImportOutlets(
     outlet: string;
     tglDaftar: string;
     order?: number;
-    harga?: number;
+    pendapatan?: number;
     totalBayar?: number;
   }>
 ): Promise<void> {
@@ -256,25 +269,34 @@ export async function bulkImportOutlets(
         },
       });
 
-      const orderQty = input.order ?? 0;
-      if (orderQty > 0) {
-        const price = input.harga && input.harga > 0 ? input.harga : defaultPrice;
-        const totalPiutang = orderQty * price;
+      let orderQty = input.order ?? 0;
+      const inputPendapatan = input.pendapatan ?? 0;
+      const payAmount = input.totalBayar ?? 0;
+
+      const hasFinancials = orderQty > 0 || inputPendapatan > 0 || payAmount > 0;
+      if (hasFinancials) {
+        if (orderQty === 0 && inputPendapatan > 0) {
+          orderQty = 1;
+        }
+        const price = inputPendapatan > 0 ? (orderQty > 0 ? inputPendapatan / orderQty : defaultPrice) : defaultPrice;
+        const totalOrderVal = inputPendapatan > 0 ? inputPendapatan : orderQty * price;
+        const totalPiutang = Math.max(0, totalOrderVal - payAmount);
+        const status: "Lunas" | "Piutang" = totalPiutang > 0 ? "Piutang" : "Lunas";
 
         await tx.order.create({
           data: {
             outletId: newOutlet.id,
             order: orderQty,
             harga: price,
-            totalBayar: 0,
+            totalBayar: payAmount,
             totalPiutang: totalPiutang,
-            status: "Piutang",
+            status: status,
             orderStatus: "Sukses",
             tglOrder: input.tglDaftar || new Date().toISOString().slice(0, 10),
           },
         });
 
-        if (stocks.length > 0) {
+        if (orderQty > 0 && stocks.length > 0) {
           const stock = stocks[0];
           await tx.coffeeStock.update({
             where: { id: stock.id },
@@ -287,7 +309,6 @@ export async function bulkImportOutlets(
         }
       }
 
-      const payAmount = input.totalBayar ?? 0;
       if (payAmount > 0) {
         await tx.payment.create({
           data: {

@@ -36,7 +36,7 @@ export interface OutletFormData {
   outlet: string;
   tglDaftar: string;
   order?: number;
-  harga?: number;
+  pendapatan?: number;
   totalBayar?: number;
 }
 

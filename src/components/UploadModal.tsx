@@ -25,8 +25,8 @@ export default function UploadModal({ onClose, onUpload }: UploadModalProps) {
 
   const downloadTemplate = () => {
     const csvContent =
-      "noInduk,outlet,tglDaftar,order,harga,totalBayar\n" +
-      "#DRJ1SN006,Toko Contoh Sederhana,2026-07-11,2.5,100000,250000\n";
+      "noInduk,outlet,tglDaftar,order,pendapatan,totalBayar\n" +
+      "#DRJ1SN006,Toko Contoh Sederhana,2026-07-11,2.5,250000,250000\n";
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -306,8 +306,8 @@ export default function UploadModal({ onClose, onUpload }: UploadModalProps) {
                   "noInduk / no_induk",
                   "outlet",
                   "tglDaftar / tgl_daftar",
-                  "order",
-                  "harga (opsional)",
+                  "order (opsional)",
+                  "pendapatan (opsional)",
                   "totalBayar / total_bayar",
                 ].map((col) => (
                   <div

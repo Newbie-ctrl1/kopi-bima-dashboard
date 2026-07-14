@@ -153,7 +153,7 @@ export async function updateAlamatAction(
 
 function parseOutletFormData(formData: FormData): OutletFormData {
   const rawOrder = (formData.get("order") as string) || "";
-  const rawHarga = (formData.get("harga") as string) || "";
+  const rawPendapatan = (formData.get("pendapatan") as string) || (formData.get("total_pendapatan") as string) || "";
   const rawTotalBayar = (formData.get("totalBayar") as string) || (formData.get("total_bayar") as string) || "";
 
   return {
@@ -161,7 +161,7 @@ function parseOutletFormData(formData: FormData): OutletFormData {
     outlet: (formData.get("outlet") as string) || "",
     tglDaftar: (formData.get("tglDaftar") as string) || (formData.get("tgl_daftar") as string) || "",
     order: rawOrder ? parseFloat(rawOrder) : undefined,
-    harga: rawHarga ? parseFloat(rawHarga) : undefined,
+    pendapatan: rawPendapatan ? parseFloat(rawPendapatan) : undefined,
     totalBayar: rawTotalBayar ? parseFloat(rawTotalBayar) : undefined,
   };
 }
@@ -437,12 +437,14 @@ export async function uploadOutletsAction(
         "0";
       const orderVal = parseFloat(String(orderStr)) || 0;
 
-      const hargaStr =
-        row["harga"] ||
-        row["Harga"] ||
-        row["HARGA"] ||
+      const pendapatanStr =
+        row["pendapatan"] ||
+        row["Pendapatan"] ||
+        row["PENDAPATAN"] ||
+        row["total_pendapatan"] ||
+        row["totalPendapatan"] ||
         "";
-      const hargaVal = hargaStr !== "" ? (parseFloat(String(hargaStr)) || undefined) : undefined;
+      const pendapatanVal = pendapatanStr !== "" ? (parseFloat(String(pendapatanStr)) || undefined) : undefined;
 
       const totalBayarStr =
         row["totalBayar"] ||
@@ -464,7 +466,7 @@ export async function uploadOutletsAction(
         outlet: String(outlet).trim(),
         tglDaftar: String(tglDaftar).trim(),
         order: orderVal,
-        harga: hargaVal,
+        pendapatan: pendapatanVal,
         totalBayar: totalBayarVal,
       });
     }
