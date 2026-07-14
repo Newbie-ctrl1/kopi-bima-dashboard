@@ -1,5 +1,5 @@
-import Breadcrumb from "@/components/Breadcrumb";
-import SingleStockView from "@/components/SingleStockView";
+import Breadcrumb from "@/components/layout/Breadcrumb";
+import SingleStockView from "@/components/stock/SingleStockView";
 import { getCoffeeStocks, createCoffeeStock } from "@/lib/store";
 import { updateCoffeeStockAction } from "@/app/actions";
 

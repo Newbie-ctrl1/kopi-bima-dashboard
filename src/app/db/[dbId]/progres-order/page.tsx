@@ -1,5 +1,5 @@
-import Breadcrumb from "@/components/Breadcrumb";
-import GlobalOrdersView from "@/components/GlobalOrdersView";
+import Breadcrumb from "@/components/layout/Breadcrumb";
+import GlobalOrdersView from "@/components/order/GlobalOrdersView";
 import { getOrdersByDatabase, getOutletsByDatabase, getDatabaseById, getPaymentsByDatabase } from "@/lib/store";
 import { createOrderAction, updateOrderAction, deleteOrderAction, createPaymentAction, updatePaymentAction, deletePaymentAction } from "@/app/actions";
 import { notFound } from "next/navigation";

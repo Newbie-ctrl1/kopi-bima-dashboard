@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import type { Outlet, OrderWithRelations, PaymentWithRelations } from "@/lib/types";
-import { useAuth } from "@/components/AuthProvider";
-import OrderFormModal from "./OrderFormModal";
-import PaymentFormModal from "./PaymentFormModal";
+import { useAuth } from "@/components/layout/AuthProvider";
+import OrderFormModal from "@/components/order/OrderFormModal";
+import PaymentFormModal from "@/components/payment/PaymentFormModal";
 import { formatCurrency } from "@/lib/utils";
 
 interface GlobalOrdersViewProps {

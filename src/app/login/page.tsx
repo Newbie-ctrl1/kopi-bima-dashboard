@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { loginAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
 
-import LogoBima from "@/components/LogoBima";
+import LogoBima from "@/components/layout/LogoBima";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import Breadcrumb from "@/components/Breadcrumb";
-import StatsCards from "@/components/StatsCards";
-import DataTable from "@/components/DataTable";
+import Breadcrumb from "@/components/layout/Breadcrumb";
+import StatsCards from "@/components/ui/StatsCards";
+import DataTable from "@/components/outlet/DataTable";
 import {
   getDatabaseById,
   getJalurById,

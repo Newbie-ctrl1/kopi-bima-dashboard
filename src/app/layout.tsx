@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Syne, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/layout/Sidebar";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 
 import { cookies } from "next/headers";
 import { getCurrentUser } from "@/app/actions";
-import { AuthProvider } from "@/components/AuthProvider";
+import { AuthProvider } from "@/components/layout/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Kopi Bima — Dashboard Admin",

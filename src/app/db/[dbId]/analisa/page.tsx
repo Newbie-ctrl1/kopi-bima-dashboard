@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import Breadcrumb from "@/components/Breadcrumb";
-import AnalyticsView from "@/components/AnalyticsView";
+import Breadcrumb from "@/components/layout/Breadcrumb";
+import AnalyticsView from "@/components/analytics/AnalyticsView";
 import {
   getDatabaseById,
   getAnalyticsData,

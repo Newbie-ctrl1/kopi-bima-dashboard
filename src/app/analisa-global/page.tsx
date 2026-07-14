@@ -1,5 +1,5 @@
-import Breadcrumb from "@/components/Breadcrumb";
-import GlobalAnalyticsTab from "@/components/GlobalAnalyticsTab";
+import Breadcrumb from "@/components/layout/Breadcrumb";
+import GlobalAnalyticsTab from "@/components/analytics/GlobalAnalyticsTab";
 import { getGlobalSummary, getGlobalPeriodSummary } from "@/lib/store";
 
 export default async function AnalisaGlobalPage() {

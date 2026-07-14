@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import ItemCard from "@/components/ItemCard";
-import CreateModal from "@/components/CreateModal";
+import ItemCard from "@/components/ui/ItemCard";
+import CreateModal from "@/components/ui/CreateModal";
 import type { Alamat } from "@/lib/types";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/components/layout/AuthProvider";
 import { createAlamatAction, deleteAlamatAction, updateAlamatAction } from "@/app/actions";
 
 interface AlamatListProps {

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/components/AuthProvider";
-import CoffeeStockFormModal from "./CoffeeStockFormModal";
+import { useAuth } from "@/components/layout/AuthProvider";
+import CoffeeStockFormModal from "@/components/stock/CoffeeStockFormModal";
 import { formatCurrency } from "@/lib/utils";
 
 interface CoffeeStock {

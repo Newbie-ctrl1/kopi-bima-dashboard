@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import type { OutletWithSummary } from "@/lib/types";
-import { useAuth } from "@/components/AuthProvider";
-import OutletFormModal from "./OutletFormModal";
-import UploadModal from "./UploadModal";
+import { useAuth } from "@/components/layout/AuthProvider";
+import OutletFormModal from "@/components/outlet/OutletFormModal";
+import UploadModal from "@/components/outlet/UploadModal";
 import { formatCurrency } from "@/lib/utils";
 
 interface DataTableProps {

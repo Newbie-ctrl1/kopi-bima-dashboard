@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { logoutAction } from "@/app/actions";
-import LogoBima from "@/components/LogoBima";
-import { useAuth } from "@/components/AuthProvider";
+import LogoBima from "@/components/layout/LogoBima";
+import { useAuth } from "@/components/layout/AuthProvider";
 
 export default function Sidebar() {
   const pathname = usePathname();

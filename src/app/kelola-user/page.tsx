@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser, createUserAction, deleteUserAction } from "@/app/actions";
 import * as store from "@/lib/store";
-import Breadcrumb from "@/components/Breadcrumb";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 import UserListClient from "@/app/kelola-user/UserListClient";
 
 export default async function KelolaUserPage() {

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import Breadcrumb from "@/components/Breadcrumb";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 import { getDatabaseById, getJalurByDb, countAlamatInJalur } from "@/lib/store";
 import JalurList from "./JalurList";
 

@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 
-import ItemCard from "@/components/ItemCard";
-import CreateModal from "@/components/CreateModal";
+import ItemCard from "@/components/ui/ItemCard";
+import CreateModal from "@/components/ui/CreateModal";
 import type { Database } from "@/lib/types";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/components/layout/AuthProvider";
 import {
   createDatabaseAction,
   deleteDatabaseAction,
