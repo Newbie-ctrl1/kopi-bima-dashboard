@@ -36,6 +36,9 @@ export default function OrderFormModal({
   const [outletId, setOutletId] = useState(order?.outletId ?? "");
   const [qty, setQty] = useState<number | "">(order?.order ?? 1);
   const [harga, setHarga] = useState<number | "">(order?.harga ?? 100000);
+  const [customTotal, setCustomTotal] = useState<number | "">(
+    order ? order.order * order.harga : 100000
+  );
   const [orderStatus, setOrderStatus] = useState<"Sukses" | "Pending" | "Cancel" | "Proses">(order?.orderStatus ?? "Sukses");
   const [tglOrder, setTglOrder] = useState(order?.tglOrder ?? new Date().toISOString().slice(0, 10));
   const [keterangan, setKeterangan] = useState(order?.keterangan ?? "");
@@ -61,18 +64,43 @@ export default function OrderFormModal({
 
   const numQty = qty === "" ? 0 : qty;
   const numHarga = harga === "" ? 0 : harga;
-  const totalHarga = numQty * numHarga;
+  const totalHarga = customTotal !== "" ? (typeof customTotal === "number" ? customTotal : 0) : numQty * numHarga;
 
   useEffect(() => {
     if (order) {
       setOutletId(order.outletId);
       setQty(order.order);
       setHarga(order.harga);
+      setCustomTotal(order.order * order.harga);
       setOrderStatus(order.orderStatus);
       setTglOrder(order.tglOrder);
       setKeterangan(order.keterangan ?? "");
     }
   }, [order]);
+
+  const handleQtyChange = (valStr: string) => {
+    const newQty = valStr === "" ? "" : parseFloat(valStr);
+    setQty(newQty);
+    if (typeof newQty === "number" && typeof harga === "number") {
+      setCustomTotal(newQty * harga);
+    }
+  };
+
+  const handleHargaChange = (valStr: string) => {
+    const newHarga = valStr === "" ? "" : parseFloat(valStr);
+    setHarga(newHarga);
+    if (typeof numQty === "number" && numQty > 0 && typeof newHarga === "number") {
+      setCustomTotal(numQty * newHarga);
+    }
+  };
+
+  const handleCustomTotalChange = (valStr: string) => {
+    const newTotal = valStr === "" ? "" : parseFloat(valStr);
+    setCustomTotal(newTotal);
+    if (typeof numQty === "number" && numQty > 0 && typeof newTotal === "number") {
+      setHarga(newTotal / numQty);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

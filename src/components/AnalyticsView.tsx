@@ -676,7 +676,6 @@ function ExpandedPeriodDetails({
               <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
               <th className="text-right font-sans text-[10px] tracking-widest font-bold">Total</th>
               <th className="text-right font-sans text-[10px] tracking-widest font-bold">Bayar</th>
-              <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>
               <th className="text-center font-sans text-[10px] tracking-widest font-bold">Status</th>
               <th className="font-sans text-[10px] tracking-widest font-bold">Keterangan</th>
             </tr>
@@ -696,11 +695,6 @@ function ExpandedPeriodDetails({
                 <td className="text-right font-mono text-xs">{formatCurrency(o.harga)}</td>
                 <td className="text-right font-mono text-xs font-semibold text-purple-400">{formatCurrency(o.order * o.harga)}</td>
                 <td className="text-right font-mono text-xs font-semibold text-[var(--success)]">{formatCurrency(o.totalBayar)}</td>
-                <td className="text-center">
-                  <span className={`badge ${o.paymentMethod === "Cash" ? "text-amber-500 bg-amber-500/5 border-amber-500/15" : "text-blue-500 bg-blue-500/5 border-blue-500/15"}`}>
-                    {o.paymentMethod === "Cash" ? "💵 Cash" : "🏦 Transfer"}
-                  </span>
-                </td>
                 <td className="text-center">
                   <span
                     className={`badge ${
