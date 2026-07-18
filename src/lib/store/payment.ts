@@ -99,7 +99,7 @@ export async function getPaymentsByDatabase(dbId: string): Promise<PaymentWithRe
     keterangan: p.keterangan ?? undefined,
     createdAt: p.createdAt,
     outletName: p.outlet.outlet,
-    outletNoInduk: p.outlet.noInduk,
+    outletNoInduk: p.outlet.noId,
     alamatName: p.outlet.alamat.name,
     jalurName: p.outlet.alamat.jalur.name,
     databaseName: p.outlet.alamat.jalur.database.name,

@@ -108,7 +108,7 @@ export type AlamatScalarFieldEnum = (typeof AlamatScalarFieldEnum)[keyof typeof 
 
 export const OutletScalarFieldEnum = {
   id: 'id',
-  noInduk: 'noInduk',
+  noId: 'noId',
   outlet: 'outlet',
   tglDaftar: 'tglDaftar',
   alamatId: 'alamatId'

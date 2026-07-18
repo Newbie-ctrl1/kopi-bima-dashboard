@@ -49,7 +49,7 @@ export default function OrderFormModal({
     if (outletId) {
       const match = outlets.find((o) => o.id === outletId);
       if (match) {
-        setSearchQuery(`${match.noInduk} — ${match.outlet}`);
+        setSearchQuery(`${match.noId} — ${match.outlet}`);
       }
     } else {
       setSearchQuery("");
@@ -59,7 +59,7 @@ export default function OrderFormModal({
   const filteredOutlets = outlets.filter(
     (o) =>
       o.outlet.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.noInduk.toLowerCase().includes(searchQuery.toLowerCase())
+      o.noId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const numQty = qty === "" ? 0 : qty;
@@ -195,14 +195,14 @@ export default function OrderFormModal({
                 htmlFor="outlet-search"
                 className="block text-sm font-medium text-[var(--muted-foreground)] mb-1.5"
               >
-                Pilih Outlet (Cari Nama / No Induk)
+                Pilih Outlet (Cari Nama / NO ID)
               </label>
               <div className="relative">
                 <input
                   id="outlet-search"
                   type="text"
                   className="input pr-10"
-                  placeholder="Ketik nama toko atau no induk..."
+                  placeholder="Ketik nama toko atau NO ID..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -253,13 +253,13 @@ export default function OrderFormModal({
                         className="w-full text-left px-4 py-2.5 text-xs text-[var(--foreground)] hover:bg-[var(--accent)] hover:text-white transition-colors flex items-center justify-between"
                         onClick={() => {
                           setOutletId(o.id);
-                          setSearchQuery(`${o.noInduk} — ${o.outlet}`);
+                          setSearchQuery(`${o.noId} — ${o.outlet}`);
                           setIsDropdownOpen(false);
                         }}
                       >
                         <span className="font-semibold">{o.outlet}</span>
                         <span className="font-mono text-[10px] text-[var(--muted-foreground)]">
-                          {o.noInduk}
+                          {o.noId}
                         </span>
                       </button>
                     ))

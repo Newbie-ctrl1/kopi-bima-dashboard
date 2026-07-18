@@ -28,7 +28,7 @@ export async function createOutlet(
     const o = await tx.outlet.create({
       data: {
         alamatId,
-        noInduk: input.noInduk,
+        noId: input.noId,
         outlet: input.outlet,
         tglDaftar: input.tglDaftar,
       },
@@ -83,7 +83,7 @@ export async function createOutlet(
     return {
       id: o.id,
       alamatId: o.alamatId,
-      noInduk: o.noInduk,
+      noId: o.noId,
       outlet: o.outlet,
       tglDaftar: o.tglDaftar,
     };
@@ -130,7 +130,7 @@ export async function updateOutlet(
       const o = await tx.outlet.update({
         where: { id },
         data: {
-          noInduk: input.noInduk,
+          noId: input.noId,
           outlet: input.outlet,
           tglDaftar: input.tglDaftar,
         },
@@ -212,7 +212,7 @@ export async function updateOutlet(
       return {
         id: o.id,
         alamatId: o.alamatId,
-        noInduk: o.noInduk,
+        noId: o.noId,
         outlet: o.outlet,
         tglDaftar: o.tglDaftar,
       };
@@ -238,7 +238,7 @@ export async function deleteOutlet(id: string): Promise<void> {
 export async function bulkImportOutlets(
   alamatId: string,
   inputs: Array<{
-    noInduk: string;
+    noId: string;
     outlet: string;
     tglDaftar: string;
     order?: number;
@@ -263,7 +263,7 @@ export async function bulkImportOutlets(
       const newOutlet = await tx.outlet.create({
         data: {
           alamatId,
-          noInduk: input.noInduk,
+          noId: input.noId,
           outlet: input.outlet,
           tglDaftar: input.tglDaftar || new Date().toISOString().slice(0, 10),
         },
@@ -326,7 +326,7 @@ export async function bulkImportOutlets(
 export async function getOutletsWithSummary(alamatId: string): Promise<OutletWithSummary[]> {
   const outlets = await prisma.outlet.findMany({
     where: { alamatId },
-    orderBy: { noInduk: "asc" },
+    orderBy: { noId: "asc" },
     include: {
       orders: true,
       payments: true,
@@ -343,7 +343,7 @@ export async function getOutletsWithSummary(alamatId: string): Promise<OutletWit
     return {
       id: o.id,
       alamatId: o.alamatId,
-      noInduk: o.noInduk,
+      noId: o.noId,
       outlet: o.outlet,
       tglDaftar: o.tglDaftar,
       totalOrder,

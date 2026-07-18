@@ -278,7 +278,7 @@ export default function GlobalOrdersView({
               <input
                 type="text"
                 className="input pl-10 text-xs"
-                placeholder="Cari Outlet, No Induk, atau Alamat..."
+                placeholder="Cari Outlet, NO ID, atau Alamat..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -362,7 +362,7 @@ export default function GlobalOrdersView({
                 <thead>
                   <tr>
                     <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
-                    <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
+                    <th className="font-sans text-[10px] tracking-widest font-bold">NO ID</th>
                     <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Order (Krd)</th>
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
@@ -477,7 +477,7 @@ export default function GlobalOrdersView({
                 <thead>
                   <tr>
                     <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
-                    <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
+                    <th className="font-sans text-[10px] tracking-widest font-bold">NO ID</th>
                     <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
                     <th className="text-right font-sans text-[10px] tracking-widest font-bold">Jumlah Bayar</th>
                     <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>

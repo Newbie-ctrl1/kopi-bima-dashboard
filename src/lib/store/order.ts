@@ -168,7 +168,7 @@ export async function getOrdersByDatabase(dbId: string): Promise<OrderWithRelati
     tglOrder: o.tglOrder,
     keterangan: o.keterangan ?? undefined,
     outletName: o.outlet.outlet,
-    outletNoInduk: o.outlet.noInduk,
+    outletNoInduk: o.outlet.noId,
     alamatName: o.outlet.alamat.name,
     jalurName: o.outlet.alamat.jalur.name,
     databaseName: o.outlet.alamat.jalur.database.name,
@@ -185,12 +185,12 @@ export async function getOutletsByDatabase(dbId: string): Promise<Outlet[]> {
         },
       },
     },
-    orderBy: { noInduk: "asc" },
+    orderBy: { noId: "asc" },
   });
   return list.map((o: any) => ({
     id: o.id,
     alamatId: o.alamatId,
-    noInduk: o.noInduk,
+    noId: o.noId,
     outlet: o.outlet,
     tglDaftar: o.tglDaftar,
   }));

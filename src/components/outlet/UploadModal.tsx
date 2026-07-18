@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import * as XLSX from "xlsx";
 
 interface UploadModalProps {
   onClose: () => void;
@@ -23,19 +24,34 @@ export default function UploadModal({ onClose, onUpload }: UploadModalProps) {
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const downloadTemplate = () => {
-    const csvContent =
-      "noInduk,outlet,tglDaftar,order,pendapatan,totalBayar\n" +
-      "#DRJ1SN006,Toko Contoh Sederhana,2026-07-11,2.5,250000,250000\n";
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "template_outlet.csv");
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+
+  const downloadTemplateExcel = () => {
+    const rows = [
+      {
+        noId: "#DRJ1SN006",
+        outlet: "Toko Contoh Sederhana",
+        tglDaftar: "2026-07-11",
+        order: 2.5,
+        pendapatan: 250000,
+        totalBayar: 250000,
+      },
+    ];
+    const ws = XLSX.utils.json_to_sheet(rows, {
+      header: ["noId", "outlet", "tglDaftar", "order", "pendapatan", "totalBayar"],
+    });
+    // Set column widths
+    ws["!cols"] = [
+      { wch: 16 },
+      { wch: 28 },
+      { wch: 14 },
+      { wch: 10 },
+      { wch: 14 },
+      { wch: 14 },
+    ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Template Outlet");
+    XLSX.writeFile(wb, "template_outlet.xlsx");
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -66,7 +82,7 @@ export default function UploadModal({ onClose, onUpload }: UploadModalProps) {
       !name.endsWith(".xlsx") &&
       !name.endsWith(".xls")
     ) {
-      setError("Format file harus CSV atau Excel (.xlsx/.xls)");
+      setError("Format file harus Excel (.xlsx/.xls)");
       return;
     }
     setFile(f);
@@ -123,7 +139,7 @@ export default function UploadModal({ onClose, onUpload }: UploadModalProps) {
                 Upload Data
               </h2>
               <p className="text-xs text-[var(--muted)]">
-                Import data dari file CSV atau Excel
+                Import data dari file Excel
               </p>
             </div>
           </div>
@@ -267,7 +283,7 @@ export default function UploadModal({ onClose, onUpload }: UploadModalProps) {
                     atau drag & drop file
                   </p>
                   <p className="text-xs text-[var(--muted)]">
-                    Format: CSV, Excel (.xlsx, .xls)
+                    Format: Excel (.xlsx, .xls)
                   </p>
                 </div>
               )}
@@ -275,35 +291,35 @@ export default function UploadModal({ onClose, onUpload }: UploadModalProps) {
 
             {/* Format Guide */}
             <div className="rounded-xl bg-[var(--background)] border border-[var(--card-border)] p-4 mb-5">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                 <h4 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wide">
                   Format Kolom yang Didukung
                 </h4>
                 <button
-                  type="button"
-                  onClick={downloadTemplate}
-                  className="text-xs text-[var(--accent)] hover:underline flex items-center gap-1 font-medium transition-colors"
-                >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    type="button"
+                    onClick={downloadTemplateExcel}
+                    className="text-xs text-emerald-500 hover:underline flex items-center gap-1 font-medium transition-colors"
                   >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Unduh Template CSV
-                </button>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Unduh Template Excel
+                  </button>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                 {[
-                  "noInduk / no_induk",
+                  "noId / no_induk (NO ID)",
                   "outlet",
                   "tglDaftar / tgl_daftar",
                   "order (opsional)",

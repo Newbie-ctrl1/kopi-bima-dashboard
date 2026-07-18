@@ -157,7 +157,7 @@ function parseOutletFormData(formData: FormData): OutletFormData {
   const rawTotalBayar = (formData.get("totalBayar") as string) || (formData.get("total_bayar") as string) || "";
 
   return {
-    noInduk: (formData.get("noInduk") as string) || (formData.get("no_induk") as string) || "",
+    noId: (formData.get("noId") as string) || (formData.get("no_induk") as string) || "",
     outlet: (formData.get("outlet") as string) || "",
     tglDaftar: (formData.get("tglDaftar") as string) || (formData.get("tgl_daftar") as string) || "",
     order: rawOrder ? parseFloat(rawOrder) : undefined,
@@ -167,7 +167,7 @@ function parseOutletFormData(formData: FormData): OutletFormData {
 }
 
 function validateOutletData(data: OutletFormData): string | null {
-  if (!data.noInduk.trim()) return "No Induk tidak boleh kosong";
+  if (!data.noId.trim()) return "NO ID tidak boleh kosong";
   if (!data.outlet.trim()) return "Nama outlet tidak boleh kosong";
   if (!data.tglDaftar) return "Tanggal daftar tidak boleh kosong";
   return null;
@@ -413,11 +413,11 @@ export async function uploadOutletsAction(
       const row = rows[i];
       const rowNum = i + 2;
 
-      const noInduk =
-        row["noInduk"] ||
+      const noId =
+        row["noId"] ||
+        row["no_id"] ||
         row["no_induk"] ||
-        row["No Induk"] ||
-        row["NO INDUK"] ||
+        row["NO ID"] ||
         "";
       const outlet =
         row["outlet"] || row["Outlet"] || row["OUTLET"] || row["nama"] || "";
@@ -456,13 +456,13 @@ export async function uploadOutletsAction(
         "0";
       const totalBayarVal = parseFloat(String(totalBayarStr)) || 0;
 
-      if (!noInduk && !outlet) {
-        errors.push(`Baris ${rowNum}: No Induk dan Outlet kosong, dilewati`);
+      if (!noId && !outlet) {
+        errors.push(`Baris ${rowNum}: NO ID dan Outlet kosong, dilewati`);
         continue;
       }
 
       outlets.push({
-        noInduk: String(noInduk).trim(),
+        noId: String(noId).trim(),
         outlet: String(outlet).trim(),
         tglDaftar: String(tglDaftar).trim(),
         order: orderVal,

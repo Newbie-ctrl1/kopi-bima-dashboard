@@ -26,7 +26,7 @@ export type AggregateOutlet = {
 
 export type OutletMinAggregateOutputType = {
   id: string | null
-  noInduk: string | null
+  noId: string | null
   outlet: string | null
   tglDaftar: string | null
   alamatId: string | null
@@ -34,7 +34,7 @@ export type OutletMinAggregateOutputType = {
 
 export type OutletMaxAggregateOutputType = {
   id: string | null
-  noInduk: string | null
+  noId: string | null
   outlet: string | null
   tglDaftar: string | null
   alamatId: string | null
@@ -42,7 +42,7 @@ export type OutletMaxAggregateOutputType = {
 
 export type OutletCountAggregateOutputType = {
   id: number
-  noInduk: number
+  noId: number
   outlet: number
   tglDaftar: number
   alamatId: number
@@ -52,7 +52,7 @@ export type OutletCountAggregateOutputType = {
 
 export type OutletMinAggregateInputType = {
   id?: true
-  noInduk?: true
+  noId?: true
   outlet?: true
   tglDaftar?: true
   alamatId?: true
@@ -60,7 +60,7 @@ export type OutletMinAggregateInputType = {
 
 export type OutletMaxAggregateInputType = {
   id?: true
-  noInduk?: true
+  noId?: true
   outlet?: true
   tglDaftar?: true
   alamatId?: true
@@ -68,7 +68,7 @@ export type OutletMaxAggregateInputType = {
 
 export type OutletCountAggregateInputType = {
   id?: true
-  noInduk?: true
+  noId?: true
   outlet?: true
   tglDaftar?: true
   alamatId?: true
@@ -149,7 +149,7 @@ export type OutletGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type OutletGroupByOutputType = {
   id: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   alamatId: string
@@ -178,7 +178,7 @@ export type OutletWhereInput = {
   OR?: Prisma.OutletWhereInput[]
   NOT?: Prisma.OutletWhereInput | Prisma.OutletWhereInput[]
   id?: Prisma.StringFilter<"Outlet"> | string
-  noInduk?: Prisma.StringFilter<"Outlet"> | string
+  noId?: Prisma.StringFilter<"Outlet"> | string
   outlet?: Prisma.StringFilter<"Outlet"> | string
   tglDaftar?: Prisma.StringFilter<"Outlet"> | string
   alamatId?: Prisma.StringFilter<"Outlet"> | string
@@ -189,7 +189,7 @@ export type OutletWhereInput = {
 
 export type OutletOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  noInduk?: Prisma.SortOrder
+  noId?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
   tglDaftar?: Prisma.SortOrder
   alamatId?: Prisma.SortOrder
@@ -203,7 +203,7 @@ export type OutletWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.OutletWhereInput | Prisma.OutletWhereInput[]
   OR?: Prisma.OutletWhereInput[]
   NOT?: Prisma.OutletWhereInput | Prisma.OutletWhereInput[]
-  noInduk?: Prisma.StringFilter<"Outlet"> | string
+  noId?: Prisma.StringFilter<"Outlet"> | string
   outlet?: Prisma.StringFilter<"Outlet"> | string
   tglDaftar?: Prisma.StringFilter<"Outlet"> | string
   alamatId?: Prisma.StringFilter<"Outlet"> | string
@@ -214,7 +214,7 @@ export type OutletWhereUniqueInput = Prisma.AtLeast<{
 
 export type OutletOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  noInduk?: Prisma.SortOrder
+  noId?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
   tglDaftar?: Prisma.SortOrder
   alamatId?: Prisma.SortOrder
@@ -228,7 +228,7 @@ export type OutletScalarWhereWithAggregatesInput = {
   OR?: Prisma.OutletScalarWhereWithAggregatesInput[]
   NOT?: Prisma.OutletScalarWhereWithAggregatesInput | Prisma.OutletScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
-  noInduk?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
+  noId?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
   outlet?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
   tglDaftar?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
   alamatId?: Prisma.StringWithAggregatesFilter<"Outlet"> | string
@@ -236,7 +236,7 @@ export type OutletScalarWhereWithAggregatesInput = {
 
 export type OutletCreateInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   alamat: Prisma.AlamatCreateNestedOneWithoutOutletsInput
@@ -246,7 +246,7 @@ export type OutletCreateInput = {
 
 export type OutletUncheckedCreateInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   alamatId: string
@@ -256,7 +256,7 @@ export type OutletUncheckedCreateInput = {
 
 export type OutletUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   alamat?: Prisma.AlamatUpdateOneRequiredWithoutOutletsNestedInput
@@ -266,7 +266,7 @@ export type OutletUpdateInput = {
 
 export type OutletUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   alamatId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -276,7 +276,7 @@ export type OutletUncheckedUpdateInput = {
 
 export type OutletCreateManyInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   alamatId: string
@@ -284,14 +284,14 @@ export type OutletCreateManyInput = {
 
 export type OutletUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type OutletUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   alamatId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -309,7 +309,7 @@ export type OutletOrderByRelationAggregateInput = {
 
 export type OutletCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  noInduk?: Prisma.SortOrder
+  noId?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
   tglDaftar?: Prisma.SortOrder
   alamatId?: Prisma.SortOrder
@@ -317,7 +317,7 @@ export type OutletCountOrderByAggregateInput = {
 
 export type OutletMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  noInduk?: Prisma.SortOrder
+  noId?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
   tglDaftar?: Prisma.SortOrder
   alamatId?: Prisma.SortOrder
@@ -325,7 +325,7 @@ export type OutletMaxOrderByAggregateInput = {
 
 export type OutletMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  noInduk?: Prisma.SortOrder
+  noId?: Prisma.SortOrder
   outlet?: Prisma.SortOrder
   tglDaftar?: Prisma.SortOrder
   alamatId?: Prisma.SortOrder
@@ -408,7 +408,7 @@ export type OutletUpdateOneRequiredWithoutPaymentsNestedInput = {
 
 export type OutletCreateWithoutAlamatInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   orders?: Prisma.OrderCreateNestedManyWithoutOutletInput
@@ -417,7 +417,7 @@ export type OutletCreateWithoutAlamatInput = {
 
 export type OutletUncheckedCreateWithoutAlamatInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOutletInput
@@ -455,7 +455,7 @@ export type OutletScalarWhereInput = {
   OR?: Prisma.OutletScalarWhereInput[]
   NOT?: Prisma.OutletScalarWhereInput | Prisma.OutletScalarWhereInput[]
   id?: Prisma.StringFilter<"Outlet"> | string
-  noInduk?: Prisma.StringFilter<"Outlet"> | string
+  noId?: Prisma.StringFilter<"Outlet"> | string
   outlet?: Prisma.StringFilter<"Outlet"> | string
   tglDaftar?: Prisma.StringFilter<"Outlet"> | string
   alamatId?: Prisma.StringFilter<"Outlet"> | string
@@ -463,7 +463,7 @@ export type OutletScalarWhereInput = {
 
 export type OutletCreateWithoutOrdersInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   alamat: Prisma.AlamatCreateNestedOneWithoutOutletsInput
@@ -472,7 +472,7 @@ export type OutletCreateWithoutOrdersInput = {
 
 export type OutletUncheckedCreateWithoutOrdersInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   alamatId: string
@@ -497,7 +497,7 @@ export type OutletUpdateToOneWithWhereWithoutOrdersInput = {
 
 export type OutletUpdateWithoutOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   alamat?: Prisma.AlamatUpdateOneRequiredWithoutOutletsNestedInput
@@ -506,7 +506,7 @@ export type OutletUpdateWithoutOrdersInput = {
 
 export type OutletUncheckedUpdateWithoutOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   alamatId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -515,7 +515,7 @@ export type OutletUncheckedUpdateWithoutOrdersInput = {
 
 export type OutletCreateWithoutPaymentsInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   alamat: Prisma.AlamatCreateNestedOneWithoutOutletsInput
@@ -524,7 +524,7 @@ export type OutletCreateWithoutPaymentsInput = {
 
 export type OutletUncheckedCreateWithoutPaymentsInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
   alamatId: string
@@ -549,7 +549,7 @@ export type OutletUpdateToOneWithWhereWithoutPaymentsInput = {
 
 export type OutletUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   alamat?: Prisma.AlamatUpdateOneRequiredWithoutOutletsNestedInput
@@ -558,7 +558,7 @@ export type OutletUpdateWithoutPaymentsInput = {
 
 export type OutletUncheckedUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   alamatId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -567,14 +567,14 @@ export type OutletUncheckedUpdateWithoutPaymentsInput = {
 
 export type OutletCreateManyAlamatInput = {
   id?: string
-  noInduk: string
+  noId: string
   outlet: string
   tglDaftar: string
 }
 
 export type OutletUpdateWithoutAlamatInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   orders?: Prisma.OrderUpdateManyWithoutOutletNestedInput
@@ -583,7 +583,7 @@ export type OutletUpdateWithoutAlamatInput = {
 
 export type OutletUncheckedUpdateWithoutAlamatInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
   orders?: Prisma.OrderUncheckedUpdateManyWithoutOutletNestedInput
@@ -592,7 +592,7 @@ export type OutletUncheckedUpdateWithoutAlamatInput = {
 
 export type OutletUncheckedUpdateManyWithoutAlamatInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noInduk?: Prisma.StringFieldUpdateOperationsInput | string
+  noId?: Prisma.StringFieldUpdateOperationsInput | string
   outlet?: Prisma.StringFieldUpdateOperationsInput | string
   tglDaftar?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -639,7 +639,7 @@ export type OutletCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types
 
 export type OutletSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  noInduk?: boolean
+  noId?: boolean
   outlet?: boolean
   tglDaftar?: boolean
   alamatId?: boolean
@@ -651,7 +651,7 @@ export type OutletSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 
 export type OutletSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  noInduk?: boolean
+  noId?: boolean
   outlet?: boolean
   tglDaftar?: boolean
   alamatId?: boolean
@@ -660,7 +660,7 @@ export type OutletSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 
 export type OutletSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  noInduk?: boolean
+  noId?: boolean
   outlet?: boolean
   tglDaftar?: boolean
   alamatId?: boolean
@@ -669,13 +669,13 @@ export type OutletSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 
 export type OutletSelectScalar = {
   id?: boolean
-  noInduk?: boolean
+  noId?: boolean
   outlet?: boolean
   tglDaftar?: boolean
   alamatId?: boolean
 }
 
-export type OutletOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "noInduk" | "outlet" | "tglDaftar" | "alamatId", ExtArgs["result"]["outlet"]>
+export type OutletOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "noId" | "outlet" | "tglDaftar" | "alamatId", ExtArgs["result"]["outlet"]>
 export type OutletInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   alamat?: boolean | Prisma.AlamatDefaultArgs<ExtArgs>
   orders?: boolean | Prisma.Outlet$ordersArgs<ExtArgs>
@@ -698,7 +698,7 @@ export type $OutletPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    noInduk: string
+    noId: string
     outlet: string
     tglDaftar: string
     alamatId: string
@@ -1129,7 +1129,7 @@ export interface Prisma__OutletClient<T, Null = never, ExtArgs extends runtime.T
  */
 export interface OutletFieldRefs {
   readonly id: Prisma.FieldRef<"Outlet", 'String'>
-  readonly noInduk: Prisma.FieldRef<"Outlet", 'String'>
+  readonly noId: Prisma.FieldRef<"Outlet", 'String'>
   readonly outlet: Prisma.FieldRef<"Outlet", 'String'>
   readonly tglDaftar: Prisma.FieldRef<"Outlet", 'String'>
   readonly alamatId: Prisma.FieldRef<"Outlet", 'String'>

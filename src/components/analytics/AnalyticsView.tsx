@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import * as XLSX from "xlsx";
 
 import type { AnalyticsPeriod } from "@/lib/store";
 import { formatCurrency } from "@/lib/utils";
@@ -98,92 +99,58 @@ export default function AnalyticsView({
   const getPercentage = (value: number, total: number) =>
     total > 0 ? Math.round((value / total) * 100) : 0;
 
-  const downloadSummaryCSV = () => {
-    const headers = [
-      activeTab === "harian" ? "Tanggal" : activeTab === "bulanan" ? "Bulan" : "Tahun",
-      "Total Outlet",
-      "Volume Order (Krd)",
-      "Total Pendapatan (Rp)",
-      "Total Terbayar (Rp)",
-      "Sisa Piutang (Rp)",
-      "Jumlah Lunas",
-      "Jumlah Piutang"
-    ];
-
-    const rows = currentData.map(p => [
-      p.label,
-      p.totalOutlet,
-      p.totalOrder,
-      p.totalPendapatan,
-      p.totalBayar,
-      p.totalPiutang,
-      p.lunas,
-      p.piutang
-    ]);
-
-    const csvContent = [
-      headers.join(","),
-      ...rows.map(row => row.map(val => `"${val}"`).join(","))
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Rekap_${activeTab}_kopi_bima_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadSummaryExcel = () => {
+    const periodLabel = activeTab === "harian" ? "Tanggal" : activeTab === "bulanan" ? "Bulan" : "Tahun";
+    const rows = currentData.map(p => ({
+      [periodLabel]: p.label,
+      "Total Outlet": p.totalOutlet,
+      "Volume Order (Krd)": p.totalOrder,
+      "Total Pendapatan (Rp)": p.totalPendapatan,
+      "Total Terbayar (Rp)": p.totalBayar,
+      "Sisa Piutang (Rp)": p.totalPiutang,
+      "Jumlah Lunas": p.lunas,
+      "Jumlah Piutang": p.piutang,
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws["!cols"] = [{ wch: 14 }, { wch: 14 }, { wch: 20 }, { wch: 22 }, { wch: 22 }, { wch: 20 }, { wch: 14 }, { wch: 14 }];
+    const wb = XLSX.utils.book_new();
+    const sheetName = activeTab === "harian" ? "Rekap Harian" : activeTab === "bulanan" ? "Rekap Bulanan" : "Rekap Tahunan";
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.writeFile(wb, `Rekap_${activeTab}_kopi_bima_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  const downloadPeriodDetailsCSV = (periodData: AnalyticsPeriod) => {
-    // Generate CSV for orders
-    const orderLines = [
-      "--- DAFTAR TRANSAKSI ORDER ---",
-      ["Jalur/Alamat", "No Induk", "Nama Outlet", "Volume Order (Krd)", "Harga (Rp)", "Total Harga (Rp)", "Jumlah Bayar (Rp)", "Status", "Keterangan"].join(",")
-    ];
-    
-    periodData.orders.forEach(o => {
-      orderLines.push([
-        `"${o.jalurName} - ${o.alamatName}"`,
-        `"${o.outletNoInduk}"`,
-        `"${o.outletName}"`,
-        o.order,
-        o.harga,
-        o.order * o.harga,
-        o.totalBayar,
-        o.status,
-        `"${o.keterangan ?? ""}"`
-      ].join(","));
-    });
+  const downloadPeriodDetailsExcel = (periodData: AnalyticsPeriod) => {
+    const orderRows = periodData.orders.map(o => ({
+      "Jalur/Alamat": `${o.jalurName} - ${o.alamatName}`,
+      "NO ID": o.outletNoInduk,
+      "Nama Outlet": o.outletName,
+      "Volume Order (Krd)": o.order,
+      "Harga (Rp)": o.harga,
+      "Total Harga (Rp)": o.order * o.harga,
+      "Jumlah Bayar (Rp)": o.totalBayar,
+      "Status": o.status,
+      "Keterangan": o.keterangan ?? "",
+    }));
+    const paymentRows = periodData.payments.map(p => ({
+      "Jalur/Alamat": `${p.jalurName} - ${p.alamatName}`,
+      "NO ID": p.outletNoInduk,
+      "Nama Outlet": p.outletName,
+      "Jumlah Bayar (Rp)": p.amount,
+      "Metode Pembayaran": p.paymentMethod,
+      "Keterangan": p.keterangan ?? "",
+    }));
 
-    // Generate CSV for payments
-    const paymentLines = [
-      "",
-      "--- DAFTAR TRANSAKSI PEMBAYARAN ---",
-      ["Jalur/Alamat", "No Induk", "Nama Outlet", "Jumlah Bayar (Rp)", "Metode Pembayaran", "Keterangan"].join(",")
-    ];
+    const wb = XLSX.utils.book_new();
 
-    periodData.payments.forEach(p => {
-      paymentLines.push([
-        `"${p.jalurName} - ${p.alamatName}"`,
-        `"${p.outletNoInduk}"`,
-        `"${p.outletName}"`,
-        p.amount,
-        p.paymentMethod,
-        `"${p.keterangan ?? ""}"`
-      ].join(","));
-    });
+    const wsOrders = XLSX.utils.json_to_sheet(orderRows.length > 0 ? orderRows : [{}]);
+    wsOrders["!cols"] = [{ wch: 28 }, { wch: 14 }, { wch: 24 }, { wch: 18 }, { wch: 14 }, { wch: 16 }, { wch: 16 }, { wch: 10 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, wsOrders, "Transaksi Order");
 
-    const csvContent = [...orderLines, ...paymentLines].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Detail_${activeTab}_${periodData.label}_kopi_bima.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const wsPayments = XLSX.utils.json_to_sheet(paymentRows.length > 0 ? paymentRows : [{}]);
+    wsPayments["!cols"] = [{ wch: 28 }, { wch: 14 }, { wch: 24 }, { wch: 16 }, { wch: 18 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, wsPayments, "Transaksi Pembayaran");
+
+    XLSX.writeFile(wb, `Detail_${activeTab}_${periodData.label}_kopi_bima.xlsx`);
   };
 
   return (
@@ -375,15 +342,15 @@ export default function AnalyticsView({
 
         {currentData.length > 0 && (
           <button
-            onClick={downloadSummaryCSV}
-            className="btn btn-secondary text-xs flex items-center gap-2 py-3 px-4 border border-[var(--card-border)] bg-[#0d0d0c] hover:bg-[#121211] text-[var(--foreground)] font-bold uppercase tracking-wider"
+            onClick={downloadSummaryExcel}
+            className="btn btn-secondary text-xs flex items-center gap-2 py-3 px-4 border border-emerald-500/30 bg-[#0d0d0c] hover:bg-[#121211] text-emerald-400 font-bold uppercase tracking-wider"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
-            Unduh Rekap {activeTab === "harian" ? "Harian" : activeTab === "bulanan" ? "Bulanan" : "Tahunan"} (.csv)
+            Unduh Rekap Excel
           </button>
         )}
       </div>
@@ -459,14 +426,14 @@ export default function AnalyticsView({
                     </div>
                   </div>
 
-                  {/* Instantly Download CSV */}
+                  {/* Download Excel */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      downloadPeriodDetailsCSV(period);
+                      downloadPeriodDetailsExcel(period);
                     }}
-                    className="p-1.5 rounded-lg border border-[var(--card-border)] bg-black/40 text-[var(--muted-foreground)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all flex items-center justify-center shrink-0"
-                    title={`Unduh Rincian CSV (${period.label})`}
+                    className="p-1.5 rounded-lg border border-emerald-500/30 bg-black/40 text-emerald-500/60 hover:text-emerald-400 hover:border-emerald-400 transition-all flex items-center justify-center shrink-0"
+                    title={`Unduh Rincian Excel (${period.label})`}
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -506,7 +473,7 @@ export default function AnalyticsView({
               {expandedPeriod === period.key && (
                 <ExpandedPeriodDetails
                   period={period}
-                  onDownloadCSV={downloadPeriodDetailsCSV}
+                  onDownloadExcel={downloadPeriodDetailsExcel}
                 />
               )}
             </div>
@@ -581,10 +548,10 @@ export default function AnalyticsView({
 
 function ExpandedPeriodDetails({
   period,
-  onDownloadCSV,
+  onDownloadExcel,
 }: {
   period: AnalyticsPeriod;
-  onDownloadCSV: (period: AnalyticsPeriod) => void;
+  onDownloadExcel: (period: AnalyticsPeriod) => void;
 }) {
   const [orderPage, setOrderPage] = useState(1);
   const [paymentPage, setPaymentPage] = useState(1);
@@ -624,15 +591,15 @@ function ExpandedPeriodDetails({
         </div>
 
         <button
-          onClick={() => onDownloadCSV(period)}
-          className="btn btn-secondary text-[10px] flex items-center gap-1.5 py-2 px-3 border border-[var(--card-border)] bg-[#0d0d0c] hover:bg-[#121211] text-[var(--foreground)] font-bold uppercase tracking-wider h-fit self-end sm:self-center"
+          onClick={() => onDownloadExcel(period)}
+          className="btn btn-secondary text-[10px] flex items-center gap-1.5 py-2 px-3 border border-emerald-500/30 bg-[#0d0d0c] hover:bg-[#121211] text-emerald-400 font-bold uppercase tracking-wider h-fit self-end sm:self-center"
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accent)]">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-          Unduh CSV Rincian
+          Unduh Excel
         </button>
       </div>
 
@@ -670,7 +637,7 @@ function ExpandedPeriodDetails({
           <thead>
             <tr>
               <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
-              <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
+              <th className="font-sans text-[10px] tracking-widest font-bold">NO ID</th>
               <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
               <th className="text-right font-sans text-[10px] tracking-widest font-bold">Order (Krd)</th>
               <th className="text-right font-sans text-[10px] tracking-widest font-bold">Harga</th>
@@ -760,7 +727,7 @@ function ExpandedPeriodDetails({
           <thead>
             <tr>
               <th className="font-sans text-[10px] tracking-widest font-bold">Jalur / Alamat</th>
-              <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
+              <th className="font-sans text-[10px] tracking-widest font-bold">NO ID</th>
               <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
               <th className="text-right font-sans text-[10px] tracking-widest font-bold">Jumlah Bayar</th>
               <th className="text-center font-sans text-[10px] tracking-widest font-bold">Metode</th>

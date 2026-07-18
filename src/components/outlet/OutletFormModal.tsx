@@ -5,7 +5,7 @@ import { useState } from "react";
 interface OutletFormModalProps {
   mode: "create" | "edit";
   outlet?: {
-    noInduk: string;
+    noId: string;
     outlet: string;
     tglDaftar: string;
     totalOrder?: number;
@@ -112,21 +112,21 @@ export default function OutletFormModal({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* No Induk */}
+          {/* NO ID */}
           <div>
             <label
-              htmlFor="noInduk"
+              htmlFor="noId"
               className="block text-sm font-medium text-[var(--muted-foreground)] mb-1.5"
             >
-              No Induk
+              NO ID
             </label>
             <input
-              id="noInduk"
-              name="noInduk"
+              id="noId"
+              name="noId"
               type="text"
               className="input"
               placeholder="Contoh: #RJ1SN001"
-              defaultValue={mode === "create" ? (nextNoInduk ?? "") : (outlet?.noInduk ?? "")}
+              defaultValue={mode === "create" ? (nextNoInduk ?? "") : (outlet?.noId ?? "")}
               required
             />
           </div>

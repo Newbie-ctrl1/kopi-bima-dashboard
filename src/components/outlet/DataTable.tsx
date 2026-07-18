@@ -65,7 +65,7 @@ export default function DataTable({
 
   const filtered = outlets.filter((o) => {
     const matchesSearch =
-      o.noInduk.toLowerCase().includes(search.toLowerCase()) ||
+      o.noId.toLowerCase().includes(search.toLowerCase()) ||
       o.outlet.toLowerCase().includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === "all"
@@ -113,7 +113,7 @@ export default function DataTable({
               id="search-outlet"
               type="text"
               className="input pl-10"
-              placeholder="Cari No Induk / Nama Outlet..."
+              placeholder="Cari NO ID / Nama Outlet..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -168,7 +168,7 @@ export default function DataTable({
                 <polyline points="17 8 12 3 7 8" />
                 <line x1="12" y1="3" x2="12" y2="15" />
               </svg>
-              Upload CSV/XLSX
+              Upload Excel
             </button>
             <button
               id="btn-tambah-data"
@@ -200,7 +200,7 @@ export default function DataTable({
           <table className="data-table">
             <thead>
               <tr>
-                <th className="font-sans text-[10px] tracking-widest font-bold">No Induk</th>
+                <th className="font-sans text-[10px] tracking-widest font-bold">NO ID</th>
                 <th className="font-sans text-[10px] tracking-widest font-bold">Outlet</th>
                 <th className="font-sans text-[10px] tracking-widest font-bold">Tgl Daftar</th>
                 <th className="text-center font-sans text-[10px] tracking-widest font-bold">Orders</th>
@@ -241,7 +241,7 @@ export default function DataTable({
                 paginatedOutlets.map((o) => (
                   <tr key={o.id}>
                     <td className="font-mono text-[var(--foreground)] font-semibold text-xs tracking-tight">
-                      {o.noInduk}
+                      {o.noId}
                     </td>
                     <td className="text-[var(--foreground)] font-semibold">{o.outlet}</td>
                     <td className="text-xs uppercase tracking-wide">

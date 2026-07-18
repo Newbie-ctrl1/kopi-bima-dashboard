@@ -60,23 +60,23 @@ async function main() {
 
   // OUTLETS — Rendi
   const rendiOutlets = [
-    { id: "o-sn-1", noInduk: "#DRJ1SN001", outlet: "Toko Sejahtera",     tglDaftar: fourDaysAgo, alamatId: aSananrejo.id },
-    { id: "o-sn-2", noInduk: "#DRJ1SN002", outlet: "Warung Barokah",     tglDaftar: fourDaysAgo, alamatId: aSananrejo.id },
-    { id: "o-sn-3", noInduk: "#DRJ1SN003", outlet: "Kios Makmur Jaya",   tglDaftar: threeDaysAgo, alamatId: aSananrejo.id },
-    { id: "o-sn-4", noInduk: "#DRJ1SN004", outlet: "Toko Bahagia",       tglDaftar: threeDaysAgo, alamatId: aSananrejo.id },
-    { id: "o-sn-5", noInduk: "#DRJ1SN005", outlet: "Warung Pak Harto",   tglDaftar: twoDaysAgo,   alamatId: aSananrejo.id },
-    { id: "o-wn-1", noInduk: "#DRJ1WN001", outlet: "Toko Berkah Wono",   tglDaftar: threeDaysAgo, alamatId: aWonokerto.id },
-    { id: "o-wn-2", noInduk: "#DRJ1WN002", outlet: "Warung Bu Sri",      tglDaftar: twoDaysAgo,   alamatId: aWonokerto.id },
-    { id: "o-wn-3", noInduk: "#DRJ1WN003", outlet: "Kios Maju Wono",     tglDaftar: twoDaysAgo,   alamatId: aWonokerto.id },
-    { id: "o-bl-1", noInduk: "#DRJ2BL001", outlet: "Kios Mandiri Bulu",  tglDaftar: twoDaysAgo,   alamatId: aBululawang.id },
-    { id: "o-bl-2", noInduk: "#DRJ2BL002", outlet: "Toko Sumber Sari",   tglDaftar: yesterday,    alamatId: aBululawang.id },
-    { id: "o-bl-3", noInduk: "#DRJ2BL003", outlet: "Agen Sembako Bulu",  tglDaftar: yesterday,    alamatId: aBululawang.id },
-    { id: "o-kb-1", noInduk: "#DRJ2KB001", outlet: "Warung Hj. Mimin",   tglDaftar: yesterday,    alamatId: aKrebet.id },
-    { id: "o-kb-2", noInduk: "#DRJ2KB002", outlet: "Toko Krebet Indah",  tglDaftar: today,        alamatId: aKrebet.id },
-    { id: "o-gl-1", noInduk: "#DRJ3GL001", outlet: "Toko Abadi Gondang", tglDaftar: twoDaysAgo,   alamatId: aGondang.id },
-    { id: "o-gl-2", noInduk: "#DRJ3GL002", outlet: "Warung Sari Rasa",   tglDaftar: yesterday,    alamatId: aGondang.id },
-    { id: "o-tr-1", noInduk: "#DRJ3TR001", outlet: "Kios Maju Turen",    tglDaftar: yesterday,    alamatId: aTuren.id },
-    { id: "o-tr-2", noInduk: "#DRJ3TR002", outlet: "Toko Rezeki Turen",  tglDaftar: today,        alamatId: aTuren.id },
+    { id: "o-sn-1", noId: "#DRJ1SN001", outlet: "Toko Sejahtera",     tglDaftar: fourDaysAgo, alamatId: aSananrejo.id },
+    { id: "o-sn-2", noId: "#DRJ1SN002", outlet: "Warung Barokah",     tglDaftar: fourDaysAgo, alamatId: aSananrejo.id },
+    { id: "o-sn-3", noId: "#DRJ1SN003", outlet: "Kios Makmur Jaya",   tglDaftar: threeDaysAgo, alamatId: aSananrejo.id },
+    { id: "o-sn-4", noId: "#DRJ1SN004", outlet: "Toko Bahagia",       tglDaftar: threeDaysAgo, alamatId: aSananrejo.id },
+    { id: "o-sn-5", noId: "#DRJ1SN005", outlet: "Warung Pak Harto",   tglDaftar: twoDaysAgo,   alamatId: aSananrejo.id },
+    { id: "o-wn-1", noId: "#DRJ1WN001", outlet: "Toko Berkah Wono",   tglDaftar: threeDaysAgo, alamatId: aWonokerto.id },
+    { id: "o-wn-2", noId: "#DRJ1WN002", outlet: "Warung Bu Sri",      tglDaftar: twoDaysAgo,   alamatId: aWonokerto.id },
+    { id: "o-wn-3", noId: "#DRJ1WN003", outlet: "Kios Maju Wono",     tglDaftar: twoDaysAgo,   alamatId: aWonokerto.id },
+    { id: "o-bl-1", noId: "#DRJ2BL001", outlet: "Kios Mandiri Bulu",  tglDaftar: twoDaysAgo,   alamatId: aBululawang.id },
+    { id: "o-bl-2", noId: "#DRJ2BL002", outlet: "Toko Sumber Sari",   tglDaftar: yesterday,    alamatId: aBululawang.id },
+    { id: "o-bl-3", noId: "#DRJ2BL003", outlet: "Agen Sembako Bulu",  tglDaftar: yesterday,    alamatId: aBululawang.id },
+    { id: "o-kb-1", noId: "#DRJ2KB001", outlet: "Warung Hj. Mimin",   tglDaftar: yesterday,    alamatId: aKrebet.id },
+    { id: "o-kb-2", noId: "#DRJ2KB002", outlet: "Toko Krebet Indah",  tglDaftar: today,        alamatId: aKrebet.id },
+    { id: "o-gl-1", noId: "#DRJ3GL001", outlet: "Toko Abadi Gondang", tglDaftar: twoDaysAgo,   alamatId: aGondang.id },
+    { id: "o-gl-2", noId: "#DRJ3GL002", outlet: "Warung Sari Rasa",   tglDaftar: yesterday,    alamatId: aGondang.id },
+    { id: "o-tr-1", noId: "#DRJ3TR001", outlet: "Kios Maju Turen",    tglDaftar: yesterday,    alamatId: aTuren.id },
+    { id: "o-tr-2", noId: "#DRJ3TR002", outlet: "Toko Rezeki Turen",  tglDaftar: today,        alamatId: aTuren.id },
   ];
 
   for (const o of rendiOutlets) {
@@ -238,16 +238,16 @@ async function main() {
   const aDampit   = await prisma.alamat.create({ data: { id: "a-dm", name: "Dampit",   jalurId: jF2.id } });
 
   const faridOutlets = [
-    { id: "o-tj-1", noInduk: "#DFJ1TJ001", outlet: "Toko Abadi",        tglDaftar: twoDaysAgo,   alamatId: aTajinan.id },
-    { id: "o-tj-2", noInduk: "#DFJ1TJ002", outlet: "Warung Pojok",      tglDaftar: twoDaysAgo,   alamatId: aTajinan.id },
-    { id: "o-tj-3", noInduk: "#DFJ1TJ003", outlet: "Kios Maju Bersama", tglDaftar: yesterday,    alamatId: aTajinan.id },
-    { id: "o-pk-1", noInduk: "#DFJ1PK001", outlet: "Toko Pak Bambang",  tglDaftar: yesterday,    alamatId: aPakisaji.id },
-    { id: "o-pk-2", noInduk: "#DFJ1PK002", outlet: "Warung Sederhana",  tglDaftar: yesterday,    alamatId: aPakisaji.id },
-    { id: "o-pk-3", noInduk: "#DFJ1PK003", outlet: "Toko Sembako 99",   tglDaftar: today,        alamatId: aPakisaji.id },
-    { id: "o-kp-1", noInduk: "#DFJ2KP001", outlet: "Toko Jaya Kepanjen",tglDaftar: twoDaysAgo,   alamatId: aKepanjen.id },
-    { id: "o-kp-2", noInduk: "#DFJ2KP002", outlet: "Warung Bu Dewi",    tglDaftar: yesterday,    alamatId: aKepanjen.id },
-    { id: "o-dm-1", noInduk: "#DFJ2DM001", outlet: "Agen Dampit Raya",  tglDaftar: yesterday,    alamatId: aDampit.id },
-    { id: "o-dm-2", noInduk: "#DFJ2DM002", outlet: "Kios Berkah Dampit",tglDaftar: today,        alamatId: aDampit.id },
+    { id: "o-tj-1", noId: "#DFJ1TJ001", outlet: "Toko Abadi",        tglDaftar: twoDaysAgo,   alamatId: aTajinan.id },
+    { id: "o-tj-2", noId: "#DFJ1TJ002", outlet: "Warung Pojok",      tglDaftar: twoDaysAgo,   alamatId: aTajinan.id },
+    { id: "o-tj-3", noId: "#DFJ1TJ003", outlet: "Kios Maju Bersama", tglDaftar: yesterday,    alamatId: aTajinan.id },
+    { id: "o-pk-1", noId: "#DFJ1PK001", outlet: "Toko Pak Bambang",  tglDaftar: yesterday,    alamatId: aPakisaji.id },
+    { id: "o-pk-2", noId: "#DFJ1PK002", outlet: "Warung Sederhana",  tglDaftar: yesterday,    alamatId: aPakisaji.id },
+    { id: "o-pk-3", noId: "#DFJ1PK003", outlet: "Toko Sembako 99",   tglDaftar: today,        alamatId: aPakisaji.id },
+    { id: "o-kp-1", noId: "#DFJ2KP001", outlet: "Toko Jaya Kepanjen",tglDaftar: twoDaysAgo,   alamatId: aKepanjen.id },
+    { id: "o-kp-2", noId: "#DFJ2KP002", outlet: "Warung Bu Dewi",    tglDaftar: yesterday,    alamatId: aKepanjen.id },
+    { id: "o-dm-1", noId: "#DFJ2DM001", outlet: "Agen Dampit Raya",  tglDaftar: yesterday,    alamatId: aDampit.id },
+    { id: "o-dm-2", noId: "#DFJ2DM002", outlet: "Kios Berkah Dampit",tglDaftar: today,        alamatId: aDampit.id },
   ];
 
   for (const o of faridOutlets) {

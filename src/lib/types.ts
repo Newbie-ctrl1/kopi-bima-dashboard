@@ -26,13 +26,13 @@ export interface Alamat {
 export interface Outlet {
   id: string;
   alamatId: string;
-  noInduk: string;
+  noId: string;
   outlet: string;       // nama toko
   tglDaftar: string;    // tanggal daftar (YYYY-MM-DD)
 }
 
 export interface OutletFormData {
-  noInduk: string;
+  noId: string;
   outlet: string;
   tglDaftar: string;
   order?: number;

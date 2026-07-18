@@ -277,7 +277,7 @@ export async function getAnalyticsData(
       map[key].outletMap[o.outletId] = {
         outletId: o.outletId,
         outletName: o.outlet.outlet,
-        outletNoInduk: o.outlet.noInduk,
+        outletNoInduk: o.outlet.noId,
         alamatName: o.outlet.alamat.name,
         jalurName: o.outlet.alamat.jalur.name,
         databaseName: o.outlet.alamat.jalur.database.name,
@@ -326,7 +326,7 @@ export async function getAnalyticsData(
       map[key].outletMap[p.outletId] = {
         outletId: p.outletId,
         outletName: p.outlet.outlet,
-        outletNoInduk: p.outlet.noInduk,
+        outletNoInduk: p.outlet.noId,
         alamatName: p.outlet.alamat.name,
         jalurName: p.outlet.alamat.jalur.name,
         databaseName: p.outlet.alamat.jalur.database.name,
@@ -381,7 +381,7 @@ export async function getAnalyticsData(
           tglPayment: p.tglPayment,
           keterangan: p.keterangan ?? undefined,
           outletName: p.outlet.outlet,
-          outletNoInduk: p.outlet.noInduk,
+          outletNoInduk: p.outlet.noId,
           alamatName: p.outlet.alamat.name,
           jalurName: p.outlet.alamat.jalur.name,
           databaseName: p.outlet.alamat.jalur.database.name,
@@ -459,7 +459,7 @@ export async function getNextNoInduk(alamatId: string): Promise<string> {
   // 4. Sequence number
   const existingNums = alamat.outlets
     .map((o: any) => {
-      const match = o.noInduk.match(/(\d+)$/);
+      const match = o.noId.match(/(\d+)$/);
       return match ? parseInt(match[1], 10) : 0;
     })
     .filter((n: number) => !isNaN(n));
