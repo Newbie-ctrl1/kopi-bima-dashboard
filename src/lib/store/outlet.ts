@@ -3,6 +3,7 @@
 // ============================================
 
 import { prisma } from "../db";
+import { Prisma } from "../../generated/client/client";
 import type { Outlet, OutletFormData, OutletWithSummary } from "../types";
 import { adjustCoffeeStock, getCoffeeStockQuantity } from "./helpers";
 
@@ -246,7 +247,9 @@ export async function bulkImportOutlets(
     totalBayar?: number;
   }>
 ): Promise<void> {
-  // Check stock first
+  const CHUNK_SIZE = 500; // safe PostgreSQL param limit margin
+
+  // Check stock first (across all chunks)
   const totalRequestedOrder = inputs.reduce((sum, input) => sum + (input.order ?? 0), 0);
   if (totalRequestedOrder > 0) {
     const currentStock = await getCoffeeStockQuantity();
@@ -258,70 +261,103 @@ export async function bulkImportOutlets(
   const stocks = await prisma.coffeeStock.findMany({ take: 1 });
   const defaultPrice = stocks.length > 0 ? stocks[0].price : 100000;
 
-  await prisma.$transaction(async (tx) => {
-    for (const input of inputs) {
-      const newOutlet = await tx.outlet.create({
-        data: {
+  // Split into chunks of CHUNK_SIZE
+  const chunks: typeof inputs[] = [];
+  for (let i = 0; i < inputs.length; i += CHUNK_SIZE) {
+    chunks.push(inputs.slice(i, i + CHUNK_SIZE));
+  }
+
+  for (const chunk of chunks) {
+    await prisma.$transaction(async (tx) => {
+      // ── 1. Batch-create all outlets in one query ──────────────────────────
+      await tx.outlet.createMany({
+        data: chunk.map((input) => ({
           alamatId,
           noId: input.noId,
           outlet: input.outlet,
           tglDaftar: input.tglDaftar || new Date().toISOString().slice(0, 10),
-        },
+        })),
       });
 
-      let orderQty = input.order ?? 0;
-      const inputPendapatan = input.pendapatan ?? 0;
-      const payAmount = input.totalBayar ?? 0;
+      // ── 2. Fetch the newly created outlets by noId to get their IDs ───────
+      const noIds = chunk.map((i) => i.noId);
+      const createdOutlets = await tx.outlet.findMany({
+        where: { alamatId, noId: { in: noIds } },
+        select: { id: true, noId: true },
+      });
+      const idByNoId = Object.fromEntries(createdOutlets.map((o) => [o.noId, o.id]));
 
-      const hasFinancials = orderQty > 0 || inputPendapatan > 0 || payAmount > 0;
-      if (hasFinancials) {
-        if (orderQty === 0 && inputPendapatan > 0) {
-          orderQty = 1;
-        }
-        const price = inputPendapatan > 0 ? (orderQty > 0 ? inputPendapatan / orderQty : defaultPrice) : defaultPrice;
-        const totalOrderVal = inputPendapatan > 0 ? inputPendapatan : orderQty * price;
-        const totalPiutang = Math.max(0, totalOrderVal - payAmount);
-        const status: "Lunas" | "Piutang" = totalPiutang > 0 ? "Piutang" : "Lunas";
+      // ── 3. Prepare order, payment & stock data ────────────────────────────
+      const orderData: Prisma.OrderCreateManyInput[] = [];
+      const paymentData: Prisma.PaymentCreateManyInput[] = [];
+      let chunkStockDecrement = 0;
 
-        await tx.order.create({
-          data: {
-            outletId: newOutlet.id,
+      for (const input of chunk) {
+        const outletId = idByNoId[input.noId];
+        if (!outletId) continue;
+
+        let orderQty = input.order ?? 0;
+        const inputPendapatan = input.pendapatan ?? 0;
+        const payAmount = input.totalBayar ?? 0;
+
+        const hasFinancials = orderQty > 0 || inputPendapatan > 0 || payAmount > 0;
+        if (hasFinancials) {
+          if (orderQty === 0 && inputPendapatan > 0) orderQty = 1;
+          const price =
+            inputPendapatan > 0
+              ? orderQty > 0
+                ? inputPendapatan / orderQty
+                : defaultPrice
+              : defaultPrice;
+          const totalOrderVal = inputPendapatan > 0 ? inputPendapatan : orderQty * price;
+          const totalPiutang = Math.max(0, totalOrderVal - payAmount);
+          const status: "Lunas" | "Piutang" = totalPiutang > 0 ? "Piutang" : "Lunas";
+
+          orderData.push({
+            outletId,
             order: orderQty,
             harga: price,
             totalBayar: payAmount,
-            totalPiutang: totalPiutang,
-            status: status,
+            totalPiutang,
+            status,
             orderStatus: "Sukses",
             tglOrder: input.tglDaftar || new Date().toISOString().slice(0, 10),
-          },
-        });
+          });
 
-        if (orderQty > 0 && stocks.length > 0) {
-          const stock = stocks[0];
-          await tx.coffeeStock.update({
-            where: { id: stock.id },
-            data: {
-              quantity: {
-                decrement: orderQty
-              }
-            },
+          if (orderQty > 0 && stocks.length > 0) {
+            chunkStockDecrement += orderQty;
+          }
+        }
+
+        if (payAmount > 0) {
+          paymentData.push({
+            outletId,
+            amount: payAmount,
+            paymentMethod: "Cash",
+            tglPayment: input.tglDaftar || new Date().toISOString().slice(0, 10),
           });
         }
       }
 
-      if (payAmount > 0) {
-        await tx.payment.create({
-          data: {
-            outletId: newOutlet.id,
-            amount: payAmount,
-            paymentMethod: "Cash",
-            tglPayment: input.tglDaftar || new Date().toISOString().slice(0, 10),
-          },
-        });
-      }
-    }
-  });
+      // ── 4. Execute all writes in parallel ─────────────────────────────────
+      await Promise.all([
+        orderData.length > 0 ? tx.order.createMany({ data: orderData }) : Promise.resolve(),
+        paymentData.length > 0 ? tx.payment.createMany({ data: paymentData }) : Promise.resolve(),
+        chunkStockDecrement > 0 && stocks.length > 0
+          ? tx.coffeeStock.update({
+              where: { id: stocks[0].id },
+              data: { quantity: { decrement: chunkStockDecrement } },
+            })
+          : Promise.resolve(),
+      ]);
+    }, {
+      timeout: 30000, // 30s per chunk — safe for Neon/Vercel cold-start
+    });
+  }
 }
+
+
+
 
 export async function getOutletsWithSummary(alamatId: string): Promise<OutletWithSummary[]> {
   const outlets = await prisma.outlet.findMany({
